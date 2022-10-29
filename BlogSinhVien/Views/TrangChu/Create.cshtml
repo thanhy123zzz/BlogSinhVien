@@ -1,0 +1,47 @@
+﻿@model BlogSinhVien.Models.Entities.Roles
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = null;
+}
+
+<h1>Create</h1>
+<partial name="_ArletMessage"></partial>
+<h4>Roles</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="insert" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="MaRole" class="control-label">Mã Role</label>
+                <input asp-for="MaRole" class="form-control" />
+                <span asp-validation-for="MaRole" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenRole" class="control-label">Tên role</label>
+                <input asp-for="TenRole" class="form-control" />
+                <span asp-validation-for="TenRole" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlFile1">Hình ảnh</label>
+                <input onchange="readURL(this);" asp-for="@Model.HinhAnh" multiple="multiple" type="file" class="form-control-file" id="exampleFormControlFile1">
+                <span asp-validation-for="HinhAnh" class="text-danger"></span>    
+            </div>
+            <div class="form-group">
+                <img id="image" width="120px" height="120px" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

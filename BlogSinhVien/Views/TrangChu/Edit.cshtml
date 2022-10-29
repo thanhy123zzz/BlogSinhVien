@@ -1,0 +1,49 @@
+﻿@model BlogSinhVien.Models.Entities.Roles
+@{
+    ViewData["Title"] = "Edit";
+    string getImage(byte[] image)
+    {
+        if (image == null) return "";
+        string imageBase64Data = Convert.ToBase64String(image);
+        string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+        return imageDataURL;
+    }
+    Layout = null;
+}
+
+<h1>Edit</h1>
+
+<h4>Roles</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SaveEdit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaRole" />
+            <div class="form-group">
+                <label asp-for="TenRole" class="control-label"></label>
+                <input asp-for="TenRole" class="form-control" />
+                <span asp-validation-for="TenRole" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlFile1">Hình ảnh</label>
+                <input asp-for="@Model.HinhAnh" onchange="readURL(this);" type="file" class="form-control-file" id="exampleFormControlFile1">
+                <span asp-validation-for="HinhAnh" class="text-danger"></span>    
+            </div>
+            <div class="form-group">
+                <img id="image" width="120px" height="120px" src="@getImage(Model.HinhAnh)" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
