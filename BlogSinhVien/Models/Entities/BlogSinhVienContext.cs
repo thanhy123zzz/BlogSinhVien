@@ -17,7 +17,6 @@ namespace BlogSinhVien.Models.Entities
         public BlogSinhVienContext(DbContextOptions<BlogSinhVienContext> options)
             : base(options)
         {
-
         }
 
         public virtual DbSet<Accounts> Accounts { get; set; }
@@ -37,6 +36,7 @@ namespace BlogSinhVien.Models.Entities
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Data Source=LAPTOP-FPKNLS6A\\SQLEXPRESS;Initial Catalog=BlogSinhVien;Persist Security Info=True;User ID=sa;Password=123456");
             }
         }
@@ -277,7 +277,7 @@ namespace BlogSinhVien.Models.Entities
                     .IsUnicode(false)
                     .IsFixedLength();
 
-                entity.Property(e => e.TenRole).HasMaxLength(300);
+                entity.Property(e => e.TenRole).HasMaxLength(50);
             });
 
             modelBuilder.Entity<SinhVien>(entity =>

@@ -9,9 +9,15 @@ namespace BlogSinhVien.Models.Entities
 {
     public partial class Roles
     {
+        public Roles()
+        {
+            Accounts = new HashSet<Accounts>();
+        }
+
         public string MaRole { get; set; }
         public string TenRole { get; set; }
         public byte[] HinhAnh { get; set; }
+
         public virtual ICollection<Accounts> Accounts { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace BlogSinhVien.Models.Entities
         public bool? GioiTinh { get; set; }
         public string DiaChi { get; set; }
         public string TaiKhoan { get; set; }
+        public byte[] HinhAnh { get; set; }
 
         public virtual Accounts TaiKhoanNavigation { get; set; }
         public virtual ICollection<BaiDang> BaiDang { get; set; }
