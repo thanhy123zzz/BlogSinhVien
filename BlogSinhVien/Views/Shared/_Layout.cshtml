@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -210,16 +211,22 @@
 					<button data-ripple><i class="ti-search"></i></button>
 				</form>
 			</div>
+			<ul class="setting-area">
+				<a href="/" title="Home"><i class="ti-home"></i> Home</a>
+				|
+				<a href="/messages" title="Chat"><i class="ti-comments-smiley"></i> Chat</a>
+				|
+			</ul>
 			<div class="user-img">
 				<img src="images/resources/admin.jpg" alt="">
-				<span class="status f-online"></span>
-				<div class="user-setting">
-					<a href="#" title=""><i class="ti-user"></i>Profile</a>
-					<a href="#" title=""><i class="ti-pencil-alt"></i>Edit profile</a>
-					<a href="#" title=""><i class="ti-power-off"></i>Log out</a>
-				</div>
+			</div>
+			<div class="logo" style="width: 30px!important;">
+				<a title="" href="/Login/Logout">
+					<i class="ti-power-off"></i>
+				</a>
 			</div>
 		</div>
+		
 	</div>
 		<div class="fixed-sidebar right">
 		<div class="chat-friendz">
@@ -227,7 +234,6 @@
 				<li>
 					<div class="author-thmb">
 						<img src="images/resources/side-friend1.jpg" alt="">
-						<span class="status f-online"></span>
 					</div>
 				</li>
 				<li>
@@ -383,8 +389,9 @@
 		<script src="~/js/main.min.js"></script>
 	<script src="~/js/script.js"></script>
 	<script src="~/js/map-init.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8c55_YHLvDHGACkQscgbGLtLRdxBDCfI"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)

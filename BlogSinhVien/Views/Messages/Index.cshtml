@@ -1,0 +1,81 @@
+﻿<div class="gap2 gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row" id="page-contents">
+							<div class="col-lg-1"></div>
+							<div class="col-lg-10">
+								<div class="central-meta">
+									<div class="messages">
+										<h5 class="f-title"><i class="ti-bell"></i>Chat<span class="more-options"><i class="fa fa-ellipsis-h"></i></span></h5>
+										<div class="message-box">
+											<ul class="peoples">
+										@foreach (Conversation a in ViewBag.Conversations)
+											{
+												<li onclick="loadMesBox(@a.MaC)">
+													<figure>
+														<img src="images/resources/friend-avatar2.jpg" alt="">
+														<span class="status f-online"></span>
+													</figure>
+													<div class="people-name">
+														<span>@a.MaSinhVien2</span>
+													</div>
+												</li>
+											}
+											</ul>
+											<div id="chatBox" class="peoples-mesg-box" style="min-width:480px;">
+												<div class="conversation-head">
+													<figure><img src="images/resources/friend-avatar.jpg" alt=""></figure>
+													<span>jason bourne <i>online</i></span>
+												</div>
+												<ul id="messagesList" class="chatting-area">
+													<li class="you">
+														<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
+														<p>what's liz short for? :)</p>
+													</li>
+													<li class="me">
+														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
+														<p>Elizabeth lol</p>
+													</li>
+													<li class="me">
+														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
+														<p>wanna know whats my second guess was?</p>
+													</li>
+													<li class="you">
+														<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
+														<p>yes</p>
+													</li>
+													<li class="me">
+														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
+														<p>Disney's the lizard king</p>
+													</li>
+													<li class="me">
+														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
+														<p>i know him 5 years ago</p>
+													</li>
+													<li class="you">
+														<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
+														<p>coooooooooool dude ;)</p>
+													</li>
+												</ul>
+												<div class="message-text-container">
+													<form>
+														<textarea id="messageInput"></textarea>
+														<input id="MaC" style="display:none;">
+														<input id="userInput" value="@User.FindFirst("MaSV").Value" style="display:none;">
+														<button id="sendButton" title="send"><i class="fa fa-paper-plane"></i></button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div><!-- centerl meta -->
+							<div class="col-lg-1"></div>
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>	
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>

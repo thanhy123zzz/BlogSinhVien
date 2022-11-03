@@ -688,10 +688,6 @@ header.sticky {
     z-index: 2;
 }
 
-.top-area > ul > li > a {
-    color: #999;
-}
-
 .top-area .user-img {
     cursor: pointer;
     display: inline-block;
@@ -1335,7 +1331,7 @@ header.sticky {
 }
 
 textarea {
-    border: 1px solid #eeeeee;
+    border: 2px solid #eeeeee;
     border-radius: 6px 6px 0 0;
     padding: 10px;
     width: 100%;
@@ -4056,27 +4052,28 @@ a.forgot-pwd {
 }
 
 .peoples {
-    border-right: 1px solid #e1e8ed;
+    border-right: 2px solid #e1e8ed;
     display: inline-block;
     list-style: outside none none;
     margin-bottom: 0;
     max-height: 462px;
+    min-height: 462px;
     padding-left: 0;
     position: relative;
-    width: 200px;
+    width: 20%;
 }
 
-.peoples > li {
-    border-bottom: 1px solid #e1e8ed;
-    cursor: pointer;
-    display: inline-block;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 0px;
-    width: 100%;
-    position: relative;
-    transition: all 0.2s linear 0s;
-}
+    .peoples > li {
+        border-bottom: 2px solid #8be594;
+        cursor: pointer;
+        display: inline-block;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 0px;
+        width: 100%;
+        position: relative;
+        transition: all 0.2s linear 0s;
+    }
 
 .peoples > li:hover {
     background: #fff;
@@ -4131,20 +4128,21 @@ a.forgot-pwd {
 .peoples-mesg-box {
     display: inline-block;
     vertical-align: top;
-    width: 64.5%;
+    width: 75%;
     padding-left: 15px;
 }
 
-.peoples-mesg-box > ul.chatting-area {
-    display: inline-block;
-    list-style: outside none none;
-    margin-bottom: 0;
-    max-height: 322px;
-    padding: 40px 15px 10px 0;
-    width: 100%;
-    position: relative;
-    overflow-x: hidden;
-}
+    .peoples-mesg-box > ul.chatting-area {
+        display: inline-block;
+        list-style: outside none none;
+        margin-bottom: 0;
+        max-height: 322px;
+        min-height: 322px;
+        padding: 40px 15px 10px 0;
+        width: 100%;
+        position: relative;
+        overflow-x: hidden;
+    }
 
 .peoples-mesg-box > ul li {
     display: inline-block;
@@ -4168,7 +4166,7 @@ a.forgot-pwd {
     margin-bottom: 0;
     margin-left: 10px;
     vertical-align: top;
-    width: 75%;
+    width: auto;
     padding: 5px 8px;
     position: relative;
     color: #434343;
@@ -4216,7 +4214,7 @@ a.forgot-pwd {
 }
 
 .conversation-head {
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 2px solid #8be594;
     display: inline-block;
     padding-bottom: 10px;
     width: 100%;

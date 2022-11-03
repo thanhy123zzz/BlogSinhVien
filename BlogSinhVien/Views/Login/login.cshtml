@@ -1,123 +1,151 @@
-﻿@{
-	Layout= null;
+﻿@model BlogSinhVien.Models.Entities.Accounts
+@{
+    Layout = null;
 }
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
-	<title>Winku Social Network Toolkit</title>
-	<link rel="icon" href="images/fav.png" type="image/png" sizes="16x16"> 
-
-	<link rel="stylesheet" href="~/css/main.min.css">
-	<link rel="stylesheet" href="~/css/style.css">
-	<link rel="stylesheet" href="~/css/color.css">
-	<link rel="stylesheet" href="~/css/responsive.css">
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập</title>
+    <link rel="shortcut icon" href="/images/login/Logo_HCMUNRE.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+    <link rel="stylesheet" href="/css/login.css">
 </head>
-<body>
-<!--<div class="se-pre-con"></div>-->
-<div class="theme-layout">
-	<div class="container-fluid pdng0">
-		<div class="row merged">
-			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-				<div class="land-featurearea">
-					<div class="land-meta">
-						<h1>Winku</h1>
-						<p>
-							Winku is free to use for as long as you want with two active projects.
-						</p>
-						<div class="friend-logo">
-							<span><img src="images/Logo_HCMUNRE.png" alt=""></span>
-						</div>
-						<a href="#" title="" class="folow-me">Follow Us on</a>
-					</div>	
-				</div>
-			</div>
-			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-				<div class="login-reg-bg">
-					<div class="log-reg-area sign">
-						<h2 class="log-title">Login</h2>
-							<p>
-								Don’t use Winku Yet? <a href="#" title="">Take the tour</a> or <a href="#" title="">Join now</a>
-							</p>
-						<form method="post">
-							<div class="form-group">	
-							  <input type="text" id="input" required="required"/>
-							  <label class="control-label" for="input">Username</label><i class="mtrl-select"></i>
-							</div>
-							<div class="form-group">	
-							  <input type="password" required="required"/>
-							  <label class="control-label" for="input">Password</label><i class="mtrl-select"></i>
-							</div>
-							<div class="checkbox">
-							  <label>
-								<input type="checkbox" checked="checked"/><i class="check-box"></i>Always Remember Me.
-							  </label>
-							</div>
-							<a href="#" title="" class="forgot-pwd">Forgot Password?</a>
-							<div class="submit-btns">
-								<button class="mtr-btn signin" type="button" style="color:rgb(139, 229, 148);"><span>Login</span></button>
-								<button class="mtr-btn signup" type="button" style="color:rgb(139, 229, 148);"><span>Register</span></button>
-							</div>
-						</form>
-					</div>
-					<div class="log-reg-area reg">
-						<h2 class="log-title">Register</h2>
-							<p>
-								Don’t use Winku Yet? <a href="#" title="">Take the tour</a> or <a href="#" title="">Join now</a>
-							</p>
-						<form method="post">
-							<div class="form-group">	
-							  <input type="text" required="required"/>
-							  <label class="control-label" for="input">First & Last Name</label><i class="mtrl-select"></i>
-							</div>
-							<div class="form-group">	
-							  <input type="text" required="required"/>
-							  <label class="control-label" for="input">User Name</label><i class="mtrl-select"></i>
-							</div>
-							<div class="form-group">	
-							  <input type="password" required="required"/>
-							  <label class="control-label" for="input">Password</label><i class="mtrl-select"></i>
-							</div>
-							<div class="form-radio">
-							  <div class="radio">
-								<label>
-								  <input type="radio" name="radio" checked="checked"/><i class="check-box"></i>Male
-								</label>
-							  </div>
-							  <div class="radio">
-								<label>
-								  <input type="radio" name="radio"/><i class="check-box"></i>Female
-								</label>
-							  </div>
-							</div>
-							<div class="form-group">	
-							  <input type="text" required="required"/>
-							  <label class="control-label" for="input"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c29010d05002c">[email&#160;protected]</a></label><i class="mtrl-select"></i>
-							</div>
-							<div class="checkbox">
-							  <label>
-								<input type="checkbox" checked="checked"/><i class="check-box"></i>Accept Terms & Conditions ?
-							  </label>
-							</div>
-							<a href="#" title="" class="already-have">Already have an account</a>
-							<div class="submit-btns">
-								<button class="mtr-btn signup" type="button"><span>Register</span></button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<script src="~/js/main.min.js"></script>
-	<script src="~/js/script.js"></script>
 
-</body>		
+<body>
+    <div class="the-end">
+        <div class="the-end__first">
+        </div>
+        <div class="the-end__second">
+            <div class="the-end__second-one">
+                <img src="/images/login/Logo_HCMUNRE.png" alt="">
+            </div>
+            <div class="the-end__second-two">
+                <div class="container">
+                </div>
+                <div class="login-content">
+                    <form asp-controller="Login" asp-action="LoginUser" method="post">
+                        <h2 class="title">Welcome</h2>
+                        <div class="input-div one">
+                            <div class="i">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="div">
+                                <h5>Tài khoản</h5>
+                                <input asp-for="TaiKhoan" type="text" class="input">
+                            </div>
+                        </div>
+                        <div class="input-div pass">
+                            <div class="i">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="div">
+                                <h5>Mật khẩu</h5>
+                                <input asp-for="MatKhau" type="password" class="input">
+                            </div>
+                        </div>
+                        <a href="#" id="myBtn">Quên mật khẩu</a>
+                        <input type="submit" class="btn" value="Login">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal-->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="title-modal">NHẬP EMAIL EDU</h2>
+            <div class="login-content">
+                <form id="formEmail">
+                    <div class="input-div one" style="margin-bottom: 16px;">
+                        <div class="i">
+                            <i class="fa fa-envelope"></i>
+                        </div>
+                        <div class="div">
+                            <h5>abcxyz@hcmunre.edu.vn</h5>
+                            <input onkeyup="AnThongBao()" id="emailForm" type="email" class="input">
+                        </div>
+                    </div>
+                        <div id="messEmail" style="display: none;">
+                           <h6 style="color:red; font-size:14px; text-align:start;">Không đúng định dạng</h6>
+                        </div>
+                        <div id="errorEmail" style="display: none;">
+                           <h6 style="color:red; font-size:14px; text-align:start;">Email không tồn tại</h6>
+                        </div>
+                    <input type="button" class="btn" value="Gửi mã" id="sendBtn">
+                    <div id="loader" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal2" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="close_modal()">&times;</span>
+            <h2 class="title-modal">MÃ XÁC NHẬN</h2>
+            <div class="login-content">
+                <form>
+                    <div class="input-div one style="margin-bottom: 16px;"">
+                        <div class="i">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <div class="div">
+                            <h5>Code</h5>
+                            <input id="code" onkeyup="AnTBCode()" type="number" max="9999" min="1000" class="input">
+                        </div>
+                    </div>
+                    <div id="errorCode" style="display: none;">
+                           <h6 style="color:red; font-size:14px; text-align:start;">Sai mã code, mời nhập lại!</h6>
+                        </div>
+                    <input onclick="confirmCode()" type="button" class="btn" value="Xác nhận" id="comfirmBtn">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal3" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="close_modal()">&times;</span>
+            <h2 class="title-modal">ĐỔI MẬT KHẨU</h2>
+            <div class="login-content">
+                <form>
+                    <div class="input-div one">
+                        <div class="i">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="div">
+                            <h5>Nhập mật khẩu</h5>
+                            <input id="pass" type="password" class="input">
+                        </div>
+                    </div>
+                    <div class="input-div one">
+                        <div class="i">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="div">
+                            <h5>Nhập lại mật khẩu</h5>
+                            <input id="passconfirm" type="password" class="input">
+                        </div>
+                    </div>
+                    <div id="errorPass" style="display: none;">
+                           <h6 style="color:red; font-size:14px; text-align:start;">Error</h6>
+                        </div>
+                    <input type="button" id="btnDoi" onclick="DoiMatKhau()" disabled style="cursor:auto;" class="btn" value="Đổi">
+                    <div id="loader2" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/login.js"></script>
+</body>
 
 </html>

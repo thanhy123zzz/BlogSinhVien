@@ -11,9 +11,14 @@ using System.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using SqlParameter = Microsoft.Data.SqlClient.SqlParameter;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace BlogSinhVien.Controllers
 {
+
+    [Authorize(Roles = "QL,SV")]
     public class TrangChuController : Controller
     {
         private readonly ILogger<TrangChuController> _logger;
@@ -22,6 +27,7 @@ namespace BlogSinhVien.Controllers
         {
             _logger = logger;
         }
+        [HttpGet]
         [Route("trang-chu")]
         [Route("")]
         public IActionResult Index()
@@ -111,6 +117,20 @@ namespace BlogSinhVien.Controllers
             var list = context.Roles.FromSqlRaw("timKiem @marole = " + key)
                     .ToList();
             return View("Role", list);
+        }
+    }
+    public static class SessionExtensions
+    {
+        public static void SetObjectAsJson(this ISession session, string key, object value)
+        {
+            session.SetString(key, JsonConvert.SerializeObject(value));
+        }
+
+        public static T GetObjectFromJson<T>(this ISession session, string key)
+        {
+            var value = session.GetString(key);
+
+            return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
         }
     }
 }

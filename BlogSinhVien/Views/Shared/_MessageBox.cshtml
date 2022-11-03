@@ -1,0 +1,20 @@
+﻿
+<ul id="messagesList" class="chatting-area">
+	
+	@foreach(Message m in ViewBag.messages)
+	{
+		@if (User.FindFirst("MaSV").Value == m.MaSinhVienSend)
+		{
+			<li class="me">
+				<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
+				<p >@m.Content</p>
+			</li>
+		}
+		else{
+			<li class="you">
+				<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
+				<p>@m.Content</p>
+			</li>
+		}
+	}
+</ul>
