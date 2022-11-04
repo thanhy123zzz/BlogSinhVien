@@ -142,6 +142,18 @@ namespace BlogSinhVien.Models.Entities
 
                 entity.Property(e => e.Files).HasColumnName("files");
 
+                entity.Property(e => e.NameFile)
+                    .HasColumnName("nameFile")
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.HasOne(d => d.MaBaiDangNavigation)
                     .WithMany()
                     .HasForeignKey(d => d.MaBaiDang)
@@ -153,6 +165,18 @@ namespace BlogSinhVien.Models.Entities
                 entity.HasNoKey();
 
                 entity.Property(e => e.Files).HasColumnName("files");
+
+                entity.Property(e => e.NameFile)
+                    .HasColumnName("nameFile")
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
                 entity.HasOne(d => d.MaCmtNavigation)
                     .WithMany()

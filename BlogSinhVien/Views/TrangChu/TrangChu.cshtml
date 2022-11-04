@@ -6,7 +6,7 @@
 							<div class="col-lg-2">
 							</div><!-- sidebar -->
 							<div class="col-lg-8">
-								<div class="central-meta">
+								<div class="central-meta item">
 									<div class="new-postbox">
 										<figure>
 											<img src="images/resources/admin2.jpg" alt="">
@@ -14,38 +14,44 @@
 										<div class="newpst-input">
 											<form method="post">
 												<textarea rows="2" placeholder="Đăng bài viết"></textarea>
+												
 												<div class="attachments">
 													<ul>
-														<li>
-															<i class="fa fa-music"></i>
-															<label class="fileContainer">
-																<input type="file">
-															</label>
-														</li>
-														<li>
+														<li style="cursor:pointer;">
 															<i class="fa fa-image"></i>
 															<label class="fileContainer">
-																<input type="file">
+																<input id="fileImage" type="file" multiple  accept="image/*">
 															</label>
 														</li>
-														<li>
+														<li style="cursor:pointer;">
+															<i class="fa fa-paperclip"></i>
+															<label class="fileContainer">
+																<input type="file" multiple  accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.txt,.pdf">
+															</label>
+														</li>
+														<li style="cursor:pointer;">
 															<i class="fa fa-video-camera"></i>
 															<label class="fileContainer">
-																<input type="file">
+																<input type="file" multiple  accept="video/mp4,video/x-m4v,video/*"> 
 															</label>
 														</li>
-														<li>
-															<i class="fa fa-camera"></i>
-															<label class="fileContainer">
-																<input type="file">
-															</label>
-														</li>
-														<li>
+														<li style="cursor:pointer;">
 															<button type="submit">Post</button>
 														</li>
 													</ul>
 												</div>
 											</form>
+										</div>
+									</div>
+									<div class="user-post" id="user-post-new" style="display:none;">
+										<div class="friend-info">
+											<div class="post-meta imagePreview" style="display:flex; justify-content: space-between; flex-flow: wrap;">
+											</div>
+											<div class="post-meta" style="display:flex;justify-content:center;">
+												<button onclick="close_imagepreview()" type="button" class="btn btn-danger">
+													<i class="fa fa-close"></i>
+												</button>
+											</div>
 										</div>
 									</div>
 								</div><!-- add post new box -->

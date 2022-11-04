@@ -11,6 +11,8 @@ namespace BlogSinhVien.Models.Entities
     {
         public int? MaBaiDang { get; set; }
         public byte[] Files { get; set; }
+        public string Type { get; set; }
+        public string NameFile { get; set; }
 
         public virtual BaiDang MaBaiDangNavigation { get; set; }
     }
