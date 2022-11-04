@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace BlogSinhVien.Controllers
 {
@@ -33,6 +34,13 @@ namespace BlogSinhVien.Controllers
         public IActionResult Index()
         {
             return View("TrangChu");
+        }
+        [AllowAnonymous]
+        [Route("download")]
+        public IActionResult Download()
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            return File(context.SinhVien.Find("sv01").HinhAnh, "image/jpg", "file.jpg");
         }
         public IActionResult Create()
         {

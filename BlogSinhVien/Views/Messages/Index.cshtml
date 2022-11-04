@@ -1,4 +1,22 @@
-﻿<div class="gap2 gray-bg">
+﻿
+@{
+	string getImage(string MaSV)
+	{
+		BlogSinhVienContext context = new BlogSinhVienContext();
+		SinhVien sv = context.SinhVien.Find(MaSV);
+
+		if (sv.HinhAnh == null) return "";
+		string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
+		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+	string getName(string MaSV){
+		BlogSinhVienContext context = new BlogSinhVienContext();
+		SinhVien sv = context.SinhVien.Find(MaSV);
+		return sv.Ho +" "+ sv.Ten;
+	}
+}
+<div class="gap2 gray-bg">
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-lg-12">
@@ -13,56 +31,60 @@
 										@foreach (Conversation a in ViewBag.Conversations)
 											{
 												<li onclick="loadMesBox(@a.MaC)">
+												@if (a.MaSinhVien1 == User.FindFirst("MaSV").Value)
+												{
+														<figure>
+															<img width="45px" height="45px" src="@getImage(a.MaSinhVien2)" alt="@a.MaSinhVien2">
+														</figure>
+														<div class="people-name">
+															<span>@getName(a.MaSinhVien2)</span>
+														</div>
+													
+												}else{
 													<figure>
-														<img src="images/resources/friend-avatar2.jpg" alt="">
-														<span class="status f-online"></span>
+														<img width="45px" height="45px" src="@getImage(a.MaSinhVien1)" alt="@a.MaSinhVien1">
 													</figure>
 													<div class="people-name">
-														<span>@a.MaSinhVien2</span>
+														<span>@getName(a.MaSinhVien1)</span>
 													</div>
+												}
 												</li>
 											}
 											</ul>
 											<div id="chatBox" class="peoples-mesg-box" style="min-width:480px;">
-												<div class="conversation-head">
-													<figure><img src="images/resources/friend-avatar.jpg" alt=""></figure>
-													<span>jason bourne <i>online</i></span>
+												<div id="headerMessage" class="conversation-head">
+													<figure><img src="@getImage(ViewBag.MaSV)" alt=""></figure>
+													<span>@getName(ViewBag.MaSV)</span>
 												</div>
 												<ul id="messagesList" class="chatting-area">
-													<li class="you">
-														<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
-														<p>what's liz short for? :)</p>
-													</li>
-													<li class="me">
-														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
-														<p>Elizabeth lol</p>
-													</li>
-													<li class="me">
-														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
-														<p>wanna know whats my second guess was?</p>
-													</li>
-													<li class="you">
-														<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
-														<p>yes</p>
-													</li>
-													<li class="me">
-														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
-														<p>Disney's the lizard king</p>
-													</li>
-													<li class="me">
-														<figure><img src="images/resources/userlist-1.jpg" alt=""></figure>
-														<p>i know him 5 years ago</p>
-													</li>
-													<li class="you">
-														<figure><img src="images/resources/userlist-2.jpg" alt=""></figure>
-														<p>coooooooooool dude ;)</p>
-													</li>
+
+												@foreach (Message m in ViewBag.messages)
+													{
+														@if (User.FindFirst("MaSV").Value == m.MaSinhVienSend)
+															{
+																<li class="me">
+																	<figure></figure>
+																	<p >@m.Content</p>
+																</li>
+															}
+														else
+															{
+																<li class="you">
+																	<figure><img src="@getImage(m.MaSinhVienSend)" alt=""></figure>
+																	<p>@m.Content</p>
+																</li>
+															}
+													}
+												<script>
+													var objDiv = document.getElementById("messagesList");
+													objDiv.scrollTop = objDiv.scrollHeight;
+												</script>
 												</ul>
 												<div class="message-text-container">
 													<form>
 														<textarea id="messageInput"></textarea>
-														<input id="MaC" style="display:none;">
-														<input id="userInput" value="@User.FindFirst("MaSV").Value" style="display:none;">
+														<input id="MaC" value="@ViewBag.MaC" style="display:none;">
+														<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
 														<button id="sendButton" title="send"><i class="fa fa-paper-plane"></i></button>
 													</form>
 												</div>

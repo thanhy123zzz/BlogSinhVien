@@ -53,8 +53,6 @@ namespace BlogSinhVien.Controllers
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
             Accounts a = context.Accounts.Find(accounts.TaiKhoan);
-            /*_logger.LogInformation(accounts.TaiKhoan + accounts.MatKhau);
-            _logger.LogInformation(a.TaiKhoan + a.MatKhau);*/
             if (a == null)
             {
                 return Redirect("/login");

@@ -1,0 +1,24 @@
+﻿
+@{
+	string getImage(string MaSV)
+	{
+		BlogSinhVienContext context = new BlogSinhVienContext();
+		SinhVien sv = context.SinhVien.Find(MaSV);
+
+		if (sv.HinhAnh == null) return "";
+		string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
+		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+	string getName(string MaSV)
+	{
+		BlogSinhVienContext context = new BlogSinhVienContext();
+		SinhVien sv = context.SinhVien.Find(MaSV);
+		return sv.Ho + " " + sv.Ten;
+	}
+}
+
+<div id="headerMessage" class="conversation-head">
+	<figure><img src="@getImage(ViewBag.MaSV)" alt=""></figure>
+	<span>@getName(ViewBag.MaSV)</span>
+</div>
