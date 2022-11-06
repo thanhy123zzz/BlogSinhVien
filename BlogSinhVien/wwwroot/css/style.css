@@ -1396,7 +1396,7 @@ form button {
 
 .post-meta > img {
     float: left;
-    width: 100%;
+    width: 32%;
 }
 
 .description {
@@ -1906,6 +1906,7 @@ li.post-comment .comet-avatar {
     font-weight: 500;
     height: 40px;
     line-height: 16px;
+    padding-right: 3%;
 }
 
 .add-smiles {
@@ -10047,3 +10048,9 @@ aside.sidebar.full-style {
 }
 
 
+.items-att {
+    width: 32%;
+    height: auto;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+}

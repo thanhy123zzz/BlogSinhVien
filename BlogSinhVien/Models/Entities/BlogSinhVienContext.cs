@@ -143,21 +143,20 @@ namespace BlogSinhVien.Models.Entities
                 entity.Property(e => e.Files).HasColumnName("files");
 
                 entity.Property(e => e.NameFile)
-                    .HasColumnName("nameFile")
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .IsFixedLength();
 
                 entity.Property(e => e.Type)
-                    .HasColumnName("type")
-                    .HasMaxLength(10)
+                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .IsFixedLength();
 
                 entity.HasOne(d => d.MaBaiDangNavigation)
                     .WithMany()
                     .HasForeignKey(d => d.MaBaiDang)
-                    .HasConstraintName("FK__ChiTietBa__MaBai__4D94879B");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ChiTietBa__MaBai__2BFE89A6");
             });
 
             modelBuilder.Entity<ChiTietCmt>(entity =>
