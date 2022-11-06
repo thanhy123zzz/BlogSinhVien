@@ -9,10 +9,10 @@ namespace BlogSinhVien.Models.Entities
 {
     public partial class ChiTietBaiDang
     {
-        public int? MaBaiDang { get; set; }
+        public int MaBaiDang { get; set; }
         public byte[] Files { get; set; }
-        public string Type { get; set; }
         public string NameFile { get; set; }
+        public string Type { get; set; }
 
         public virtual BaiDang MaBaiDangNavigation { get; set; }
     }
