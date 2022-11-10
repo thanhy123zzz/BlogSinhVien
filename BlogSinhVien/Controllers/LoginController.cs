@@ -76,24 +76,43 @@ namespace BlogSinhVien.Controllers
 
         private async Task SignInUser(Accounts accounts)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            SinhVien a =context.SinhVien.Where(x => x.TaiKhoan == accounts.TaiKhoan).FirstOrDefault();
-            _logger.LogInformation(a.MaSv);
-            var claims = new List<Claim>
+            if (accounts.MaRole.Trim() == "SV1")
+            {
+                BlogSinhVienContext context = new BlogSinhVienContext();
+                SinhVien a = context.SinhVien.Where(x => x.TaiKhoan == accounts.TaiKhoan).FirstOrDefault();
+                var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, accounts.TaiKhoan),
                 new Claim(ClaimTypes.Role, accounts.MaRole.Substring(0,2)),
                 new Claim("MaSV",a.MaSv),
             };
 
-            var claimsIdentity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+            }
+            else
+            {
+                BlogSinhVienContext context = new BlogSinhVienContext();
+                QuanLy a = context.QuanLy.Where(x => x.TaiKhoan == accounts.TaiKhoan).FirstOrDefault();
+                var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, accounts.TaiKhoan),
+                new Claim(ClaimTypes.Role, accounts.MaRole.Substring(0,2)),
+                new Claim("MaSV",a.MaQl),
+            };
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+            }
         }
-
         [HttpGet]
         public async Task<IActionResult> Logout()
         {

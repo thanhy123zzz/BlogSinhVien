@@ -22,10 +22,10 @@
     };
 
     $('#fileImage').on('change', function () {
-/*        $('.items-att').replaceWith('');*/
+        /*        $('.items-att').replaceWith('');*/
         document.getElementById('user-post-new').style.display = "block";
-/*        document.getElementById('fileVideo').disabled = true;
-        document.getElementById('fileDocs').disabled = true;*/
+        /*        document.getElementById('fileVideo').disabled = true;
+                document.getElementById('fileDocs').disabled = true;*/
         imagesPreview(this, 'div.imagePreview');
     });
 
@@ -33,9 +33,6 @@
 function close_imagepreview() {
     $('.items-att').replaceWith('');
     document.getElementById('user-post-new').style.display = "none";
-/*    document.getElementById('fileVideo').disabled = false;
-    document.getElementById('fileDocs').disabled = false;
-    document.getElementById('fileImage').disabled = false;*/
 }
 
 $("#fileVideo").on("change", function (event) {
@@ -102,17 +99,96 @@ $("#fileDocs").on("change", function (event) {
 
 // add item conmment
 
+    // Multiple images preview in browser
+    var imagesPreview = function (input, placeToInsertImagePreview,maBD) {
+
+        if (input.files) {
+            var filesAmount = input.files.length;
+
+            for (i = 0; i < filesAmount; i++) {
+                var reader = new FileReader();
+
+                reader.onload = function (event) {
+                    $($.parseHTML('<img class="itemsComment_' + maBD + '" style="width:15%;box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);margin-right:5px;margin-bottom:10px">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
+                }
+
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+
+};
+
+function previewImageCmt(event, maBD) {
+    console.log(maBD);
+    document.getElementById("imageComment_" + maBD).style.display = "block";
+    imagesPreview(event.target, "div.imageCommentPreview_" + maBD, maBD);
+};
 
 
+//close item conmment
+function close_imageCommentpreview(maBD) {
+    document.getElementById("imageComment_" + maBD).style.display = "none";
+    $('.itemsComment_' + maBD).replaceWith('');
+    $("#inputComment_" + maBD).val('');
+}
 
-/** Post a Comment **/
-jQuery(".post-comt-box textarea").on("keydown", function (event) {
 
+function Comment(event, MaBD) {
     if (event.keyCode == 13) {
-        var comment = jQuery(this).val();
-        var parent = jQuery(".showmore").parent("li");
-        var comment_HTML = '	<li><div class="comet-avatar"><img src="images/resources/comet-1.jpg" alt=""></div><div class="we-comment"><div class="coment-head"><h5><a href="time-line.html" title="">Jason borne</a></h5><span>1 year ago</span><a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a></div><p>' + comment + '</p></div></li>';
-        $(comment_HTML).insertBefore(parent);
-        jQuery(this).val('');
+        var maSV = document.getElementById("userInput").value;
+        var content = $("#contentcomments_" + MaBD).val();
+        connection.invoke("CommentInsert", maSV, content, MaBD).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
     }
+}
+
+var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+connection.start().then(function () {
+    document.getElementById("sendButton").disabled = false;
+}).catch(function (err) {
+    return console.error(err.toString());
 });
+
+connection.on("DisplayComment", function (maSV, tenSV, content, MaBD, imageDataURL, date) {
+    var parent = jQuery("#showmore_" + MaBD).parent("li");
+    var count_cmt = parseInt(jQuery('#count_cmt_' + MaBD).text());
+    $('#count_cmt_' + MaBD).text(count_cmt + 1);
+    var comment_HTML = '<li style="display: flex"><div class="comet-avatar"><img style="width:50px; height:50px;" src="' + imageDataURL + '" alt=""></div><div class="we-comment" style="max-width:89.4%; width:89.4%;"><div class="coment-head"><h5><a href="/profile/' + maSV + '" title="' + tenSV + '">' + tenSV + '</a></h5><span>' + date +'</span><a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a></div><p>' + content + '</p></div></li>';
+    $(comment_HTML).insertBefore(parent);
+    $("#contentcomments_" + MaBD).val('');
+});
+
+function load_More_Cmt(event,MaBD,loai) {
+    var count_cmt = jQuery('#count_cmt_' + MaBD).val();
+    $.ajax({
+        type: 'POST',
+        url: '/load-more-cmt',
+        data: "MaBD=" + MaBD + "&sl=" + count_cmt + "&loai=" + loai,
+        success: function (result) {
+            $('#list_cmt_' + MaBD).replaceWith(result);
+        },
+        error: function (result) {
+            alert('Lỗi!');
+        }
+    })
+    event.preventDefault();
+}
+
+function load_More_BD() {
+    var sl_bd = $('#sl_bd').val();
+    console.log(sl_bd);
+    $.ajax({
+        type: 'POST',
+        url: '/load-more-bd',
+        data: "slbd=" + sl_bd,
+        success: function (result) {
+            $('#loadMore').replaceWith(result);
+        },
+        error: function (result) {
+            alert('Lỗi!');
+        }
+    })
+}

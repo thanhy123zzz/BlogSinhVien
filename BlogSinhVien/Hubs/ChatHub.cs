@@ -1,4 +1,5 @@
 ﻿using BlogSinhVien.Models.Entities;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,6 +30,22 @@ namespace BlogSinhVien.Hubs
             context.Database.ExecuteSqlRaw("insert into Message values("+MaC+",'"+user+"','"+ sv02 + "',GETDATE(),N'"+message+"')");
 
             await Clients.All.SendAsync("ReceiveMessage", user, message, MaC, imageDataURL);
+        }
+
+        public async Task CommentInsert(string maSV, string content, int MaBD)
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            BinhLuan bl = new BinhLuan();
+            bl.MaBaiDang = MaBD;
+            bl.MaSinhVien = maSV;
+            bl.Content = content;
+            bl.NgayDang = DateTime.Now;
+            context.BinhLuan.Add(bl);
+            context.SaveChanges();
+            SinhVien sv = context.SinhVien.Find(maSV);
+            string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
+            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            await Clients.All.SendAsync("DisplayComment", maSV, sv.Ho + " " + sv.Ten, content, MaBD, imageDataURL, DateTime.Now.ToString());
         }
     }
 }

@@ -1,0 +1,59 @@
+﻿@{
+	BlogSinhVienContext context = new BlogSinhVienContext();
+	List<BinhLuan> binhLuans(int MaBD)
+	{
+		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
+	}
+	string getImage(byte[] image)
+	{
+		if (image == null) return "";
+		string imageBase64Data = Convert.ToBase64String(image);
+		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+	SinhVien getSinhVien(string maSV)
+	{
+
+		return context.SinhVien.Find(maSV);
+	}
+}
+
+<ul class="we-comet" id="list_cmt_@ViewBag.MaBD">
+	@foreach (BinhLuan bl in binhLuans(@ViewBag.MaBD).Take((Int32)ViewBag.sl))
+	{
+		<li style="display: flex">
+			<div class="comet-avatar">
+				<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+			</div>
+		<div class="we-comment" style="max-width:89.4%; width:89.4%;">
+			<div class="coment-head">
+				<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
+					<span>@bl.NgayDang</span>
+				<a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
+					</div>
+				<p style="word-break: break-all;">@bl.Content</p>
+					</div>
+		</li>
+	}
+		<li>
+<a href="" onclick="load_More_Cmt(event,@ViewBag.MaBD)" title="" id="showmore_@ViewBag.MaBD" class="showmore underline @ViewBag.MaBD">more comments</a>
+<input id="count_cmt_@ViewBag.MaBD" style="display:none;" value="@ViewBag.sl">
+</li>
+	@if (ViewBag.Loai == true)
+	{
+		<li class="post-comment">
+			<div class="comet-avatar">
+				<img width="50px" height="50px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+			</div>
+			<div class="post-comt-box">
+				<form enctype="multipart/form-data">
+					<textarea id="contentcomments_@ViewBag.MaBD" onkeydown="Comment(event,@ViewBag.MaBD)" placeholder="Post your comment"></textarea>
+					<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
+					<div class="add-smiles" style="cursor:pointer;">
+						<i class="fa fa-paper-plane"></i>
+					</div>
+				</form>	
+			</div>
+		</li>
+	}
+</ul>

@@ -11,7 +11,7 @@ namespace BlogSinhVien.Controllers
     public class MessagesController : Controller
     {
         [Route("messages")]
-        [Authorize(Roles = "QL,SV")]
+        [Authorize(Roles = "SV")]
         public IActionResult Index()
         {
             string MaSV = User.FindFirst("MaSV").Value;

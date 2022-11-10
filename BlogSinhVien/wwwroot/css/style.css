@@ -10054,3 +10054,14 @@ aside.sidebar.full-style {
     margin-bottom: 10px;
     box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
 }
+
+.menu-manager {
+    padding: 20px 20px;
+    
+}
+.menu-manager activel {
+    background-color: #8be594;
+}
+.activel {
+    background-color: #f1f1f1;
+}
