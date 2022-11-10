@@ -1,4 +1,22 @@
-﻿
+﻿@{
+	BlogSinhVienContext context = new BlogSinhVienContext();
+	string getImage(byte[] image)
+	{
+		if (image == null) return "";
+		string imageBase64Data = Convert.ToBase64String(image);
+		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+	SinhVien getSinhVien(string maSV){
+
+		return context.SinhVien.Find(maSV);
+	}
+
+	QuanLy getQuanLy(string maQL)
+	{
+		return context.QuanLy.Find(maQL);
+	}
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -203,7 +221,6 @@
 				<b>BLOG DTM</b>
 			</a>
 		</div>
-
 		<div class="top-area">
 			<div class="top-search">
 				<form method="post" class="">
@@ -212,18 +229,39 @@
 				</form>
 			</div>
 			<ul class="setting-area">
-				<a href="/" title="Trang chủ"><i class="ti-home"></i> Home</a>
-				|
-				<a href="/messages" title="Chat"><i class="ti-comments-smiley"></i> Chat</a>
-				|
-			</ul>
-			<a title="Cá nhân">
-			<div class="user-img">
-				<img src="images/resources/admin.jpg" alt="">
+				<li title="Trang chủ" style="cursor:pointer;" onclick="location.href='/';"><i class="ti-home">
+
+				</i>Trang Chủ</li>
+				@if (User.IsInRole("SV"))
+				{
+						<li title="Nhắn tin" style="cursor:pointer;" onclick="location.href='/messages';">
+					<i class="ti-comments-smiley">
+
+					</i>Nhắn tin</li>
+				}
+				<li title="Bài viết cá nhân" style="cursor:pointer;" onclick="location.href='/BDCaNhan';">
+							<i class="ti-layout-width-default">
+							</i>Bài viết cá nhân
+				</li>
+				@if (User.IsInRole("QL"))
+				{
+					<li title="Quản lý" style="cursor:pointer;" onclick="location.href='/managerment';">
+					<i class="ti-user">
+
+					</i>Quản lý</li>
+				}
+			</ul>	
+			
+			<div onclick="location.href='/profile/@User.FindFirst("MaSV").Value';" title="Cá nhân" class="user-img">
+				@if(User.IsInRole("SV")){
+					<img width="45px" height="45px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+				}
+				else{
+						<img width="45px" height="45px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+				}
 			</div>
-			</a>
-			<div class="logo" style="width: 30px!important;">
-				<a title="" href="/Login/Logout">
+				<div class="logo" style="width: 30px!important;">
+					<a title="Đăng xuất" href="/Login/Logout">
 					<i class="ti-power-off"></i>
 				</a>
 			</div>
@@ -235,7 +273,7 @@
 			<ul class="chat-users">
 				<li>
 					<div class="author-thmb">
-						<img src="images/resources/side-friend1.jpg" alt="">
+						<img src="" alt="">
 					</div>
 				</li>
 				<li>

@@ -34,7 +34,7 @@ namespace BlogSinhVien.Controllers
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
 
-            List<BaiDang> listBD = context.BaiDang.OrderBy(x => x.NgayDang).Take(10).ToList();
+            List<BaiDang> listBD = context.BaiDang.Where(x=>x.TrangThai==true).OrderByDescending(x => x.NgayDang).Take(1).ToList();
 
             ViewBag.ListBD = listBD;
             return View("TrangChu");
@@ -92,6 +92,26 @@ namespace BlogSinhVien.Controllers
             ChiTietBaiDang ct = context.ChiTietBaiDang.Where(x => x.MaBaiDang == MaBD && x.NameFile == tenFile && x.Type == loaiFile).FirstOrDefault();
             return File(ct.Files,ct.Type.Trim(),ct.NameFile.Trim());
         }
+
+        [HttpPost("load-more-cmt")]
+        public IActionResult load_more_cmt(int MaBD, int sl,bool loai)
+        {
+            ViewBag.MaBD = MaBD;
+            ViewBag.sl = sl+5;
+            ViewBag.Loai = loai;
+            return PartialView("_list_cmt");
+        }
+        [HttpPost("load-more-bd")]
+        public IActionResult load_more_bd(int slbd)
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            _logger.LogInformation(slbd.ToString());
+            List<BaiDang> listBD = context.BaiDang.Where(x => x.TrangThai == true).OrderByDescending(x => x.NgayDang).Take(slbd+5).ToList();
+            ViewBag.ListBD = listBD;
+            ViewBag.SLBD = slbd + 5;
+            return PartialView("_baiDang");
+        }
+
         public IActionResult Edit(String? id)
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
