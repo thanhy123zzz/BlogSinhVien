@@ -9,11 +9,10 @@ namespace BlogSinhVien.Models.Entities
 {
     public partial class Vote
     {
-        public int? MaCmt { get; set; }
-        public string MaSinhVien { get; set; }
+        public int MaCmt { get; set; }
+        public string MaUser { get; set; }
         public DateTime? TimeVote { get; set; }
 
         public virtual BinhLuan MaCmtNavigation { get; set; }
-        public virtual SinhVien MaSinhVienNavigation { get; set; }
     }
 }

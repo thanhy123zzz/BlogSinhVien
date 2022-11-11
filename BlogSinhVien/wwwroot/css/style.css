@@ -10065,3 +10065,12 @@ aside.sidebar.full-style {
 .activel {
     background-color: #f1f1f1;
 }
+
+.vote-h{
+   margin-bottom: 0;
+}
+
+.vote-item{
+    display: flex;
+    justify-content: center;
+}

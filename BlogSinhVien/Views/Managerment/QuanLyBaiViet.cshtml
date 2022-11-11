@@ -1,4 +1,40 @@
-﻿<div class="gap2 gray-bg">
+﻿@{
+	BlogSinhVienContext context = new BlogSinhVienContext();
+	string getImage(byte[] image)
+	{
+		if (image == null) return "images/avt.png";
+		string imageBase64Data = Convert.ToBase64String(image);
+		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+	SinhVien getSinhVien(string maSV){
+
+		return context.SinhVien.Find(maSV);
+	}
+	List<ChiTietBaiDang> chiTietBaiDangs(int MaBD){
+		return context.ChiTietBaiDang.Where(x => x.MaBaiDang == MaBD).ToList();
+	}
+
+	string getVideo(byte[] image)
+	{
+		if (image == null) return "";
+		string imageBase64Data = Convert.ToBase64String(image);
+		string imageDataURL = string.Format("data:video/mp4;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+
+	List<BinhLuan> binhLuans(int MaBD){
+		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
+	}
+
+	QuanLy getQuanLy(string maQL)
+	{
+		return context.QuanLy.Find(maQL);
+	}
+}
+
+
+<div class="gap2 gray-bg">
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-lg-12">
@@ -7,19 +43,126 @@
 							
 							</div><!-- sidebar -->
 							<div class="col-lg-8">
-								<div class="topbar stick" style="height:auto;background:#fdfdfd;margin-bottom:20px;padding:0">
+								<div class="topbar stick" style="height:auto;background:#fdfdfd;margin-bottom:20px;padding:0;z-index:0">
 										<div class="top-area" style="width:auto;">
 											<ul class="setting-area">
-												<li class="menu-manager activel" title="Trang chủ" style="cursor:pointer;margin-right:0;" onclick="location.href='/';">Quản lý bài viết</li>
+												<li class="menu-manager activel" title="Trang chủ" style="cursor:pointer;margin-right:0;" id="quanlybaiviet" onclick="active('quanlybaiviet')">Quản lý bài viết</li>
 												
-												<li class="menu-manager" title="Nhắn tin" style="cursor:pointer;margin-right:0;" onclick="location.href='/messages';">Quản lý sinh viên</li>
+												<li class="menu-manager" title="Nhắn tin" style="cursor:pointer;margin-right:0;" id="quanlysv" onclick="active('quanlysv')">Quản lý sinh viên</li>
 												
-												<li class="menu-manager" title="Bài viết cá nhân" style="cursor:pointer;margin-right:0;" onclick="location.href='/BDCaNhan';">Quản lý bình luận
+												<li class="menu-manager" title="Bài viết cá nhân" style="cursor:pointer;margin-right:0;" id="quanlycmt" onclick="active('quanlycmt')">Quản lý bình luận
 												</li>
 
-												<li class="menu-manager" title="Quản lý" style="cursor:pointer;margin-right:0;" onclick="location.href='/managerment';">Thống kê hoạt động</li>
+												<li class="menu-manager" title="Quản lý" style="cursor:pointer;margin-right:0;" id="thongke" onclick="active('thongke')">Thống kê hoạt động</li>
 										</ul>
 									</div>
+								</div>
+								<div id="loadMore" class="loadMore">
+							@foreach (BaiDang bd in ViewBag.ListBD)
+							{
+											<div class="central-meta item">
+											<div class="user-post">
+												<div class="friend-info">
+													<figure>
+														@if (bd.MaSinhVien != null)
+														{
+															<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+														}
+														else
+														{
+															<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
+														}
+													</figure>
+													<div class="friend-name">
+														<ins style="display:flex;justify-content:space-between;">
+													@if (bd.MaSinhVien != null)
+													{
+														<ins style="text-decoration: none;"><a href="time-line.html" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
+													}
+													else
+													{
+														<ins style="text-decoration: none;"><a href="time-line.html" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
+													}
+															<p style="margin-bottom: 0;">Chờ duyệt</p>
+														</ins>
+													<span style="display:flex;justify-content:space-between;">
+														@bd.NgayDang
+														<div>
+																<a href="/managerment/duyet/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn duyệt bài viết này?')" style="color:lawngreen;margin-bottom: 0;cursor:pointer;">
+																			Duyệt <i class="ti-check"></i>
+																	</a>
+																	|
+																	<a href="/managerment/xoa/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn xoá bài viết này?')" style="color:orangered;margin-bottom: 0;cursor:pointer;">
+																	Huỷ <i class="ti-trash"></i>
+																</a>
+														</div>	
+														</span>
+													</div>
+													<div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
+												@foreach (ChiTietBaiDang item in chiTietBaiDangs(bd.MaBaiDang))
+												{
+													@if (item.Type.Trim().EndsWith("/png") || item.Type.Trim().EndsWith("/jpeg") || item.Type.Trim().EndsWith("/jpg"))
+													{
+																					<img style="margin-bottom:10px;" width="32%" src="@getImage(item.Files)" alt="@item.NameFile">
+													}
+													@if (item.Type.Trim().EndsWith("/mp4"))
+													{
+																					<video style="margin-bottom:10px;" controls width="32%" src="@getVideo(item.Files)"></video>
+													}
+													@if (item.Type.Trim().EndsWith(".document"))
+													{
+																					<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" 
+															style="white-space:normal;margin-bottom:10px; max-height:60px">
+																						<i class="fa fa-file-word-o">
+																						</i>
+															@item.NameFile.Trim()
+																					</a>
+													}
+													@if (item.Type.Trim().EndsWith("/pdf"))
+													{
+																														<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+																						<i class="fa fa-file-excel-o">
+																						</i>
+															@item.NameFile.Trim()
+																					</a>
+													}
+													@if (item.Type.Trim().EndsWith(".sheet"))
+													{
+																														<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+																						<i class="fa fa-file-pdf-o">
+																						</i>
+															@item.NameFile.Trim()
+																					</a>
+													}
+													@if (item.Type.Trim().EndsWith(".presentation"))
+													{
+																								<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+																						<i class="fa fa-file-powerpoint-o">
+																						</i>
+															@item.NameFile.Trim()
+																					</a>
+													}
+												}
+														<div class="we-video-info">
+															<ul>
+																<li>
+																	<span class="comment" data-toggle="tooltip" title="Comments">
+																		<i class="fa fa-comments-o"></i>
+																			<ins>@binhLuans(bd.MaBaiDang).Count()</ins>
+																	</span>
+																</li>
+															</ul>
+														</div>
+														<div class="description">
+															<p>
+														@bd.Content
+															</p>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+							}
 								</div>
 							</div>
 							<div class="col-lg-2">
@@ -30,3 +173,4 @@
 				</div>
 			</div>
 </div>
+<script src="~/js/QuanLy.js"></script>

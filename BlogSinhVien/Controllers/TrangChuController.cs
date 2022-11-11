@@ -34,7 +34,7 @@ namespace BlogSinhVien.Controllers
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
 
-            List<BaiDang> listBD = context.BaiDang.Where(x=>x.TrangThai==true).OrderByDescending(x => x.NgayDang).Take(1).ToList();
+            List<BaiDang> listBD = context.BaiDang.Where(x=>x.TrangThai==true).OrderByDescending(x => x.NgayDang).Take(5).ToList();
 
             ViewBag.ListBD = listBD;
             return View("TrangChu");
@@ -53,7 +53,9 @@ namespace BlogSinhVien.Controllers
             BaiDang baiDang = new BaiDang();
 
             baiDang.Content = content;
+            if(User.IsInRole("SV"))
             baiDang.MaSinhVien = User.FindFirst("MaSV").Value;
+            else baiDang.MaQl = User.FindFirst("MaSV").Value;
             baiDang.TrangThai = false;
             baiDang.NgayDang = DateTime.Now;
 

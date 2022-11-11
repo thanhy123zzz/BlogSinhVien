@@ -9,6 +9,11 @@ namespace BlogSinhVien.Models.Entities
 {
     public partial class BinhLuan
     {
+        public BinhLuan()
+        {
+            Vote = new HashSet<Vote>();
+        }
+
         public int MaCmt { get; set; }
         public int? MaBaiDang { get; set; }
         public string MaSinhVien { get; set; }
@@ -19,5 +24,6 @@ namespace BlogSinhVien.Models.Entities
         public virtual BaiDang MaBaiDangNavigation { get; set; }
         public virtual QuanLy MaQlNavigation { get; set; }
         public virtual SinhVien MaSinhVienNavigation { get; set; }
+        public virtual ICollection<Vote> Vote { get; set; }
     }
 }
