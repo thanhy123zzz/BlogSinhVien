@@ -147,7 +147,7 @@ if ($.isFunction($.fn.userincr)) {
 	}).data({'min':0,'max':20,'step':1});
 }	
 	
-if ($.isFunction($.fn.loadMoreResults)) {	
+/*if ($.isFunction($.fn.loadMoreResults)) {	
 	$('.loadMore').loadMoreResults({
 		displayedItems: 3,
 		showItems: 1,
@@ -156,7 +156,7 @@ if ($.isFunction($.fn.loadMoreResults)) {
 		  'text': 'Load More'
 		}
 	});	
-}
+}*/
 	//===== owl carousel  =====//
 	if ($.isFunction($.fn.owlCarousel)) {
 		$('.sponsor-logo').owlCarousel({
@@ -312,17 +312,6 @@ $(function() {
 		});
 	}
 	
-/** Post a Comment **/
-jQuery(".post-comt-box textarea").on("keydown", function(event) {
-
-	if (event.keyCode == 13) {
-		var comment = jQuery(this).val();
-		var parent = jQuery(".showmore").parent("li");
-		var comment_HTML = '	<li><div class="comet-avatar"><img src="images/resources/comet-1.jpg" alt=""></div><div class="we-comment"><div class="coment-head"><h5><a href="time-line.html" title="">Jason borne</a></h5><span>1 year ago</span><a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a></div><p>'+comment+'</p></div></li>';
-		$(comment_HTML).insertBefore(parent);
-		jQuery(this).val('');
-	}
-}); 
 	
 //inbox page 	
 //***** Message Star *****//  

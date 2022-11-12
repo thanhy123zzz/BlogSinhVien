@@ -1396,7 +1396,7 @@ form button {
 
 .post-meta > img {
     float: left;
-    width: 100%;
+    width: 32%;
 }
 
 .description {
@@ -1906,6 +1906,7 @@ li.post-comment .comet-avatar {
     font-weight: 500;
     height: 40px;
     line-height: 16px;
+    padding-right: 3%;
 }
 
 .add-smiles {
@@ -10047,3 +10048,62 @@ aside.sidebar.full-style {
 }
 
 
+.items-att {
+    width: 32%;
+    height: auto;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+}
+
+.menu-manager {
+    padding: 20px 20px;
+    
+}
+.menu-manager activel {
+    background-color: #8be594;
+}
+.activel {
+    background-color: #f1f1f1;
+}
+
+.vote-h{
+   margin-bottom: 0;
+}
+
+.vote-item{
+    display: flex;
+    justify-content: center;
+}
+.top-menu-manager {
+    height: auto;
+    background: #fdfdfd;
+    margin-bottom: 20px;
+    padding: 0;
+    z-index: 0;
+    display:flex;
+    justify-content: space-between;
+}
+.search-menu-manager {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+}
+
+.search-menu-manager input {
+        background: #f4f2f2 none repeat scroll 0 0;
+        border: medium none;
+        font-size: 13px;
+        padding: 13px 30px;
+        width: 100%;
+        border-radius: 5px;
+}
+
+    .search-menu-manager button {
+        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+        color: #b6b6b6;
+        font-size: 15px;
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
