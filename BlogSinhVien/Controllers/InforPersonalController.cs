@@ -10,32 +10,43 @@ using System.Linq;
 
 namespace BlogSinhVien.Controllers
 {
-	public class InforPersonalController : Controller
-	{
+    public class InforPersonalController : Controller
+    {
         [HttpGet]
         [Route("/inforpersonal")]
         [Authorize(Roles = "QL,SV")]
         public IActionResult Details()
-		{
+        {
             /*var student = await _context.Students
                 .FirstOrDefaultAsync(m => m.Id == id); */
             BlogSinhVienContext _context = new BlogSinhVienContext();
             //string tk = "xuandieu123";
             string MaSV = User.FindFirst("MaSV").Value;
+            // string MaQL = User.FindFirst("MaQL").Value;
             SinhVien sv = _context.SinhVien.FirstOrDefault(x => x.MaSv == MaSV);
+            // QuanLy quanLy = _context.QuanLy.FirstOrDefault(x => x.MaQl == MaQL);
             if (sv == null)
             {
                 return NotFound();
             }
-			return View(sv);
-		}
+            // if (sv != null)
+            // {
+            //     return View(sv);
+            // }
+            // else if (quanLy != null)
+            // {
+            //     return View(quanLy);
+
+            // }
+            return View(sv);
+        }
         [HttpGet]
         [Route("/change-password")]
         [Authorize(Roles = "QL,SV")]
         public IActionResult ChanggePass()
-		{
-			return View();
-		}
+        {
+            return View();
+        }
 
         [HttpPost]
         [Route("/confirm-change-password")]
@@ -58,12 +69,12 @@ namespace BlogSinhVien.Controllers
                 ac.MatKhau = newpass;
                 _context.Accounts.Update(ac);
                 _context.SaveChanges();
-                TempData["messUpdateSuccess"] = "Đổi mật khẩu thành công!";
+                TempData["messUpdateSuccess"] = $"Đổi mật khẩu thành công!";
                 return RedirectToAction("Details");
             }
             else
             {
-                TempData["messPass"] = "Mật khẩu cũ không chính xác!";
+                TempData["messPass"] = $"Mật khẩu cũ không chính xác!";
                 // TempData["messPassx"] = "Mật khẩu cũ không chính xác!";
                 return RedirectToAction("ChanggePass");
             }
@@ -96,7 +107,7 @@ namespace BlogSinhVien.Controllers
             var data = _context.SinhVien.FirstOrDefault(x => x.MaSv == sv.MaSv);
             if (data == null)
             {
-                return View(); 
+                return View();
             }
             else
             {
@@ -110,8 +121,8 @@ namespace BlogSinhVien.Controllers
                 data.Phone = sv.Phone.Trim();
                 _context.SinhVien.Update(data);
                 _context.SaveChanges();
-                TempData["messUpdateSuccess"] = "Cập nhật thông tin cá nhân thành công!";
-                return RedirectToAction("Details","InforPersonal");
+                TempData["messUpdateSuccess"] = $"Cập nhật thông tin cá nhân thành công!";
+                return RedirectToAction("Details", "InforPersonal");
             }
         }
     }

@@ -252,8 +252,8 @@
 					</i>Quản lý</li>
 				}
 			</ul>	
-			
-			<div onclick="location.href='/profile/@User.FindFirst("MaSV").Value';" title="Cá nhân" class="user-img">
+			@* /profile/@User.FindFirst("MaSV").Value *@
+			<div onclick="location.href='/inforpersonal';" title="Cá nhân" class="user-img">
 				@if(User.IsInRole("SV")){
 					<img width="45px" height="45px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 				}
