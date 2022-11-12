@@ -48,11 +48,11 @@
 								<div class="central-meta item">
 									<div class="new-postbox">
 										<figure>
-											
 										@if (User.IsInRole("SV"))
 										{
 											<img width="70px" height="70px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 										}
+										
 										else
 										{
 											<img width="70px" height="70px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
