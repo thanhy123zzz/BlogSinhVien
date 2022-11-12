@@ -10065,3 +10065,45 @@ aside.sidebar.full-style {
 .activel {
     background-color: #f1f1f1;
 }
+
+.vote-h{
+   margin-bottom: 0;
+}
+
+.vote-item{
+    display: flex;
+    justify-content: center;
+}
+.top-menu-manager {
+    height: auto;
+    background: #fdfdfd;
+    margin-bottom: 20px;
+    padding: 0;
+    z-index: 0;
+    display:flex;
+    justify-content: space-between;
+}
+.search-menu-manager {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+}
+
+.search-menu-manager input {
+        background: #f4f2f2 none repeat scroll 0 0;
+        border: medium none;
+        font-size: 13px;
+        padding: 13px 30px;
+        width: 100%;
+        border-radius: 5px;
+}
+
+    .search-menu-manager button {
+        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+        color: #b6b6b6;
+        font-size: 15px;
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+    }

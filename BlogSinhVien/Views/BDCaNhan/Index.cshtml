@@ -2,7 +2,7 @@
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
 	{
-		if (image == null) return "";
+		if (image == null) return "images/avt.png";
 		string imageBase64Data = Convert.ToBase64String(image);
 		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
 		return imageDataURL;
@@ -28,6 +28,11 @@
 	{
 		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
 	}
+
+	QuanLy getQuanLy(string maQL)
+	{
+		return context.QuanLy.Find(maQL);
+	}
 }
 <div class="gap2 gray-bg">
 			<div class="container-fluid">
@@ -44,14 +49,25 @@
 										<div class="user-post">
 											<div class="friend-info">
 												<figure>
-													<img width="70px" height="70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+												@if (bd.MaSinhVien != null)
+												{
+													<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+												}
+												else
+												{
+													<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
+												}
 												</figure>
 												<div class="friend-name">
 													<ins style="display:flex;justify-content:space-between;">
-														<a href="/profile" title="@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten
-														</a>
+														@if (bd.MaSinhVien != null){
+														<a href="/profile" title="@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a>
+														}
+														else{
+														<a href="/profile" title="@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a>
+														}
 														@if(bd.TrangThai==true){
-															<p style="color:orangered;margin-bottom: 0;">Đã đăng</p>
+																	<p style="color:lawngreen;margin-bottom: 0;">Đã đăng</p>
 														}
 														else{
 															<p style="color:orangered;margin-bottom: 0;">Đang duyệt</p>
@@ -132,11 +148,25 @@
 												{
 															<li style="display: flex">
 																<div class="comet-avatar">
-																		<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+															@if (bl.MaSinhVien != null)
+															{
+																<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+															}
+															else
+															{
+																<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+															}
 																	</div>
 																	<div class="we-comment" style="max-width:89.4%; width:89.4%;">
 																		<div class="coment-head">
-																			<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
+																@if (bl.MaSinhVien != null)
+																{
+																				<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
+																}
+																else
+																{
+																				<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
+																}
 																			<span>@bl.NgayDang</span>
 																			<a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
 																		</div>

@@ -2,7 +2,7 @@
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
 	{
-		if (image == null) return "";
+		if (image == null) return "images/avt.png";
 		string imageBase64Data = Convert.ToBase64String(image);
 		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
 		return imageDataURL;
@@ -24,6 +24,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BlogSinhVien</title>
 
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -435,6 +436,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/trangchu.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
     @RenderSection("Scripts", required: false)
     <script>
              function readURL(input) {

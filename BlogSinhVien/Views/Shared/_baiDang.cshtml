@@ -2,7 +2,7 @@
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
 	{
-		if (image == null) return "";
+		if (image == null) return "images/avt.png";
 		string imageBase64Data = Convert.ToBase64String(image);
 		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
 		return imageDataURL;
@@ -29,22 +29,46 @@
 	{
 		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
 	}
+	QuanLy getQuanLy(string maQL)
+	{
+		return context.QuanLy.Find(maQL);
+	}
+
+	int GetSLVote(int MaCmt)
+	{
+		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
+	}
 }
 
 
 <div id="loadMore" class="loadMore">
 	@foreach (BaiDang bd in ViewBag.ListBD)
 	{
-										<input style="display:none;" value="@ViewBag.SLBD" id="sl_bd"></input>
-										<div class="central-meta item">
-										<div class="user-post">
-											<div class="friend-info">
+		<input style="display:none;" value="@ViewBag.SLBD" id="sl_bd"></input>
+			<div class="central-meta item">
+					<div class="user-post">
+					<div class="friend-info">
 												<figure>
-													<img width="70px" height="70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+						@if (User.IsInRole("SV"))
+						{
+													<img width="70px" height="70px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+						}
+						else
+						{
+													<img width="70px" height="70px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+						}
 												</figure>
 												<div class="friend-name">
-															<ins><a href="time-line.html" title=""></a>@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</ins>
+													@if (bd.MaSinhVien != null)
+													{
+															<ins><a href="time-line.html" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
+													}
+													else
+													{
+															<ins><a href="time-line.html" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
+													}
 													<span>@bd.NgayDang</span>
+
 												</div>
 												<div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
 						@foreach (ChiTietBaiDang item in chiTietBaiDangs(bd.MaBaiDang))
@@ -113,19 +137,42 @@
 						@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
 						{
 															<li style="display: flex">
-																<div class="comet-avatar">
-																		<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
-																	</div>
-																	<div class="we-comment" style="max-width:89.4%; width:89.4%;">
-																		<div class="coment-head">
-																			<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
-																			<span>@bl.NgayDang</span>
-																			<a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
-																		</div>
-																		<p style="word-break: break-all;">@bl.Content</p>
-																	</div>
-
-																</li>
+														<div class="comet-avatar">
+															@if (bl.MaSinhVien != null)
+															{
+																<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+															}else{
+																<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+															}
+														</div>
+														<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+																<div class="coment-head">
+																@if (bl.MaSinhVien != null)
+																{
+																	<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
+																}
+																else
+																{
+																	<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
+																}
+																	<span>@bl.NgayDang</span>
+																		<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
+																</div>
+																<p style="word-break: break-all;">@bl.Content</p>
+															</div>
+														<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+															<div class="vote-item">
+																<i class="ti-angle-up"></i>
+															</div>
+															<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
+															</div>
+																
+															<div class="vote-item">
+																<i class="ti-angle-down"></i>
+															</div>
+														</div>
+													</li>
 						}
 													<li>
 														<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
@@ -133,7 +180,14 @@
 													</li>
 													<li class="post-comment">
 														<div class="comet-avatar">
-															<img width="50px" height="50px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+								@if (User.IsInRole("SV"))
+								{
+												<img width="50px" height="50px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+								}
+								else
+								{
+											<img width="50px" height="50px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+								}
 														</div>
 														<div class="post-comt-box">
 															<form enctype="multipart/form-data">
