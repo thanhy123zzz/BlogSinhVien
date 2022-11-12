@@ -41,18 +41,38 @@
 				}
 			</div>
 			<div class="we-comment"  style="max-width:83.4%; width:83.4%; ">
-			<div class="coment-head">
-					@if (bl.MaSinhVien != null)
-					{
-						<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
+				@if(ViewBag.Loai == true){
+						<div class="coment-head">
+						@if (bl.MaSinhVien != null)
+						{
+									<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
+						}
+						else
+						{
+									<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
+						}
+						<span>@bl.NgayDang</span>
+								<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@ViewBag.MaBD,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
+							</div>
 					}
-					else
-					{
-						<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
-					}
-				<span>@bl.NgayDang</span>
-						<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@ViewBag.MaBD,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
+					else{
+						<div class="coment-head" style="display:inline-flex;justify-content:space-between">
+						<div class="coment-head">
+							@if (bl.MaSinhVien != null)
+							{
+								<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5> 
+							}
+							else
+							{
+								<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5> 
+							}
+							<span>@bl.NgayDang</span> 
+
+							<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@ViewBag.MaBD,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
+							</div>
+						<i style="cursor:pointer;" onclick="RemoveCmt(@bl.MaCmt)" class="ti-close"></i>
 					</div>
+					}
 				<p style="word-break: break-all;">@bl.Content</p>
 			</div>
 			<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
@@ -68,9 +88,12 @@
 		</li>
 	}
 		<li>
-<a href="" onclick="load_More_Cmt(event,@ViewBag.MaBD)" title="" id="showmore_@ViewBag.MaBD" class="showmore underline @ViewBag.MaBD">more comments</a>
+<a href="" onclick="load_More_Cmt(event,@ViewBag.MaBD,'@ViewBag.Loai')" title="" id="showmore_@ViewBag.MaBD" class="showmore underline @ViewBag.MaBD">more comments</a>
 <input id="count_cmt_@ViewBag.MaBD" style="display:none;" value="@ViewBag.sl">
+
 </li>
+	@if (ViewBag.Loai == true)
+	{
 		<li class="post-comment">
 			<div class="comet-avatar">
 				@if (User.IsInRole("SV"))
@@ -92,4 +115,5 @@
 				</form>	
 			</div>
 		</li>
+		}
 </ul>

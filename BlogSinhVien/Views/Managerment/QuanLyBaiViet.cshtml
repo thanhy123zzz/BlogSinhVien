@@ -31,6 +31,17 @@
 	{
 		return context.QuanLy.Find(maQL);
 	}
+	int GetSLVote(int MaCmt)
+	{
+		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
+	}
+	List<SinhVien> getListSinhVien(){
+		return context.SinhVien.ToList();
+	}
+
+	Accounts getAccount(string taikhoan){
+		return context.Accounts.Find(taikhoan);
+	}
 }
 
 
@@ -43,21 +54,22 @@
 							
 							</div><!-- sidebar -->
 							<div class="col-lg-8">
-								<div class="topbar stick" style="height:auto;background:#fdfdfd;margin-bottom:20px;padding:0;z-index:0">
-										<div class="top-area" style="width:auto;">
+								<div class="topbar stick top-menu-manager">
+									<div class="top-area" style="width:auto;">
 											<ul class="setting-area">
-												<li class="menu-manager activel" title="Trang chủ" style="cursor:pointer;margin-right:0;" id="quanlybaiviet" onclick="active('quanlybaiviet')">Quản lý bài viết</li>
-												
-												<li class="menu-manager" title="Nhắn tin" style="cursor:pointer;margin-right:0;" id="quanlysv" onclick="active('quanlysv')">Quản lý sinh viên</li>
-												
-												<li class="menu-manager" title="Bài viết cá nhân" style="cursor:pointer;margin-right:0;" id="quanlycmt" onclick="active('quanlycmt')">Quản lý bình luận
-												</li>
-
-												<li class="menu-manager" title="Quản lý" style="cursor:pointer;margin-right:0;" id="thongke" onclick="active('thongke')">Thống kê hoạt động</li>
-										</ul>
+												<li class="menu-manager activel" title="Bài viết" style="cursor:pointer;margin-right:0;" id="quanlybaiviet" onclick="active('quanlybaiviet')">Quản lý bài viết</li>
+												<li class="menu-manager" title="Quản lý sinh viên" style="cursor:pointer;margin-right:0;" id="quanlysv" onclick="active('quanlysv')">Quản lý sinh viên</li>
+												<li class="menu-manager" title="Thống kê" style="cursor:pointer;margin-right:0;" id="thongke" onclick="active('thongke')">Thống kê hoạt động</li>
+											</ul>
+									</div>
+									<div class="top-search" style="margin: auto 1%;">
+										<div class="search-menu-manager">
+											<input id="search_manager" onkeydown="searchManagerEnter(event)" type="text" placeholder="Tìm kiếm">
+											<button style="border:none" onclick="searchManager()" data-ripple><i class="ti-search"></i></button>
+										</div>
 									</div>
 								</div>
-								<div id="loadMore" class="loadMore">
+								<div id="contain_quanlybaiviet" class="contain">
 							@foreach (BaiDang bd in ViewBag.ListBD)
 							{
 											<div class="central-meta item">
@@ -83,18 +95,25 @@
 													{
 														<ins style="text-decoration: none;"><a href="time-line.html" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
 													}
-															<p style="margin-bottom: 0;">Chờ duyệt</p>
-														</ins>
+													@if (bd.TrangThai == false)
+													{
+														<p style="margin-bottom: 0;color:orangered;">Chờ duyệt</p>
+													}else{
+														<p style="margin-bottom: 0;color:lawngreen;">Đã duyệt</p>
+													}
+													</ins>
 													<span style="display:flex;justify-content:space-between;">
 														@bd.NgayDang
 														<div>
-																<a href="/managerment/duyet/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn duyệt bài viết này?')" style="color:lawngreen;margin-bottom: 0;cursor:pointer;">
-																			Duyệt <i class="ti-check"></i>
+														@if (bd.TrangThai == false)
+														{
+														<a href="/managerment/duyet/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn duyệt bài viết này?')" style="color:lawngreen;margin-bottom: 0;cursor:pointer;">
+															Duyệt <i class="ti-check"></i>
 																	</a>
-																	|
-																	<a href="/managerment/xoa/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn xoá bài viết này?')" style="color:orangered;margin-bottom: 0;cursor:pointer;">
+														}|
+															<a href="/managerment/xoa/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn xoá bài viết này?')" style="color:orangered;margin-bottom: 0;cursor:pointer;">
 																	Huỷ <i class="ti-trash"></i>
-																</a>
+															</a>
 														</div>	
 														</span>
 													</div>
@@ -136,11 +155,11 @@
 													}
 													@if (item.Type.Trim().EndsWith(".presentation"))
 													{
-																								<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
-																						<i class="fa fa-file-powerpoint-o">
-																						</i>
+															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<i class="fa fa-file-powerpoint-o">
+															</i>
 															@item.NameFile.Trim()
-																					</a>
+															</a>
 													}
 												}
 														<div class="we-video-info">
@@ -160,9 +179,110 @@
 														</div>
 													</div>
 												</div>
+													<div class="coment-area">
+												<ul class="we-comet" id="list_cmt_@bd.MaBaiDang">
+												@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
+												{
+															<li style="display: flex">
+																<div class="comet-avatar">
+															@if (bl.MaSinhVien != null)
+															{
+																			<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+															}
+															else
+															{
+																			<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+															}
+																</div>
+																<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+															<div class="coment-head" style="display:inline-flex;justify-content:space-between">
+															<div class="coment-head">
+																@if (bl.MaSinhVien != null)
+																{
+																	<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5> 
+
+																}
+																else
+																{
+																	<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5> 
+
+																}
+																
+																	<span>@bl.NgayDang</span> 
+
+																	 <i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
+																</div>
+																		<a href="/managerment/remove-cmt/@bl.MaCmt" onclick="return confirm('Bạn có muốn xoá bình luận này?')">
+																<i style="cursor:pointer;" class="ti-close"></i>
+																		</a>
+															</div>
+																		<p style="word-break: break-all;">@bl.Content</p>
+																	</div>
+																<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+																	<div class="vote-item">
+																		<i class="ti-angle-up"></i>
+																	</div>
+																	<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																		<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
+																	</div>
+
+																	<div class="vote-item">
+																		<i class="ti-angle-down"></i>
+																	</div>
+																</div>
+															</li>
+												}
+													<li>
+														<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang,false)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
+														<input id="count_cmt_@bd.MaBaiDang" style="display:none;" value="5">
+													</li>
+												</ul>
+											</div>
 											</div>
 										</div>
 							}
+								</div>
+								<div id="contain_quanlysv" class="contain" style="display:none;">
+									<div class="central-meta item">
+										<div class="user-post">
+											<form class="input-group mb-3" style="width:40%;">
+											  <div class="custom-file">
+												 <label class="custom-file-label" for="inputGroupFile01">Excel file</label>
+												<input type="file"  accept=".xlsx" class="custom-file-input" id="inputGroupFile01">
+											  </div>
+											  <div class="input-group-append" style="margin-left:5%;">
+												<button class="btn btn-info" style="background-color:#8be594;border-color:#8be594;border-radius:0;" type="button">
+													<i class="fa fa-file-excel-o"></i> Xác nhận</button>
+											  </div>
+											</form>
+										</div>
+										<div class="user-post">
+											<table id="table-sv">
+												<thead>
+												<tr>
+													<th>MSSV</th>
+													<th>Họ tên</th>
+													<th>Email trường</th>
+													<th>Tài khoản</th>
+													<th>Mật khẩu</th>
+													<th>Thao tác</th>
+												</tr>
+											</thead>
+											<tbody>
+												@foreach(SinhVien sv in getListSinhVien()){
+												<tr>
+													<td>@sv.MaSv</td>
+													<td>@sv.Ho @sv.Ten</td>
+													<td>@sv.EmailEdu</td>
+													<td>@sv.TaiKhoan</td>
+													<td>@getAccount(sv.TaiKhoan).MatKhau</td>
+													<td><button class="btn btn-danger" style="border-radius:unset">Xoá</button></td>
+												</tr>
+												}
+											</tbody>
+											</table>
+										</div>
+									</div>
 								</div>
 							</div>
 							<div class="col-lg-2">
@@ -173,4 +293,5 @@
 				</div>
 			</div>
 </div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/QuanLy.js"></script>

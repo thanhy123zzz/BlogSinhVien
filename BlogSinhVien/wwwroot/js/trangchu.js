@@ -154,9 +154,8 @@ connection.start().then(function () {
 
 connection.on("DisplayComment", function (maSV, tenSV, content, MaBD, imageDataURL, date, MaCmt,MaUser) {
     var parent = jQuery("#showmore_" + MaBD).parent("li");
-    var count_cmt = parseInt(jQuery('#count_cmt_' + MaBD).text());
-    $('#count_cmt_' + MaBD).text(count_cmt + 1);
-    document.getElementById("sl_cmt_" + MaBD).innerHTML = count_cmt + 1;
+    var count_cmt = parseInt(document.getElementById("sl_cmt_" + MaBD).textContent);
+    document.getElementById("sl_cmt_" + MaBD).textContent = count_cmt + 1;
     var comment_HTML = '<li style="display: flex"><div class="comet-avatar"><img style="width:50px; height:50px;" src="' + imageDataURL + '" alt=""></div><div class="we-comment" style="max-width:83.4%; width:83.4%;"><div class="coment-head"><h5><a href="/profile/' + maSV + '" title="' + tenSV + '">' + tenSV + '</a></h5><span>' + date + '</span><i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(' + MaBD +',' + MaCmt + ','+"'"+'' + MaUser + ''+"'"+')"></i></div><p>' + content + '</p></div><div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;"><div class="vote-item"><i class="ti-angle-up"></i></div><div class="vote-item" style="margin-bottom:0;margin-left:2px"><h5 id="vote_' + MaCmt + '" class="vote-h">0</h5></div><div class="vote-item"><i class="ti-angle-down"></i></div></div> </li>';
     $(comment_HTML).insertBefore(parent);
     $("#contentcomments_" + MaBD).val('');
@@ -202,4 +201,8 @@ function vote(MaBD, MaCmt, MaUser) {
 
 connection.on("IncreateVote", function (MaBD, MaCmt, MaUser, sl) {
     document.getElementById('vote_' + MaCmt).textContent = sl;
+});
+
+$(document).ready(function () {
+    $('#table-sv').DataTable();
 });
