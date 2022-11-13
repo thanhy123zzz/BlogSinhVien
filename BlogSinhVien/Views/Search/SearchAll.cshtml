@@ -112,8 +112,9 @@
                                                 <p class="mb-0">
                                                     @item.DiaChi
                                                 </p>
-                                                <span class="text-center"><a href="#"><i class="fa fa-comments" aria-hidden="true"></i> Trò chuyện ngay</a></span>
-                                            
+                                                @if(@item.MaSv != User.FindFirst("MaSV").Value){
+                                                <span class="text-center"><a href="/chat/@item.MaSv"><i class="fa fa-comments" aria-hidden="true"></i> Trò chuyện ngay</a></span>
+                                                }
                                             </div>
                                             </div>
                                             </div>
