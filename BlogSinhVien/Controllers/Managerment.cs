@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Data;
@@ -94,7 +95,13 @@ namespace BlogSinhVien.Controllers
             ViewBag.ListBD = listBD;
             return PartialView("_List_Bd_Manager");
         }
-        [HttpPost("insert-info-sv")]
+        [Route("add-sv")]
+        public IActionResult AddSV()
+        {
+            return View("add_sv");
+        }
+
+        /*[HttpPost("insert-info-sv")]
         public async Task<IActionResult> insert_infor_sv(IFormFile excelFile)
         {
             //get file name
@@ -158,6 +165,6 @@ namespace BlogSinhVien.Controllers
                 }
             }
             return View();
-        }
+        }*/
     }
 }
