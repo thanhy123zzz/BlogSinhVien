@@ -1,0 +1,92 @@
+﻿@model BlogSinhVien.Models.Entities.SinhVien
+@{
+	BlogSinhVienContext context = new BlogSinhVienContext();
+	string getImage(byte[] image)
+	{
+		if (image == null) return "/images/avt.png";
+		string imageBase64Data = Convert.ToBase64String(image);
+		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		return imageDataURL;
+	}
+}
+<div class="gap2 gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row merged20" id="page-contents">
+							<div class="col-lg-2">
+
+							</div><!-- sidebar -->
+							<div class="col-lg-8">
+									<div class="central-meta">
+									<div class="editing-info">
+										<style>
+											.editing-info label{
+												color: #8be594;
+											}
+											.editing-info input{
+												border: none;
+												border-bottom: 2px solid #8be594;
+												padding: 1%;
+
+											}
+										</style>
+										<h5 class="f-title"><i class="ti-info-alt"></i> Thông tin cá nhân</h5>
+
+										<form method="post">
+											<div class="row">
+											<div class=" col-6 mb-5">
+												<label class="control-label">Họ</label><br>
+												<input class="input-group" asp-for="Ho" type="text" id="Ho" />
+											</div>
+											<div class=" col-6 mb-5">
+											  <label class="control-label" for="Ten">Tên và tên đệm</label><br>
+												<input class="input-group" asp-for="Ten" type="text" />
+											</div>
+											<div class=" col-6 mb-5">
+												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>
+
+												<input class="input-group" asp-for="EmailPrivate" type="text"  />
+											</div>
+											<div class=" col-6 mb-5">
+												<label class="control-label" for="Phone">Số điện thoại</label><br>
+												<input class="input-group" asp-for="Phone" type="text"  />
+											</div>
+											<div class=" col-6 mb-5">
+												<label class="control-label" for="Cccd">Căn cước công dân(CCCD/CMND)</label><br>
+												<input class="input-group" asp-for="Cccd" type="text"  />
+											  </div>
+											  <div class=" col-6 mb-5">
+												<label class="control-label" for="Phone">Email trường</label><br>
+												<input class="input-group" asp-for="EmailEdu" type="text"  />
+											  </div>
+											  <div class=" col-6 mb-5">
+												<label class="control-label" for="input">Sinh nhật</label><br>
+												<input class="input-group" type="date" required/>
+											  </div>
+													<div class=" col-6 mb-5">
+														<label class="control-label" for="GioiTinh">Giới tính</label><br>
+														<input class="input-group" asp-for="GioiTinh" value="Nam" type="text"  />
+													</div>
+											<div class="col-12 mb-5">
+											  <label class="control-label" for="DiaChi">Địa chỉ</label><br>
+												<input class="input-group" asp-for="DiaChi" type="text"  />
+											</div>
+											</div>
+											<!--<div class="submit-btns">
+
+												<button type="button" class="mtr-btn"><span>Hủy</span></button>
+													<button type="button" class="mtr-btn"><span>Cập nhật</span></button>
+											</div> -->
+										</form>
+									</div>
+								</div>	
+							</div>
+							<div class="col-lg-2">
+
+							</div><!-- sidebar -->
+						</div>
+					</div>
+				</div>
+			</div>
+</div>

@@ -17,7 +17,8 @@ function searchManager() {
         url: '/managerment/search-manager',
         data: "key=" + key,
         success: function (result) {
-            $("#loadMore").replaceWith(result);
+            $("#contain_quanlybaiviet").replaceWith(result);
+            active("quanlybaiviet");
         },
         error: function (result) {
             alert('Lỗi!');
@@ -33,7 +34,8 @@ function searchManagerEnter(event) {
             url: '/managerment/search-manager',
             data: "key=" + key,
             success: function (result) {
-                $("#loadMore").replaceWith(result);
+                $("#contain_quanlybaiviet").replaceWith(result);
+                active("quanlybaiviet");
             },
             error: function (result) {
                 alert('Lỗi!');
