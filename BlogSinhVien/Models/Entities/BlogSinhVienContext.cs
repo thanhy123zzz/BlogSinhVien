@@ -37,7 +37,7 @@ namespace BlogSinhVien.Models.Entities
             if (!optionsBuilder.IsConfigured)
             {
 
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-Q0B8QHD\\MSSQLSERVER02;Database=BlogSinhVien;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Data Source=LAPTOP-FPKNLS6A\\SQLEXPRESS;Initial Catalog=BlogSinhVien;Persist Security Info=True;User ID=sa;Password=123456");
             }
         }
 
