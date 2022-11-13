@@ -62,13 +62,20 @@ namespace BlogSinhVien.Controllers
         [Route("/chat/{maSV}")]
         public IActionResult Chat(string maSV)
         {
+            Console.WriteLine(maSV);
             string masv1 = User.FindFirst("MaSV").Value;
             var _context = new BlogSinhVienContext();
             var list = _context.Conversation.FromSqlRaw($"SELECT *  FROM [BlogSinhVien].[dbo].[Conversation] Where MaSinhVien1 = '"+masv1+"' and MaSinhVien2 = '"+maSV+"';").ToList();        
+            Console.WriteLine(list.Count);
+            var conversation = new Conversation();
+            conversation.MaSinhVien1 = masv1;
+            conversation.MaSinhVien2 = maSV;
             if(list.Count > 0){
                 return RedirectToAction("Index","Messages");
             }else{
-                _context.Conversation.FromSqlRaw($"Insert into [BlogSinhVien].[dbo].[Conversation](MaSinhVien1,MaSinhVien2) values('"+masv1+"','"+maSV+"');");
+                _context.Conversation.Add(conversation);
+                // _context.Conversation.FromSqlRaw($"Insert into [BlogSinhVien].[dbo].[Conversation](MaSinhVien1,MaSinhVien2) values('"+masv1+"','"+maSV+"');");
+                _context.SaveChanges();
                 return RedirectToAction("Index","Messages");
             }
         }
