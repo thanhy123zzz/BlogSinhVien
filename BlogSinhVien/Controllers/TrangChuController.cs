@@ -33,7 +33,6 @@ namespace BlogSinhVien.Controllers
         public IActionResult Index()
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
-
             List<BaiDang> listBD = context.BaiDang.Where(x=>x.TrangThai==true).OrderByDescending(x => x.NgayDang).Take(5).ToList();
             ViewBag.Loai = true;
             ViewBag.ListBD = listBD;
