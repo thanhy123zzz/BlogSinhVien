@@ -1,6 +1,6 @@
 ﻿@model BlogSinhVien.Models.Entities.SinhVien
 @{
-    ViewData["Title"] = "Trang cá nhân";
+    ViewData["Title"] = @Model.Ho +" "+ @Model.Ten;
     Layout = "~/Views/Shared/_Layout.cshtml";
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
@@ -134,13 +134,9 @@
 
 										<form method="post">
 											<div class="row">
-											<div class=" col-6 mb-5">
-												<label class="control-label">Họ</label><br>
-												<input class="input-group" asp-for="Ho" type="text" id="Ho" readonly/>
-											</div>
-											<div class=" col-6 mb-5">
-											  <label class="control-label" for="Ten">Tên và tên đệm</label><br>
-												<input class="input-group" asp-for="Ten" type="text" readonly/>
+											<div class=" col-12 mb-5">
+												<label class="control-label">Họ và tên</label><br>
+												<input class="input-group" value="@Model.Ho @Model.Ten" type="text" id="Ho" readonly/>
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>

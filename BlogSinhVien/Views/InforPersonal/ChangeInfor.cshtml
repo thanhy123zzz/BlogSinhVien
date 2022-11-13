@@ -1,6 +1,6 @@
 ﻿@model BlogSinhVien.Models.Entities.SinhVien
 @{
-	ViewData["Title"] = "Cập nhật thông tin cá nhân";
+	ViewData["Title"] = "Cập nhật thông tin";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
@@ -111,7 +111,7 @@
 							<div class="col-lg-8">
 								<div class="central-meta">
 									<div class="editing-info">
-										<h5 class="f-title"><i class="ti-info-alt"></i> Chỉnh sửa thông tin cá nhân</h5>
+										<h5 class="f-title"><i class="ti-info-alt"></i>Chỉnh sửa thông tin cá nhân</h5>
 
 										<form method="post" action="/confirm-change-information">
 											<div class="form-group mb-5" hidden>

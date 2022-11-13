@@ -40,7 +40,7 @@ namespace BlogSinhVien.Controllers
             ViewBag.messages = messages;
             ViewBag.MaC = MaC;
             return PartialView("_MessageBox");
-        }
+        }   
         [HttpPost("load-nameSV")]
         public IActionResult Load_nameSV(int MaC)
         {
