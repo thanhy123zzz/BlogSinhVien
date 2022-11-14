@@ -84,5 +84,16 @@ namespace BlogSinhVien.Controllers
         {
             return View("Error!");
         }
+
+
+        [HttpGet]
+        [Route("/profile/{maSV}")]
+        public IActionResult Profile(string maSV){
+            var _context = new BlogSinhVienContext();
+            var stu = _context.SinhVien.FirstOrDefault(x => x.MaSv == maSV);
+            var list =  _context.BaiDang.Where(x => x.MaSinhVien == maSV).ToList();
+            ViewBag.ListPost = list;
+            return View(stu);
+        }
     }
 }

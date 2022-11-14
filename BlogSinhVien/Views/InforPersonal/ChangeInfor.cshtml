@@ -1,5 +1,4 @@
-﻿@model BlogSinhVien.Models.Entities.SinhVien
-@{
+﻿@{
 	ViewData["Title"] = "Cập nhật thông tin";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	BlogSinhVienContext context = new BlogSinhVienContext();
@@ -112,44 +111,44 @@
 								<div class="central-meta">
 									<div class="editing-info">
 										<h5 class="f-title"><i class="ti-info-alt"></i>Chỉnh sửa thông tin cá nhân</h5>
-
-										<form method="post" action="/confirm-change-information">
+										@if(ViewBag.SinhVien != null){
+											<form method="post" action="/confirm-change-information">
 											<div class="form-group mb-5" hidden>
-												<input asp-for="MaSv" type="text" required />
+												<input value="@ViewBag.SinhVien.MaSv" id="MaSv" name="MaSv" type="text" required />
 												<label class="control-label" for="MaSv">Mã số SV</label><i
 													class="mtrl-select"></i>
 											</div>
 											<div class="form-group half mb-5">
-												<input asp-for="Ho" type="text" required />
+												<input value="@ViewBag.SinhVien.Ho" id="Ho" name="Ho"type="text" required />
 												<label class="control-label" for="Ho">Họ</label><i
 													class="mtrl-select"></i>
 											</div>
 											<div class="form-group half mb-5">
-												<input asp-for="Ten" type="text" required />
+												<input value="@ViewBag.SinhVien.Ten" id="Ten" name="Ten" type="text" required />
 												<label class="control-label" for="Ten">Tên và tên đệm</label><i
 													class="mtrl-select"></i>
 											</div>
 											<div class="form-group half mb-5">
-												<input asp-for="EmailPrivate" type="email" required />
+												<input value="@ViewBag.SinhVien.EmailPrivate" id="EmailPrivate" name="EmailPrivate" type="email" required />
 												<label class="control-label" for="EmailPrivate"><a
 														href="https://wpkixx.com/cdn-cgi/l/email-protection"
 														class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá
 														nhân</a></label><i class="mtrl-select"></i>
 											</div>
 											<div class="form-group half mb-5">
-												<input asp-for="Phone" minlength="10" maxlength="10" type="text"
+												<input value="@ViewBag.SinhVien.Phone" id="Phone" name="Phone" minlength="10" maxlength="10" type="text"
 													required />
 												<label class="control-label" for="Phone">Số điện thoại</label><i
 													class="mtrl-select"></i>
 											</div>
 											<div class="form-group half mb-5">
-												<input asp-for="Cccd" minlength="12" maxlength="12" type="text"
+												<input value="@ViewBag.SinhVien.Cccd" id="Cccd" name="Cccd" minlength="12" maxlength="12" type="text"
 													required />
 												<label class="control-label" for="Cccd">Căn cước công
 													dân(CCCD/CMND)</label><i class="mtrl-select"></i>
 											</div>
 											<div class="form-group half mb-5">
-												<input asp-for="EmailEdu" type="email" required />
+												<input value="@ViewBag.SinhVien.EmailEdu" id="EmailEdu" name="EmailEdu" type="email" required />
 												<label class="control-label" for="Phone">Email trường</label><i
 													class="mtrl-select"></i>
 											</div>
@@ -157,11 +156,11 @@
 												<input type="date" required="required" />
 												<label class="control-label" for="input">Sinh nhật</label><i class="mtrl-select"></i>
 											</div> -->
-											@if (Model.GioiTinh == true)
+											@if (ViewBag.SinhVien.GioiTinh == true)
 											{
 
 												<div class="form-group half mb-5">
-													<select class="custom-select" asp-for="GioiTinh">
+													<select class="custom-select" id="GioiTinh" name="GioiTinh">
 														<option value="true" selected style="color:red; font-weight:600">Nam
 														</option>
 														<option value="false" style=" font-weight:600">Nữ</option>
@@ -174,7 +173,7 @@
 											{
 
 												<div class="form-group half mb-5">
-													<select class="custom-select" asp-for="GioiTinh">
+													<select class="custom-select" id="GioiTinh" name="GioiTinh">
 														<option value="true" style="font-weight:600">Nam</option>
 														<option value="false" selected style="color:red; font-weight:600">Nữ
 														</option>
@@ -184,13 +183,8 @@
 												</div>
 											}
 											<div class="form-group mb-5">
-												<input asp-for="DiaChi" type="text" required />
+												<input value="@ViewBag.SinhVien.DiaChi" id="DiaChi" name="DiaChi" type="text" required />
 												<label class="control-label" for="DiaChi">Địa chỉ</label><i
-													class="mtrl-select"></i>
-											</div>
-											<div class="form-group mb-5" hidden>
-												<input asp-for="TaiKhoan" type="text" required />
-												<label class="control-label" for="TaiKhoan">Tài khoản</label><i
 													class="mtrl-select"></i>
 											</div>
 											<div class="submit-btns">
@@ -200,6 +194,90 @@
 														nhật</span></button>
 											</div>
 										</form>
+										}else{
+											<form method="post" action="/confirm-change-information">
+											<div class="form-group mb-5" hidden>
+												<input value="@ViewBag.QuanLy.MaQl" id="MaQl" name="MaQl"type="text" required />
+												<label class="control-label" for="MaQl">Mã số SV</label><i
+													class="mtrl-select"></i>
+											</div>
+											<div class="form-group half mb-5">
+												<input value="@ViewBag.QuanLy.Ho" id="Ho" name="Ho"type="text" required />
+												<label class="control-label" for="Ho">Họ</label><i
+													class="mtrl-select"></i>
+											</div>
+											<div class="form-group half mb-5">
+												<input value="@ViewBag.QuanLy.Ten" id="Ten" name="Ten" type="text" required />
+												<label class="control-label" for="Ten">Tên và tên đệm</label><i
+													class="mtrl-select"></i>
+											</div>
+											<div class="form-group half mb-5">
+												<input value="@ViewBag.QuanLy.EmailPrivate" id="EmailPrivate" name="EmailPrivate" type="email" required />
+												<label class="control-label" for="EmailPrivate"><a
+														href="https://wpkixx.com/cdn-cgi/l/email-protection"
+														class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá
+														nhân</a></label><i class="mtrl-select"></i>
+											</div>
+											<div class="form-group half mb-5">
+												<input value="@ViewBag.QuanLy.Phone" id="Phone" name="Phone" minlength="10" maxlength="10" type="text"
+													required />
+												<label class="control-label" for="Phone">Số điện thoại</label><i
+													class="mtrl-select"></i>
+											</div>
+											<div class="form-group half mb-5">
+												<input value="@ViewBag.QuanLy.Cccd" id="Cccd" name="Cccd" minlength="12" maxlength="12" type="text"
+													required />
+												<label class="control-label" for="Cccd">Căn cước công
+													dân(CCCD/CMND)</label><i class="mtrl-select"></i>
+											</div>
+											<div class="form-group half mb-5">
+												<input value="@ViewBag.QuanLy.EmailEdu" id="EmailEdu" name="EmailEdu" type="email" required />
+												<label class="control-label" for="Phone">Email trường</label><i
+													class="mtrl-select"></i>
+											</div>
+											<!--<div class="form-group half mb-xl-5">
+												<input type="date" required="required" />
+												<label class="control-label" for="input">Sinh nhật</label><i class="mtrl-select"></i>
+											</div> -->
+											@if (ViewBag.QuanLy.GioiTinh == true)
+											{
+
+												<div class="form-group half mb-5">
+													<select class="custom-select" id="GioiTinh" name="GioiTinh">
+														<option value="true" selected style="color:red; font-weight:600">Nam
+														</option>
+														<option value="false" style=" font-weight:600">Nữ</option>
+													</select>
+													<label class="control-label" for="GioiTinh">Giới tính</label>
+													<i class="mtrl-select"></i>
+												</div>
+											}
+											else
+											{
+
+												<div class="form-group half mb-5">
+													<select class="custom-select" id="GioiTinh" name="GioiTinh">
+														<option value="true" style="font-weight:600">Nam</option>
+														<option value="false" selected style="color:red; font-weight:600">Nữ
+														</option>
+													</select>
+													<label class="control-label" for="GioiTinh">Giới tính</label><i
+													class="mtrl-select"></i>
+												</div>
+											}
+											<div class="form-group mb-5">
+												<input value="@ViewBag.QuanLy.DiaChi" id="DiaChi" name="DiaChi" type="text" required />
+												<label class="control-label" for="DiaChi">Địa chỉ</label><i
+													class="mtrl-select"></i>
+											</div>
+											<div class="submit-btns">
+												<button type="button" class="mtr-btn"><a
+														href="/inforpersonal"><span>Hủy</span></a></button>
+												<button onsubmit="changInfor()" type="submit" class="mtr-btn"><span>Cập
+														nhật</span></button>
+											</div>
+										</form>
+										}
 									</div>
 								</div>
 							</div>
