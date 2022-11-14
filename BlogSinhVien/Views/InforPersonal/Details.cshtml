@@ -25,19 +25,19 @@
 <section>
 	 <!-- xd add  -->
     @if (TempData["messUpdateSuccess"] != null)
-										{
-											<script type="text/javascript" charset="utf-8">
-												window.onload = function () {
-													alert("@Html.Raw(@TempData["messUpdateSuccess"])");
-												};
-											</script>
-										}
+		{
+			<script type="text/javascript" charset="utf-8">
+				window.onload = function () {
+				alert("@Html.Raw(@TempData["messUpdateSuccess"])");
+			};
+			</script>
+		}
     <!-- xd add -->
 		<div class="feature-photo">
 			<figure><img src="images/resources/timeline-1.jpg" alt=""></figure>
 			<div class="add-btn">
-				<span>1M theo dõi</span>
-				<a href="#" title="" data-ripple="">Thêm bạn mới</a>
+				<a>Huỷ</a>
+				<a href="#" title="" data-ripple="">Đồng ý</a>
 			</div>
 			<form class="edit-phto">
 				<i class="fa fa-camera-retro"></i>
@@ -50,24 +50,25 @@
 				<div class="row merged">
 					<div class="col-lg-2 col-sm-3">
 						<div class="user-avatar">
-							<figure>
+							<figure style="max-height: 154px;">
 								@if (User.IsInRole("SV"))
 									{
-									<img src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+										<img style="max-height: 154px;" id="image-avt" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 									}
 
 									else
 									{
-									<img src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+											<img style="max-height: 154px;" id="image-avt" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 									}
 								<form class="edit-phto">
 									<i class="fa fa-camera-retro"></i>
 									<label class="fileContainer">
 										Đổi ảnh đại diện
-										<input type="file" />
+										<input onchange="readURL(this)" type="file" />
 									</label>
 								</form>
 							</figure>
+							
 						</div>
 					</div>
 				</div>
@@ -173,3 +174,17 @@
 		</div>	
 	</section>
 	</div>
+	<script>
+		function readURL(input) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+
+				reader.onload = function (e) {
+					$('#image-avt')
+						.attr('src', e.target.result);
+				};
+
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	</script>

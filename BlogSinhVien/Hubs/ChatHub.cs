@@ -17,6 +17,7 @@ namespace BlogSinhVien.Hubs
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
             string sv02;
+            string imageBase64Data;
             string imageDataURL;
             if (context.Conversation.Find(int.Parse(MaC)).MaSinhVien1 == user)
             {
@@ -28,8 +29,12 @@ namespace BlogSinhVien.Hubs
 
             }
             SinhVien sv = context.SinhVien.Find(user);
-            string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
-            imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            if (sv.HinhAnh == null) imageDataURL = "/images/avt.png";
+            else
+            {
+                imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
+                imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            }
             context.Database.ExecuteSqlRaw("insert into Message values(" + MaC + ",'" + user + "','" + sv02 + "',GETDATE(),N'" + message + "')");
 
             await Clients.All.SendAsync("ReceiveMessage", user, message, MaC, imageDataURL);
