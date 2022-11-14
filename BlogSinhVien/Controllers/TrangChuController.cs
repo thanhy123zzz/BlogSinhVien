@@ -107,7 +107,7 @@ namespace BlogSinhVien.Controllers
         {
             BlogSinhVienContext context = new BlogSinhVienContext();
             _logger.LogInformation(slbd.ToString());
-            List<BaiDang> listBD = context.BaiDang.Where(x => x.TrangThai == true).OrderByDescending(x => x.TrangThai).Take(slbd+5).ToList();
+            List<BaiDang> listBD = context.BaiDang.Where(x => x.TrangThai == true).OrderByDescending(x => x.NgayDang).Take(slbd+5).ToList();
             ViewBag.ListBD = listBD;
             ViewBag.SLBD = slbd + 5;
             return PartialView("_baiDang");

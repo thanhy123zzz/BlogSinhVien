@@ -1,10 +1,14 @@
 ﻿using BlogSinhVien.Models.Entities;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.EntityFrameworkCore;
+using MimeKit.Text;
+using MimeKit;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
@@ -12,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using MailKit.Net.Smtp;
 
 namespace BlogSinhVien.Controllers
 {
@@ -100,7 +105,86 @@ namespace BlogSinhVien.Controllers
         {
             return View("add_sv");
         }
+        [HttpPost("add-sv")]
+        [ValidateAntiForgeryToken]
+        public IActionResult InsertSV(SinhVien sv,string MatKhau)
+        {
+            if (!ModelState.IsValid)    
+            {
+                return View("add_sv");
+            }
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            context.SinhVien.Add(sv);
+            Accounts accounts = new Accounts();
+            accounts.TaiKhoan = sv.TaiKhoan;
+            accounts.MatKhau = MatKhau;
+            accounts.MaRole = "SV1";
+            context.Add(accounts);
+            context.SaveChanges();
 
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse("0850080056@sv.hcmunre.edu.vn"));
+            email.To.Add(MailboxAddress.Parse(sv.EmailEdu));
+            email.Subject = "Thông báo Tài khoản BLOG sinh viên HCMUNRE";
+            email.Body = new TextPart(TextFormat.Plain) { Text = "Tài khoản: " + sv.TaiKhoan + "\nMật khẩu: "+accounts.MatKhau };
+
+            // send email
+            using var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("0850080056@sv.hcmunre.edu.vn", "thanhy123");
+            smtp.Send(email);
+            smtp.Disconnect(true);
+
+            TempData["ThongBao"] = "Thêm sinh viên thành công!";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost("check-mssv")]
+        public bool CheckMSSV(string mssv)
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            if (context.SinhVien.Find(mssv) != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        [HttpPost("check-emailEdu")]
+        public bool CheckEmailEdu(string emailEdu)
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            if (context.SinhVien.Where(x=>x.EmailEdu==emailEdu).FirstOrDefault() != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        [Route("trangthai-sv/{taikhoan}")]
+        public IActionResult XoaSV(string taikhoan)
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            Accounts ac = context.Accounts.Find(taikhoan);
+            if (ac.TrangThai == true)
+            {
+                ac.TrangThai = false;
+                context.Accounts.Update(ac);
+            }
+            else
+            {
+                ac.TrangThai = true;
+                context.Accounts.Update(ac);
+            }
+            TempData["ThongBao"] = "Đổi trạng thái thành công!";
+            context.SaveChanges();
+            return RedirectToAction("Index");
+
+        }
         /*[HttpPost("insert-info-sv")]
         public async Task<IActionResult> insert_infor_sv(IFormFile excelFile)
         {

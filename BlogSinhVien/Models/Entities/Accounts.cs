@@ -18,6 +18,7 @@ namespace BlogSinhVien.Models.Entities
         public string TaiKhoan { get; set; }
         public string MatKhau { get; set; }
         public string MaRole { get; set; }
+        public bool? TrangThai { get; set; }
 
         public virtual Roles MaRoleNavigation { get; set; }
         public virtual ICollection<QuanLy> QuanLy { get; set; }

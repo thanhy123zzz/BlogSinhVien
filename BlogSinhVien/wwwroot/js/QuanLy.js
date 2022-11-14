@@ -43,3 +43,53 @@ function searchManagerEnter(event) {
         })
     }
 }
+function randomAccount() {
+    var emailEdu = document.getElementById("EmailEdu").value;
+    $.ajax({
+        type: 'POST',
+        url: '/managerment/check-emailEdu',
+        data: "emailEdu=" + emailEdu,
+        success: function (result) {
+            if (result) {
+                document.getElementById("validation-emailEdu").style.display = "block";
+                document.getElementById("btn-add").disabled = true;
+            }
+            else {
+                document.getElementById("validation-emailEdu").style.display = "none";
+                document.getElementById("btn-add").disabled = false;
+                document.getElementById("taiKhoan").value = emailEdu.substring(0, 10);
+                document.getElementById("MatKhau").value = Math.floor(Math.random() * (999999 - 100000)) + 100000;
+            }
+        },
+        error: function (result) {
+            alert('Lỗi!');
+        }
+    });
+}
+
+function checkMSSV() {
+    var mssv = document.getElementById("MSSV").value;
+    $.ajax({
+        type: 'POST',
+        url: '/managerment/check-mssv',
+        data: "mssv=" + mssv,
+        success: function (result) {
+            if (result) {
+                document.getElementById("validation-mssv").style.display = "block";
+                document.getElementById("btn-add").disabled = true;
+            }
+            else {
+                document.getElementById("validation-mssv").style.display = "none";
+                document.getElementById("btn-add").disabled = false;
+            }
+        },
+        error: function (result) {
+            alert('Lỗi!');
+        }
+    });
+}
+
+function checkEmailEdu() {
+    var emailEdu = document.getElementById("EmailEdu").value;
+    
+}
