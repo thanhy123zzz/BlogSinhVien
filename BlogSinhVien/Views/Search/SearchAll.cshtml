@@ -54,43 +54,21 @@
             width: 60px;
         }
     </style>
-    <div class="container my-5 py-5" id="students">
-        <div class="row d-flex justify-content-center">
-            <div class="card-bodyy col-md-12 col-lg-10">
-                <h4 class="mb-4 pt-4 pb-2 ">Sinh viên</h4>
-                <div class="card text-dark">
-                                @* @if (@bd.MaQl != null && @bd.MaSinhVien == null)
-                                {
-                                    @foreach (var item in @ViewBag.listQL)
-                                    {
-                                         @* var listQLnew = new List<QuanLy>();
-                                            if(listQLnew.Contains(@item) == false){
-                                                listQLnew.Add(@item);
-                                            }
-                                        @if (@item.MaQl == @bd.MaQl)
-                                        {
-                                            <img class="rounded-circle shadow-1-strong me-3 mr-4"
-                                src="@getImage(getQuanLy(@bd.MaQl).HinhAnh)" alt="">
-                                            <div>
-                                                <h6 class="fw-bold mb-1">@item.Ho @item.Ten</h6>
-                                                <div class="d-flex align-items-center mb-3">
-                                                    @if (@item.GioiTinh == true)
-                                                    {
-                                                        <p class="mb-0">Nam</p>
-                                                    }
-                                                    else
-                                                    {
-                                                        <p class="mb-0">Nữ</p>
-                                                    }
-                                                </div>
-                                                <p class="mb-0">
-                                                    @item.DiaChi
-                                                </p>
-                                                <span class="text-center"><a href="#"><i class="fa fa-comments" aria-hidden="true"></i> Trò chuyện ngay</a></span>
-                                            </div>
-                                        }
-                                    }
-                                } *@
+    <div class="gap2 gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row merged20" id="page-contents">
+							<div class="col-lg-2">
+							</div><!-- sidebar -->
+							<div class="col-lg-8">
+								<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
+									@* <div class="new-postbox" style="border-bottom: 2px solid #8be594;"> *@
+										<h3 class="ml-2">Sinh viên</h3>
+									@* </div> *@
+                                </div> 
+                                @*  *@
+                                <div class="card text-dark">
                                     @foreach (var item in @ViewBag.listSV)
                                     {
                                             <div class="card-body p-4">
@@ -119,114 +97,130 @@
                                             </div>
                                             </div>
                                         }
-                                
-                    <h1 class="text-center text-blogBTM">@ViewBag.messSearch</h1>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="container my-5 py-5" style="transform: -50%;" id="posts">
-        <div class="row d-flex justify-content-center">
-            <div class="card-bodyy col-md-12 col-lg-10">
-                <h4 class="mb-4 pt-4 pb-2 ">Bài viết</h4>
-                <div class="card text-dark">
-                    @foreach (var bd in (IEnumerable<BaiDang>)TempData["listBaiDang"])
-                    {
-                        <div class="card-body p-4">
-                            @* <p class="fw-light mb-4 pb-2">Latest Comments section by users</p> *@
-                            <div class="d-flex flex-start">
-                                @if (@bd.MaQl != null && @bd.MaSinhVien == null)
-                                {
-                                    <img class="rounded-circle shadow-1-strong me-3 mr-4"
-                                src="@getImage(getQuanLy(@bd.MaQl).HinhAnh)" alt="">
-                                }
-                                else if (@bd.MaQl == null && @bd.MaSinhVien != null)
-                                {
-                                    <img class="rounded-circle shadow-1-strong me-3 mr-4"
-                                src="@getImage(getSinhVien(@bd.MaSinhVien).HinhAnh)" alt="">
-                                }
+                    <h1 class="text-center text-blogBTM p-4">@ViewBag.messSearch</h1>
 
-                                @* <img class="rounded-circle shadow-1-strong me-3 mr-4"
-                                    src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt=""> *@
-                                <div>
-                                    @if (@bd.MaQl != null && @bd.MaSinhVien == null)
-                                    {
-                                        @foreach (var item in @ViewBag.listQL)
-                                        {
-                                            @if (@item.MaQl == @bd.MaQl)
-                                            {
-                                                <h6 class="fw-bold mb-1">@item.Ho @item.Ten</h6>
-                                            }
-                                        }
-                                    }
-                                    else if (@bd.MaQl == null && @bd.MaSinhVien != null)
-                                    {
-                                        @foreach (var item in @ViewBag.listSV)
-                                        {
-                                            @if (@item.MaSv == @bd.MaSinhVien)
-                                            {
-                                                <h6 class="fw-bold mb-1">@item.Ho @item.Ten</h6>
-                                            }
-                                        }
-                                    }
-
-                                    <div class="d-flex align-items-center mb-3">
-                                        <p class="mb-0">@bd.NgayDang</p>
-                                    </div>
-                                    <p class="mb-0">@bd.Content
-                                    </p>
-                                    <span class="comment" data-toggle="tooltip" title="Comments">
-																<i class="fa fa-comments-o"></i>
-																	<ins id="sl_cmt_@bd.MaBaiDang">@binhLuans(bd.MaBaiDang).Count()</ins>
-															</span>
-                                    @*  *@
-                                            <div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
-												@foreach(ChiTietBaiDang ct in chiTietBaiDangs(@bd.MaBaiDang)){
-													@if (ct.Type.Trim().EndsWith("/png") || ct.Type.Trim().EndsWith("/jpeg") || ct.Type.Trim().EndsWith("/jpg"))
+                                @*  *@
+                                </div> 
+                                </div> </div></div> </div> </div> </div> </div>
+    @*  *@
+    <div class="gap2 gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row merged20" id="page-contents">
+							<div class="col-lg-2">
+							</div><!-- sidebar -->
+							<div class="col-lg-8">
+								<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
+									@* <div class="new-postbox" style="background-color: #8be594;"> *@
+										<h3 class="ml-2">Bài viết</h3>
+									@* </div> *@
+									<div class="user-post" id="user-post-new" style="display:none;">
+										<div class="friend-info">
+											<div id="imagePreview" class="post-meta imagePreview" style="display:flex; justify-content: space-around; flex-flow: wrap;">
+											
+											
+											</div>
+											<div class="post-meta" style="display:flex;justify-content:center;">
+												<button onclick="close_imagepreview()" type="button" class="btn btn-danger">
+													<i class="fa fa-close"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div><!-- add post new box -->
+								<div id="loadMore" class="loadMore">
+									<input style="display:none;" value="5" id="sl_bd">
+								@foreach(BaiDang bd in (IEnumerable<BaiDang>)TempData["listBaiDang"]){
+									<div class="central-meta item">
+									<div class="user-post">
+										<div class="friend-info">
+											<figure>
+											
+												@if (bd.MaSinhVien != null)
+												{
+													<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+												}
+												else
+												{
+													<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
+												}
+											</figure>
+											<div class="friend-name">
+														
+												@if (bd.MaSinhVien != null)
+												{
+													<ins><a href="time-line.html" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
+												}
+												else
+												{
+													<ins><a href="time-line.html" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
+												}
+												<span>@bd.NgayDang</span>
+											</div>
+											<div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
+												@foreach(ChiTietBaiDang item in chiTietBaiDangs(bd.MaBaiDang)){
+													@if (item.Type.Trim().EndsWith("/png") || item.Type.Trim().EndsWith("/jpeg") || item.Type.Trim().EndsWith("/jpg"))
 														{
-															<img style="margin-bottom:10px;" width="32%" src="@getImage(ct.Files)" alt="@ct.NameFile">
+															<img style="margin-bottom:10px;" width="32%" src="@getImage(item.Files)" alt="@item.NameFile">
 														}
-													@if (ct.Type.Trim().EndsWith("/mp4"))
+													@if (item.Type.Trim().EndsWith("/mp4"))
 														{
-															<video style="margin-bottom:10px;" controls width="32%" src="@getVideo(ct.Files)"></video>
+															<video style="margin-bottom:10px;" controls width="32%" src="@getVideo(item.Files)"></video>
 														}
-														@if (ct.Type.Trim().EndsWith(".document"))
+														@if (item.Type.Trim().EndsWith(".document"))
 														{
-															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@ct.NameFile.Trim()&loaiFile=@ct.Type.Trim()" class="btn btn-light" 
+															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" 
 															style="white-space:normal;margin-bottom:10px; max-height:60px">
 																<i class="fa fa-file-word-o">
 																</i>
-																@ct.NameFile.Trim()
+																@item.NameFile.Trim()
 															</a>
 														}
-														@if (ct.Type.Trim().EndsWith("/pdf"))
+														@if (item.Type.Trim().EndsWith("/pdf"))
 														{
-																<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@ct.NameFile.Trim()&loaiFile=@ct.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+																<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
 																<i class="fa fa-file-excel-o">
 																</i>
-																@ct.NameFile.Trim()
+																@item.NameFile.Trim()
 															</a>
 														}
-														@if (ct.Type.Trim().EndsWith(".sheet"))
+														@if (item.Type.Trim().EndsWith(".sheet"))
 														{
-															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@ct.NameFile.Trim()&loaiFile=@ct.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
 																<i class="fa fa-file-pdf-o">
 																</i>
-																@ct.NameFile.Trim()
+																@item.NameFile.Trim()
 															</a>
 														}
-														@if (ct.Type.Trim().EndsWith(".presentation"))
+														@if (item.Type.Trim().EndsWith(".presentation"))
 														{
-																		<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@ct.NameFile.Trim()&loaiFile=@ct.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+																		<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
 																<i class="fa fa-file-powerpoint-o">
 																</i>
-																@ct.NameFile.Trim()
+																@item.NameFile.Trim()
 															</a>
 														}
 												}
+												<div class="we-video-info">
+													<ul>
+														<li>
+															<span class="comment" data-toggle="tooltip" title="Comments">
+																<i class="fa fa-comments-o"></i>
+																	<ins id="sl_cmt_@bd.MaBaiDang">@binhLuans(bd.MaBaiDang).Count()</ins>
+															</span>
+														</li>
+													</ul>
+												</div>
+												<div class="description">
+													<p>
+														@bd.Content
+													</p>
+												</div>
 											</div>
-                                            @*  *@
-                                            <div class="coment-area">
+										</div>
+										<div class="coment-area">
 											<ul class="we-comet" id="list_cmt_@bd.MaBaiDang">
 												@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
 												{
@@ -276,11 +270,11 @@
 													<div class="comet-avatar">
 														@if (User.IsInRole("SV"))
 														{
-															<img width="50" height="50" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img width="50px" height="50px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 														}
 														else
 														{
-															<img width="50" height="50" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img width="50px" height="50px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 														}
 
 													</div>
@@ -296,16 +290,23 @@
 												</li>
 											</ul>
 										</div>
-                                            @*  *@
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    <h1 class="text-center text-blogBTM">@ViewBag.messSearch</h1>
-                </div>
-            </div>
-        </div>
-    </div>
+									</div>
+								</div>
+								}
+								</div>
+                                @if(@ViewBag.messSearch == "" || @ViewBag.messSearch == null){
+								<button onclick="load_More_BD()" class="btn-view btn-load-more"></button>
+                                }
+                                <h1 class="text-center text-blogBTM p-4">@ViewBag.messSearch</h1>
+							</div><!-- centerl meta -->
+							<div class="col-lg-2">
+							</div><!-- sidebar -->
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>	
+    @*  *@
 </section>
 <style>
     p{
@@ -327,9 +328,9 @@
             width: 60px;
         }
 
-        .card-bodyy {
-            background: #ffff none repeat scroll 0 0;
-            border: 1px solid #ede9e9;
+         .card-bodyy {
+            /*background: #ffff none repeat scroll 0 0;
+            border: 1px solid #ede9e9; */
             border-radius: 3px;
             display: inline-block;
             width: 100%;
@@ -349,7 +350,7 @@
             width: 100%;
         }
 
-        #students .card-body:hover {
+        .card-body:hover {
             background-color: #8be594;
         }
         .card-body span > a:hover{
@@ -363,7 +364,7 @@
     position: absolute;
     text-decoration: none;
         }
-        .post-meta img{
+        /* .post-meta img{
             height: 50% !important;
             max-height: fit-content;
             width: 50% !important;
@@ -371,7 +372,7 @@
         .post-meta video{
             height: auto;
             width: 100%;
-        }
+        }  */
         @* .post-comt-box img{
             height: fit-content !important;
             width: 50px !important;
