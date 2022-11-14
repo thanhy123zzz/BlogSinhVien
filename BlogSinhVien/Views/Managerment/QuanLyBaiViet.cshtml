@@ -81,7 +81,14 @@
 	}
 }
 
-
+@if (TempData["ThongBao"]!=null)
+{
+	<script type="text/javascript" charset="utf-8">
+		window.onload = function () {
+			alert("@Html.Raw(@TempData["ThongBao"])");
+		};
+	</script>
+}
 <div class="gap2 gray-bg">
 			<div class="container-fluid">
 				<div class="row">
@@ -309,6 +316,7 @@
 													<th>Email trường</th>
 													<th>Tài khoản</th>
 													<th>Mật khẩu</th>
+													<th>Trạng thái</th>
 													<th>Thao tác</th>
 												</tr>
 											</thead>
@@ -320,7 +328,15 @@
 													<td>@sv.EmailEdu</td>
 													<td>@sv.TaiKhoan</td>
 													<td>@getAccount(sv.TaiKhoan).MatKhau</td>
-													<td><button class="btn btn-danger" style="border-radius:unset">Xoá</button></td>
+													<td>
+														@getAccount(sv.TaiKhoan).TrangThai
+													</td>
+													@if(@getAccount(sv.TaiKhoan).TrangThai==true){
+														<td><a href="/managerment/trangthai-sv/@sv.TaiKhoan" onclick="return confirm('Bạn có muốn khoá sinh viên này?')" class="btn btn-danger">Khoá</a></td>
+													}
+													else{
+														<td><a href="/managerment/trangthai-sv/@sv.TaiKhoan" onclick="return confirm('Bạn có muốn khôi phục sinh viên này?')" class="btn btn-success">Khôi phục</a></td>
+													}
 												</tr>
 												}
 											</tbody>

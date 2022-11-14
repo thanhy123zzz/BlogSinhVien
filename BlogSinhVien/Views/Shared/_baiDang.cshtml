@@ -48,14 +48,15 @@
 			<div class="central-meta item">
 					<div class="user-post">
 					<div class="friend-info">
-												<figure>
-						@if (User.IsInRole("SV"))
+					<figure>
+
+						@if (bd.MaSinhVien != null)
 						{
-													<img width="70px" height="70px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
 						}
 						else
 						{
-													<img width="70px" height="70px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
 						}
 												</figure>
 												<div class="friend-name">

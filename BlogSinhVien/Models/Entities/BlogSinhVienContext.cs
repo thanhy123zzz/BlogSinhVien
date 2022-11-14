@@ -29,14 +29,13 @@ namespace BlogSinhVien.Models.Entities
         public virtual DbSet<QuanLy> QuanLy { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<SinhVien> SinhVien { get; set; }
-        public virtual DbSet<TestTable> TestTable { get; set; }
         public virtual DbSet<Vote> Vote { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Data Source=LAPTOP-FPKNLS6A\\SQLEXPRESS;Initial Catalog=BlogSinhVien;Persist Security Info=True;User ID=sa;Password=123456");
             }
         }
@@ -348,19 +347,6 @@ namespace BlogSinhVien.Models.Entities
                     .WithMany(p => p.SinhVien)
                     .HasForeignKey(d => d.TaiKhoan)
                     .HasConstraintName("FK__SinhVien__TaiKho__656C112C");
-            });
-
-            modelBuilder.Entity<TestTable>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("testTable");
-
-                entity.Property(e => e.A).HasColumnName("a");
-
-                entity.Property(e => e.Ngay)
-                    .HasColumnName("ngay")
-                    .HasColumnType("date");
             });
 
             modelBuilder.Entity<Vote>(entity =>

@@ -57,7 +57,7 @@ namespace BlogSinhVien.Controllers
             {
                 return Redirect("/login");
             }
-            if (a.MatKhau.Trim().Equals(accounts.MatKhau.Trim()))
+            if (a.MatKhau.Trim().Equals(accounts.MatKhau.Trim())&&a.TrangThai==true)
             {
                 await SignInUser(a);
                 if (string.IsNullOrWhiteSpace(returnUrl) || !returnUrl.StartsWith("/"))
