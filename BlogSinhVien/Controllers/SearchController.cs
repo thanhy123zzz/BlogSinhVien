@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BlogSinhVien.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -87,6 +88,7 @@ namespace BlogSinhVien.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "QL,SV")]
         [Route("/profile/{maSV}")]
         public IActionResult Profile(string maSV){
             var _context = new BlogSinhVienContext();
