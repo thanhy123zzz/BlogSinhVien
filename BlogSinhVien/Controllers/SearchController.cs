@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BlogSinhVien.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,23 +67,37 @@ namespace BlogSinhVien.Controllers
             string masv1 = User.FindFirst("MaSV").Value;
             var _context = new BlogSinhVienContext();
             var list = _context.Conversation.FromSqlRaw($"SELECT *  FROM [BlogSinhVien].[dbo].[Conversation] Where MaSinhVien1 = '"+masv1+"' and MaSinhVien2 = '"+maSV+"';").ToList();        
+            var list2 = _context.Conversation.FromSqlRaw($"SELECT *  FROM [BlogSinhVien].[dbo].[Conversation] Where MaSinhVien1 = '"+maSV+"' and MaSinhVien2 = '"+masv1+"';").ToList();        
             Console.WriteLine(list.Count);
             var conversation = new Conversation();
             conversation.MaSinhVien1 = masv1;
             conversation.MaSinhVien2 = maSV;
-            if(list.Count > 0){
-                return RedirectToAction("Index","Messages");
-            }else{
+            if(list.Count <= 0 && list2.Count <= 0){
                 _context.Conversation.Add(conversation);
                 // _context.Conversation.FromSqlRaw($"Insert into [BlogSinhVien].[dbo].[Conversation](MaSinhVien1,MaSinhVien2) values('"+masv1+"','"+maSV+"');");
                 _context.SaveChanges();
                 return RedirectToAction("Index","Messages");
+            }else{
+                return RedirectToAction("Index","Messages");
+                
             }
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View("Error!");
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = "QL,SV")]
+        [Route("/profile/{maSV}")]
+        public IActionResult Profile(string maSV){
+            var _context = new BlogSinhVienContext();
+            var stu = _context.SinhVien.FirstOrDefault(x => x.MaSv == maSV);
+            var list =  _context.BaiDang.Where(x => x.MaSinhVien == maSV).ToList();
+            ViewBag.ListPost = list;
+            return View(stu);
         }
     }
 }

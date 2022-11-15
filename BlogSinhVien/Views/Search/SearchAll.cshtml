@@ -76,7 +76,7 @@
                                             <img class="rounded-circle shadow-1-strong me-3 mr-4"
                                 src="@getImage(getSinhVien(@item.MaSv).HinhAnh)" alt="">
                                             <div>
-                                                <h6 class="fw-bold mb-1">@item.Ho @item.Ten</h6>
+                                                <h5 class="fw-bold mb-1"><a style="text-decoration: ;none;" href="/profile/@item.MaSv">@item.Ho @item.Ten</a></h5>
                                                 <div class="d-flex align-items-center mb-3">
                                                     @if (@item.GioiTinh == true)
                                                     {
@@ -151,11 +151,11 @@
 														
 												@if (bd.MaSinhVien != null)
 												{
-													<ins><a href="time-line.html" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
+													<ins><a href="/profile/@bd.MaSinhVien" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
 												}
 												else
 												{
-													<ins><a href="time-line.html" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
+													<ins><a href="#" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
 												}
 												<span>@bd.NgayDang</span>
 											</div>
@@ -241,7 +241,7 @@
 																}
 																else
 																{
-																	<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
+																	<h5><a href="#" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
 																}
 																	<span>@bl.NgayDang</span>
 																		<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>

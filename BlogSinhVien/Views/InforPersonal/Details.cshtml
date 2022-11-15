@@ -1,6 +1,9 @@
-﻿@model BlogSinhVien.Models.Entities.SinhVien
-@{
-    ViewData["Title"] = @Model.Ho +" "+ @Model.Ten;
+﻿@{
+	if(ViewBag.SinhVien != null){
+    ViewData["Title"] = ViewBag.SinhVien.Ho +" "+ ViewBag.SinhVien.Ten;
+	}else{
+    ViewData["Title"] = ViewBag.QuanLy.Ho +" "+ ViewBag.QuanLy.Ten;
+	}
     Layout = "~/Views/Shared/_Layout.cshtml";
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
@@ -113,49 +116,45 @@
 											}
 										</style>
 										<h5 class="f-title"><i class="ti-info-alt"></i> Thông tin cá nhân</h5>
-
-										<form method="post">
+										@if(ViewBag.SinhVien != null){
+											<form method="post">
 											<div class="row">
 											<div class=" col-12 mb-5">
 												<label class="control-label">Họ và tên</label><br>
-												<input class="input-group" value="@Model.Ho @Model.Ten" type="text" id="Ho" readonly/>
+												<input class="input-group" value="@ViewBag.SinhVien.Ho @ViewBag.SinhVien.Ten" type="text" id="Ho" readonly/>
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>
 
-												<input class="input-group" asp-for="EmailPrivate" type="text" readonly />
+												<input class="input-group" value="@ViewBag.SinhVien.EmailPrivate" type="text" readonly />
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label" for="Phone">Số điện thoại</label><br>
-												<input class="input-group" asp-for="Phone" type="text" readonly />
+												<input class="input-group" value="@ViewBag.SinhVien.Phone" type="text" readonly />
 											</div>
                                             <div class=" col-6 mb-5">
 												<label class="control-label" for="Cccd">Căn cước công dân(CCCD/CMND)</label><br>
-												<input class="input-group" asp-for="Cccd" type="text" readonly />
+												<input class="input-group" value="@ViewBag.SinhVien.Cccd" type="text" readonly />
                                               </div>
                                               <div class=" col-6 mb-5">
 												<label class="control-label" for="Phone">Email trường</label><br>
-												<input class="input-group" asp-for="EmailEdu" type="text" readonly />
+												<input class="input-group" value="@ViewBag.SinhVien.EmailEdu" type="text" readonly />
                                               </div>
-                                              <div class=" col-6 mb-5">
-                                                <label class="control-label" for="input">Sinh nhật</label><br>
-												<input class="input-group" type="date" required/>
-                                              </div>
-											  @if(Model.GioiTinh == true){
+											  @if(@ViewBag.SinhVien.GioiTinh == true){
 												<div class=" col-6 mb-5">
 													<label class="control-label" for="GioiTinh">Giới tính</label><br>
-													<input class="input-group" asp-for="GioiTinh" value="Nam" type="text" readonly />
+													<input class="input-group" value="Nam" type="text" readonly />
 												</div>
 											  }else{
 												<div class=" col-6 mb-5">
 													<label class="control-label" for="GioiTinh">Giới tính</label><br>
-													<input class="input-group" asp-for="GioiTinh" value="Nữ" type="text" readonly />
+													<input class="input-group" value="Nữ" type="text" readonly />
 												</div>
 											  }
 											  
 											<div class="col-12 mb-5">
 											  <label class="control-label" for="DiaChi">Địa chỉ</label><br>
-												<input class="input-group" asp-for="DiaChi" type="text" readonly />
+												<input class="input-group" value="@ViewBag.SinhVien.DiaChi" type="text" readonly />
 											</div>
 											</div>
 											<!--<div class="submit-btns">
@@ -164,7 +163,56 @@
 													<button type="button" class="mtr-btn"><span>Cập nhật</span></button>
 											</div> -->
 										</form>
-									</div>
+
+										}else if(ViewBag.QuanLy != null){
+											<form method="post">
+											<div class="row">
+											<div class=" col-12 mb-5">
+												<label class="control-label">Họ và tên</label><br>
+												<input class="input-group" value="@ViewBag.QuanLy.Ho @ViewBag.QuanLy.Ten" type="text" id="Ho" readonly/>
+											</div>
+											<div class=" col-6 mb-5">
+												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>
+
+												<input class="input-group" value="@ViewBag.QuanLy.EmailPrivate" type="text" readonly />
+											</div>
+											<div class=" col-6 mb-5">
+												<label class="control-label" for="Phone">Số điện thoại</label><br>
+												<input class="input-group" value="@ViewBag.QuanLy.Phone" type="text" readonly />
+											</div>
+                                            <div class=" col-6 mb-5">
+												<label class="control-label" for="Cccd">Căn cước công dân(CCCD/CMND)</label><br>
+												<input class="input-group" value="@ViewBag.QuanLy.Cccd" type="text" readonly />
+                                              </div>
+                                              <div class=" col-6 mb-5">
+												<label class="control-label" for="Phone">Email trường</label><br>
+												<input class="input-group" value="@ViewBag.QuanLy.EmailEdu" type="text" readonly />
+                                              </div>
+											  @if(@ViewBag.QuanLy.GioiTinh == true){
+												<div class=" col-6 mb-5">
+													<label class="control-label" for="GioiTinh">Giới tính</label><br>
+													<input class="input-group" value="Nam" type="text" readonly />
+												</div>
+											  }else{
+												<div class=" col-6 mb-5">
+													<label class="control-label" for="GioiTinh">Giới tính</label><br>
+													<input class="input-group" value="Nữ" type="text" readonly />
+												</div>
+											  }
+											  
+											<div class="col-12 mb-5">
+											  <label class="control-label" for="DiaChi">Địa chỉ</label><br>
+												<input class="input-group" value="@ViewBag.QuanLy.DiaChi" type="text" readonly />
+											</div>
+											</div>
+											<!--<div class="submit-btns">
+
+												<button type="button" class="mtr-btn"><span>Hủy</span></button>
+													<button type="button" class="mtr-btn"><span>Cập nhật</span></button>
+											</div> -->
+										</form>
+										}
+										</div>
 								</div>	
 							</div>
 						</div>	
