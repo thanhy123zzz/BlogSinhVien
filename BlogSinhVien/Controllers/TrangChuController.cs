@@ -112,7 +112,18 @@ namespace BlogSinhVien.Controllers
             ViewBag.SLBD = slbd + 5;
             return PartialView("_baiDang");
         }
-
+        // xd add 
+        [HttpPost("load-more-bdcaNhan")]
+        public IActionResult load_more_bdcaNhan(int slbd,string maSV)
+        {
+            BlogSinhVienContext context = new BlogSinhVienContext();
+            _logger.LogInformation(slbd.ToString());
+            List<BaiDang> listBD = context.BaiDang.Where(x => x.TrangThai == true && x.MaSinhVien == maSV).OrderByDescending(x => x.NgayDang).Take(slbd+5).ToList();
+            ViewBag.ListBD = listBD;
+            ViewBag.SLBD = slbd + 5;
+            return PartialView("_baiDang");
+        }
+        // end
         public IActionResult Edit(String? id)
         {
             BlogSinhVienContext context = new BlogSinhVienContext();

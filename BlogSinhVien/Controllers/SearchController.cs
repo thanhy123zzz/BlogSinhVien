@@ -33,7 +33,7 @@ namespace BlogSinhVien.Controllers
             
             var list  = _context.BaiDang.FromSqlRaw($"(select MaBaiDang,bd.MaSinhVien,bd.MaQL,bd.NgayDang,TrangThai, CAST(bd.Content AS NVARCHAR(MAX)) as 'content' from BaiDang bd join SinhVien sv on sv.MaSV = bd.MaSinhVien Where CONCAT_WS(' ',Content,sv.Ho,sv.Ten)  like N'%"+search+"%')"
               +"union"
-              +"(select MaBaiDang,bd.MaSinhVien,bd.MaQL,bd.NgayDang,TrangThai,CAST(bd.Content AS NVARCHAR(MAX)) from BaiDang bd join QuanLy ql on ql.MaQL = bd.MaQL Where CONCAT_WS(' ',Content,ql.Ho,ql.Ten)  like N'%"+search+"%');").ToList();
+              +"(select MaBaiDang,bd.MaSinhVien,bd.MaQL,bd.NgayDang,TrangThai,CAST(bd.Content AS NVARCHAR(MAX)) from BaiDang bd join QuanLy ql on ql.MaQL = bd.MaQL Where CONCAT_WS(' ',Content,ql.Ho,ql.Ten)  like N'%"+search+"%') order by bd.NgayDang DESC;").ToList();
             var list2 = _context.SinhVien.ToList();
             var list3 = _context.QuanLy.ToList();
             var listnewsv = new List<SinhVien>(); 
@@ -95,7 +95,7 @@ namespace BlogSinhVien.Controllers
         public IActionResult Profile(string maSV){
             var _context = new BlogSinhVienContext();
             var stu = _context.SinhVien.FirstOrDefault(x => x.MaSv == maSV);
-            var list =  _context.BaiDang.Where(x => x.MaSinhVien == maSV).ToList();
+            var list =  _context.BaiDang.Where(x => x.MaSinhVien == maSV).OrderByDescending(x => x.NgayDang).ToList();
             ViewBag.ListPost = list;
             return View(stu);
         }

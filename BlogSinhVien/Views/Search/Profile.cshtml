@@ -159,7 +159,6 @@
 									</div>
 								</div><!-- add post new box -->
 								<div id="loadMore" class="loadMore">
-									<input style="display:none;" value="5" id="sl_bd">
 								@foreach(BaiDang bd in ViewBag.ListPost){
 									<div class="central-meta item">
 									<div class="user-post">
@@ -322,9 +321,6 @@
 								</div>
 								}
 								</div>
-                                @if(@ViewBag.messSearch == "" || @ViewBag.messSearch == null){
-								<button onclick="load_More_BD()" class="btn-view btn-load-more"></button>
-                                }
                                 <h1 class="text-center text-blogBTM p-4">@ViewBag.messSearch</h1>
 					</div>
 				</div>

@@ -192,7 +192,23 @@ function load_More_BD() {
         }
     })
 }
-
+// 
+function load_More_BDCaNhan(maSV) {
+    var sl_bd = $('#sl_bd').val();
+    console.log(sl_bd);
+    $.ajax({
+        type: 'POST',
+        url: '/load-more-bdcaNhan',
+        data: "slbd=" + sl_bd,"maSV=":maSV,
+        success: function (result) {
+            $('#loadMore').replaceWith(result);
+        },
+        error: function (result) {
+            alert('Lỗi!');
+        }
+    })
+}
+// 
 function vote(MaBD, MaCmt, MaUser) {
     connection.invoke("Vote", MaBD, MaCmt, MaUser).catch(function (err) {
         return console.error(err.toString());
