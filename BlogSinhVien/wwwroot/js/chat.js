@@ -14,7 +14,7 @@ connection.on("ReceiveMessage", function (user, message, MaC, imageDataURL) {
         }
         else {
             li.className = "you";
-            $(li).append("<figure><img src='" + imageDataURL +"'></figure><p>" + message + "</p >");
+            $(li).append("<figure><img width='32px' style='max - height: 32px; max - width: 32px;' src='" + imageDataURL +"'></figure><p>" + message + "</p >");
         }
         document.getElementById("messagesList").appendChild(li);
         var objDiv = document.getElementById("messagesList");
