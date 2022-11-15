@@ -5,9 +5,13 @@
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
 	{
-		if (image == null) return "images/avt.png";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+		string imageDataURL = "";
+		if (image == null) imageDataURL = "/images/avt.png";
+            else
+            {
+                string imageBase64Data = Convert.ToBase64String(image);
+                imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            }
 		return imageDataURL;
 	}
 	SinhVien getSinhVien(string maSV){
@@ -51,14 +55,13 @@
 						<div class="user-avatar">
 							<figure style="max-height: 154px;">
 								@if (User.IsInRole("SV"))
-									{
-										<img style="max-height: 154px;" id="image-avt" src="/@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-									}
-
-									else
-									{
-									<img style="width:70px; height:70px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-									}
+										{
+											<img src="@getImage(getSinhVien(Model.MaSv).HinhAnh)" alt="">
+										}
+										else
+										{
+											<img width="70px" height="70px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+										}
 							</figure>
 							
 						</div>
@@ -85,6 +88,9 @@
 												border-bottom: 2px solid #8be594;
 												padding: 1%;
 												
+											}
+											span > a:hover{
+												color: #8be594;
 											}
 										</style>
 										<h5 class="f-title">@Model.Ho @Model.Ten</h5>
@@ -115,11 +121,9 @@
 												<input class="input-group" asp-for="DiaChi" type="text" readonly />
 											</div>
 											</div>
-											<!--<div class="submit-btns">
-
-												<button type="button" class="mtr-btn"><span>Hủy</span></button>
-													<button type="button" class="mtr-btn"><span>Cập nhật</span></button>
-											</div> -->
+											@if(Model.MaSv != User.FindFirst("MaSV").Value){
+                                                <span class="text-center"><a href="/chat/@Model.MaSv"><i class="fa fa-comments" aria-hidden="true"></i> Trò chuyện ngay</a></span>
+                                                }
 										</form>
 									</div>
 								</div>	
@@ -164,11 +168,11 @@
 											
 												@if (bd.MaSinhVien != null)
 												{
-													<img style="width:70px; height:70px" src="/@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+													<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
 												}
 												else
 												{
-													<img style="width:70px; height:70px" src="/@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
+													<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
 												}
 											</figure>
 											<div class="friend-name">
@@ -252,9 +256,9 @@
 														<div class="comet-avatar">
 															@if (bl.MaSinhVien != null)
 															{
-																<img style="width:50px; height:50px" src="/@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+																<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
 															}else{
-																<img style="width:50px; height:50px" src="/@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+																<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
 															}
 														</div>
 														<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
@@ -294,11 +298,11 @@
 													<div class="comet-avatar">
 														@if (User.IsInRole("SV"))
 														{
-															<img width="50px" height="50px" src="/@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img width="50px" height="50px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 														}
 														else
 														{
-															<img width="50px" height="50px" src="/@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img width="50px" height="50px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 														}
 
 													</div>
@@ -341,3 +345,4 @@
 			}
 		}
 	</script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
