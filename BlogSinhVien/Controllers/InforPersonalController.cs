@@ -3,15 +3,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 
 namespace BlogSinhVien.Controllers
 {
     public class InforPersonalController : Controller
     {
+        private readonly ILogger<InforPersonalController> _logger;
+        public InforPersonalController(ILogger<InforPersonalController> logger)
+        {
+            _logger = logger;
+        }
         [HttpGet]
         [Route("/inforpersonal")]
         [Authorize(Roles = "QL,SV")]
@@ -169,6 +177,23 @@ namespace BlogSinhVien.Controllers
                 return RedirectToAction("Details", "InforPersonal");
             }
             return View();
+        }
+        [Route("update-avt")]
+        public bool updateAvt(IList<IFormFile> files)
+        {
+            var _context = new BlogSinhVienContext();
+            if (files != null)
+            {
+                MemoryStream ms = new MemoryStream();
+                files[0].CopyTo(ms);
+                string sql = "update SinhVien set HinhAnh = {0} where MaSV = {1}";
+                _context.Database.ExecuteSqlRaw(sql, ms.ToArray(), User.FindFirst("MaSV").Value);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
