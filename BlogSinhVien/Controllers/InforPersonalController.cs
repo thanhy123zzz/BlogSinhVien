@@ -181,19 +181,28 @@ namespace BlogSinhVien.Controllers
         [Route("update-avt")]
         public bool updateAvt(IList<IFormFile> files)
         {
-            var _context = new BlogSinhVienContext();
-            if (files != null)
-            {
-                MemoryStream ms = new MemoryStream();
-                files[0].CopyTo(ms);
-                string sql = "update SinhVien set HinhAnh = {0} where MaSV = {1}";
-                _context.Database.ExecuteSqlRaw(sql, ms.ToArray(), User.FindFirst("MaSV").Value);
+
+                var _context = new BlogSinhVienContext();
+                if (files != null)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    files[0].CopyTo(ms);
+                   if (User.IsInRole("SV"))
+                    {
+                    string sql = "update SinhVien set HinhAnh = {0} where MaSV = {1}";
+                    _context.Database.ExecuteSqlRaw(sql, ms.ToArray(), User.FindFirst("MaSV").Value);
+                }
+                else
+                {
+                    string sql = "update QuanLy set HinhAnh = {0} where MaQL = {1}";
+                    _context.Database.ExecuteSqlRaw(sql, ms.ToArray(), User.FindFirst("MaSV").Value);
+                }
                 return true;
-            }
-            else
-            {
-                return false;
-            }
+                }
+                else
+                {
+                    return false;
+                }
         }
     }
 }

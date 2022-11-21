@@ -33,6 +33,10 @@
 	{
 		return context.QuanLy.Find(maQL);
 	}
+	int GetSLVote(int MaCmt)
+	{
+		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
+	}
 }
 <div class="gap2 gray-bg">
 			<div class="container-fluid">
@@ -130,7 +134,7 @@
 															<li>
 																<span class="comment" data-toggle="tooltip" title="Comments">
 																	<i class="fa fa-comments-o"></i>
-																		<ins>@binhLuans(bd.MaBaiDang).Count()</ins>
+																		<ins id="sl_cmt_@bd.MaBaiDang">@binhLuans(bd.MaBaiDang).Count()</ins>
 																</span>
 															</li>
 														</ul>
@@ -142,7 +146,7 @@
 													</div>
 												</div>
 											</div>
-											<div class="coment-area">
+												<div class="coment-area">
 												<ul class="we-comet" id="list_cmt_@bd.MaBaiDang">
 												@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
 												{
@@ -150,14 +154,14 @@
 																<div class="comet-avatar">
 															@if (bl.MaSinhVien != null)
 															{
-																<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+																			<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
 															}
 															else
 															{
-																<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+																			<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
 															}
-																	</div>
-																	<div class="we-comment" style="max-width:89.4%; width:89.4%;">
+																</div>
+																<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
 																		<div class="coment-head">
 																@if (bl.MaSinhVien != null)
 																{
@@ -165,19 +169,52 @@
 																}
 																else
 																{
-																				<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
+																				<h5><a href="#" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
 																}
 																			<span>@bl.NgayDang</span>
-																			<a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
+																				<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
 																		</div>
 																		<p style="word-break: break-all;">@bl.Content</p>
 																	</div>
+																<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+																	<div class="vote-item">
+																		<i class="ti-angle-up"></i>
+																	</div>
+																	<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																		<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
+																	</div>
 
-																</li>
+																	<div class="vote-item">
+																		<i class="ti-angle-down"></i>
+																	</div>
+																</div>
+															</li>
 												}
 													<li>
-														<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang,false)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
+															<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang,true)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
 														<input id="count_cmt_@bd.MaBaiDang" style="display:none;" value="5">
+													</li>
+													<li class="post-comment">
+														<div class="comet-avatar">
+														@if (User.IsInRole("SV"))
+														{
+																	<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+														}
+														else
+														{
+																	<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+														}
+
+														</div>
+														<div class="post-comt-box">
+															<form enctype="multipart/form-data">
+																		<textarea id="contentcomments_@bd.MaBaiDang" onkeydown="Comment(event,@bd.MaBaiDang)" placeholder="Post your comment"></textarea>
+																	<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
+																	<div class="add-smiles" style="cursor:pointer;">
+																		<i class="fa fa-paper-plane"></i>
+																	</div>
+															</form>	
+														</div>
 													</li>
 												</ul>
 											</div>

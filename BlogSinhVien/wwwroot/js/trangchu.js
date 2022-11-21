@@ -152,7 +152,8 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
-connection.on("DisplayComment", function (maSV, tenSV, content, MaBD, imageDataURL, date, MaCmt,MaUser) {
+connection.on("DisplayComment", function (maSV, tenSV, content, MaBD, imageDataURL, date, MaCmt, MaUser) {
+    console.log(maSV + tenSV + content + MaBD + date + MaCmt + MaUser);
     var parent = jQuery("#showmore_" + MaBD).parent("li");
     var count_cmt = parseInt(document.getElementById("sl_cmt_" + MaBD).textContent);
     document.getElementById("sl_cmt_" + MaBD).textContent = count_cmt + 1;

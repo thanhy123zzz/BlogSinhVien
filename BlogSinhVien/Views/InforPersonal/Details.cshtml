@@ -1,10 +1,10 @@
 ﻿@{
 	if(ViewBag.SinhVien != null){
-    ViewData["Title"] = ViewBag.SinhVien.Ho +" "+ ViewBag.SinhVien.Ten;
+		ViewData["Title"] = ViewBag.SinhVien.Ho +" "+ ViewBag.SinhVien.Ten;
 	}else{
-    ViewData["Title"] = ViewBag.QuanLy.Ho +" "+ ViewBag.QuanLy.Ten;
+		ViewData["Title"] = ViewBag.QuanLy.Ho +" "+ ViewBag.QuanLy.Ten;
 	}
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 	BlogSinhVienContext context = new BlogSinhVienContext();
 	string getImage(byte[] image)
 	{
@@ -21,6 +21,12 @@
 	QuanLy getQuanLy(string maQL)
 	{
 		return context.QuanLy.Find(maQL);
+	}
+	String anhQL(){
+		return getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh);
+	}
+	String getanhSV(){
+		return getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh);
 	}
 }
 
@@ -39,7 +45,13 @@
 		<div class="feature-photo">
 			<figure><img src="images/resources/timeline-1.jpg" alt=""></figure>
 			<div id="formAvt" style="display:none" class="add-btn">
-				<a href="#" onclick="CancelAvt(event)">Huỷ</a>
+				@if (User.IsInRole("SV")){
+					<a href="#" onclick="CancelAvt(event,'@getanhSV()')">Huỷ</a>
+				}
+
+				else{	
+					<a href="#" onclick="CancelAvt(event,'@anhQL()')">Huỷ</a>
+				}
 				<a href="#" onclick="uploadFiles(event)" title="" data-ripple="">Đồng ý</a>
 			</div>
 			<div class="container-fluid">
@@ -51,7 +63,6 @@
 									{
 										<img style="max-height: 154px;" id="image-avt" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 									}
-
 									else
 									{
 										<img style="max-height: 154px;" id="image-avt" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
@@ -216,10 +227,10 @@
 	</section>
 	</div>
 	<script>
-		function CancelAvt(event){
+		function CancelAvt(event,src){
 			event.preventDefault();
 			document.getElementById("formAvt").style.display = "none";
-			document.getElementById("image-avt").src = '@Html.Raw(getImage(getSinhVien(User.FindFirst("MaSV").Value).HinhAnh))';
+			document.getElementById("image-avt").src = src;
 		}
 		function readURL(input) {
 			if (input.files && input.files[0]) {

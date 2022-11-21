@@ -68,9 +68,8 @@ namespace BlogSinhVien.Controllers
             }
             else
             {
-                TempData["LoginFailed"] = $"The username or password is incorrect.";
-                _logger.LogInformation("hi1");
-                return Redirect("/login");
+                TempData["LoginFailed"] = true;
+                return RedirectToAction("Index");
             }
         }
 
