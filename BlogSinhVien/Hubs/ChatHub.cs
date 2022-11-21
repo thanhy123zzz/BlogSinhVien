@@ -52,14 +52,15 @@ namespace BlogSinhVien.Hubs
                 bl.MaSinhVien = maSV;
                 bl.NgayDang = DateTime.Now;
                 context.BinhLuan.Add(bl);
-                context.SaveChanges();
-
-                BinhLuan binhLuan = context.BinhLuan.Where(x => x.NgayDang == bl.NgayDang).FirstOrDefault();
+                
 
                 SinhVien sv = context.SinhVien.Find(maSV);
                 string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
                 string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 if (sv.HinhAnh == null) imageDataURL = "images/avt.png";
+                context.SaveChanges();
+
+                BinhLuan binhLuan = context.BinhLuan.Where(x => x.NgayDang == bl.NgayDang).FirstOrDefault();
                 await Clients.All.SendAsync("DisplayComment", maSV, sv.Ho + " " + sv.Ten, content, MaBD, imageDataURL, DateTime.Now.ToString(),binhLuan.MaCmt, maSV);
             }
             if (context.QuanLy.Find(maSV) != null)
@@ -69,8 +70,7 @@ namespace BlogSinhVien.Hubs
                 bl.MaQl = maSV;
                 bl.NgayDang = DateTime.Now;
                 context.BinhLuan.Add(bl);
-                context.SaveChanges();
-                BinhLuan binhLuan = context.BinhLuan.Where(x => x.NgayDang == bl.NgayDang).FirstOrDefault();
+                
 
                 QuanLy sv = context.QuanLy.Find(maSV);
 
@@ -80,7 +80,8 @@ namespace BlogSinhVien.Hubs
                     imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
                     imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 }
-                
+                context.SaveChanges();
+                BinhLuan binhLuan = context.BinhLuan.Where(x => x.NgayDang == bl.NgayDang).FirstOrDefault();
                 await Clients.All.SendAsync("DisplayComment", maSV, sv.Ho + " " + sv.Ten, content, MaBD, imageDataURL, DateTime.Now.ToString(), binhLuan.MaCmt, maSV);
             }
 

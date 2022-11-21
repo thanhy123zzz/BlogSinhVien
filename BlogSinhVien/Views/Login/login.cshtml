@@ -18,6 +18,14 @@
 </head>
 
 <body>
+    @if (TempData["LoginFailed"] != null)
+		{
+			<script type="text/javascript" charset="utf-8">
+				window.onload = function () {
+				alert("Đăng nhập thất bại");
+			};
+			</script>
+		}
     <div class="the-end">
         <div class="the-end__first">
         </div>

@@ -43,7 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\" />
     <Folder Include="wwwroot\PlanetImage\" />
   </ItemGroup>
 </Project>
