@@ -15,6 +15,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Text;
+using SelectPdf;
+using static System.Net.WebRequestMethods;
+using System.Security.Policy;
+using System.Drawing.Printing;
+using BlogSinhVien.Models;
 
 namespace BlogSinhVien.Controllers
 {
@@ -23,6 +28,7 @@ namespace BlogSinhVien.Controllers
     public class TrangChuController : Controller
     {
         private readonly ILogger<TrangChuController> _logger;
+
         public TrangChuController(ILogger<TrangChuController> logger)
         {
             _logger = logger;

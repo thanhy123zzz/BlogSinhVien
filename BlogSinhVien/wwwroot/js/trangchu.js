@@ -202,8 +202,24 @@ function vote(MaBD, MaCmt, MaUser) {
 
 connection.on("IncreateVote", function (MaBD, MaCmt, MaUser, sl) {
     document.getElementById('vote_' + MaCmt).textContent = sl;
+    document.getElementById('vote_' + MaCmt).parseHTML
 });
-
 $(document).ready(function () {
-    $('#table-sv').DataTable();
+    $.fn.DataTable.ext.pager.numbers_length = 5;
+    $('#table-sv').DataTable({
+        "scrollX": true,
+        bLengthChange: false,
+        "pageLength": 5,
+        select: true,
+        bInfo: false,
+        fixedHeader: true,
+        language: {
+            paginate: {
+                previous: "Trước",
+                next: "Sau",
+            },
+            search: "Tìm kiếm",
+
+        },
+    });
 });

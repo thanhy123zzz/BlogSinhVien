@@ -43,7 +43,7 @@ namespace BlogSinhVien.Controllers
                 {
                     returnUrl = "/";
                 }
-                return this.Redirect(returnUrl);
+                return Redirect(returnUrl);
             }
         }
 
@@ -64,7 +64,7 @@ namespace BlogSinhVien.Controllers
                 {
                     returnUrl = "/";
                 }
-                return this.Redirect(returnUrl);
+                return Redirect(returnUrl);
             }
             else
             {

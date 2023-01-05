@@ -50,12 +50,11 @@
 										<figure>
 										@if (User.IsInRole("SV"))
 										{
-													<img width="70px" style="max-height: 70px; max-width:70px;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+													<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 										}
-										
 										else
 										{
-												<img width="70px" style="max-height: 70px; max-width:70px;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+												<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 										}
 										</figure>
 										<div class="newpst-input">
@@ -114,11 +113,11 @@
 											
 												@if (bd.MaSinhVien != null)
 												{
-													<img width="70px" style="max-height: 70px; max-width:70px;" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+													<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
 												}
 												else
 												{
-													<img width="70px" style="max-height: 70px; max-width:70px;" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
+													<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
 												}
 											</figure>
 											<div class="friend-name">
@@ -202,9 +201,9 @@
 														<div class="comet-avatar">
 															@if (bl.MaSinhVien != null)
 															{
-																<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+																<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
 															}else{
-																<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+																<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
 															}
 														</div>
 														<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
@@ -244,11 +243,11 @@
 													<div class="comet-avatar">
 														@if (User.IsInRole("SV"))
 														{
-															<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 														}
 														else
 														{
-															<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
+															<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
 														}
 
 													</div>

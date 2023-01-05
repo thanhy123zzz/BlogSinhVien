@@ -10,6 +10,20 @@
         "dist/browser/signalr.js",
         "dist/browser/signalr.min.js"
       ]
+    },
+    {
+      "library": "Chart.js@4.1.1",
+      "destination": "wwwroot/js/",
+      "files": [
+        "chart.min.js"
+      ]
+    },
+    {
+      "library": "font-awesome@6.2.1",
+      "destination": "wwwroot/font-awesome/",
+      "files": [
+        "css/all.min.css"
+      ]
     }
   ]
 }
