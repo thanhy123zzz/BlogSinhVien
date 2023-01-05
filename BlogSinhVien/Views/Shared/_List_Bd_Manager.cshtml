@@ -50,11 +50,11 @@
 														<figure>
 						@if (bd.MaSinhVien != null)
 						{
-																	<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
+																	<img style="width:60px; height:60px;object-fit: cover;" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
 						}
 						else
 						{
-																	<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
+																	<img style="width:60px; height:60px;object-fit: cover;" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
 						}
 														</figure>
 														<div class="friend-name">
@@ -161,11 +161,11 @@
 																		<div class="comet-avatar">
 									@if (bl.MaSinhVien != null)
 									{
-																						<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
+																						<img style="width:40px; height:40px;object-fit: cover;" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
 									}
 									else
 									{
-																						<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
+																						<img style="width:40px; height:40px;object-fit: cover;" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
 									}
 																		</div>
 																		<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
