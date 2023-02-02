@@ -1,5 +1,33 @@
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fdfdfd none repeat scroll 0 0;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+.dropdown-content span {
+        font-size: 12px;
+        padding: 12px 16px;
+        text-decoration: none;
+        font-weight:500;
+        display: block;
+    }
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 table.dataTable thead th {
     white-space: nowrap
+}
+.dropdown-content span:hover {
+    background-color: #ddd;
 }
 /*
 
@@ -650,7 +678,8 @@ header.sticky {
     padding: 0 48px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     z-index: 99;
-    position: relative;
+    position: fixed;
+    width:100%;
 }
 
 .logo {
@@ -4559,6 +4588,37 @@ canvas {
     transform: translate(-50%, -50%) rotate(360deg);
 }
 
+.btn-view.btn-load-back {
+    background: #fff;
+    border: medium none;
+    border-radius: 100%;
+    color: transparent;
+    display: block;
+    height: 50px;
+    margin: 30px auto 0;
+    position: relative;
+    width: 50px;
+    transition: all 0.2s linear 0s;
+    z-index: 77;
+}
+
+.btn-view.btn-load-back::before {
+    color: #333;
+    content: "\f053";
+    font-family: fontawesome;
+    left: 50%;
+    opacity: 1;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    z-index: 111;
+    transition: all 0.2s linear 0s;
+}
+
+.btn-view.btn-load-back:hover::before {
+    color: #fff;
+    transform: translate(-50%, -50%) rotate(360deg);
+}
 
 /*--- responsive header ---*/
 

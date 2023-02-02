@@ -1,12 +1,6 @@
-﻿using BlogSinhVien.Models;
-using BlogSinhVien.Models.Entities;
-using Microsoft.AspNetCore.Mvc.Localization;
+﻿using BlogSinhVien.Models.EntitiesNew;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace BlogSinhVien.Hubs
@@ -15,97 +9,76 @@ namespace BlogSinhVien.Hubs
     {
         public async Task SendMessage(string user, string message, string MaC)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            string sv02;
-            string imageBase64Data;
-            string imageDataURL;
-            if (context.Conversation.Find(int.Parse(MaC)).MaSinhVien1 == user)
-            {
-                sv02 = context.Conversation.Find(int.Parse(MaC)).MaSinhVien2;
-            }
-            else
-            {
-                sv02 = context.Conversation.Find(int.Parse(MaC)).MaSinhVien1;
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            Message m = new Message();
+            m.SendTime = DateTime.Now;
+            m.IduserSend = int.Parse(user);
+            m.Content = message;
+            m.Idc = int.Parse(MaC);
+            m.TrangThai = false;
+            context.Message.Add(m);
 
-            }
-            SinhVien sv = context.SinhVien.Find(user);
-            if (sv.HinhAnh == null) imageDataURL = "/images/avt.png";
-            else
-            {
-                imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
-                imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-            }
-            context.Database.ExecuteSqlRaw("insert into Message values(" + MaC + ",'" + user + "','" + sv02 + "',GETDATE(),N'" + message + "')");
+            Conversation c = context.Conversation.Find(int.Parse(MaC));
+            c.LastTime = m.SendTime;
+            c.TrangThai = false;
+            c.IduserLast = int.Parse(user);
+            context.Conversation.Update(c);
 
+            context.SaveChanges();
+            string imageDataURL = context.Users.Find(int.Parse(user)).HinhAnh;
             await Clients.All.SendAsync("ReceiveMessage", user, message, MaC, imageDataURL);
         }
 
         public async Task CommentInsert(string maSV, string content, int MaBD)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
             BinhLuan bl = new BinhLuan();
-
-            bl.MaBaiDang = MaBD;
-            bl.Content = content;
-            if (context.SinhVien.Find(maSV) != null)
+            try
             {
-                bl.MaSinhVien = maSV;
+                bl.IdbaiDang = MaBD;
+                bl.Content = content;
+                bl.Iduser = Int32.Parse(maSV);
+                bl.Sllike = 0;
                 bl.NgayDang = DateTime.Now;
+
                 context.BinhLuan.Add(bl);
-                
-
-                SinhVien sv = context.SinhVien.Find(maSV);
-                string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
-                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                if (sv.HinhAnh == null) imageDataURL = "images/avt.png";
                 context.SaveChanges();
-
-                BinhLuan binhLuan = context.BinhLuan.Where(x => x.NgayDang == bl.NgayDang).FirstOrDefault();
-                await Clients.All.SendAsync("DisplayComment", maSV, sv.Ho + " " + sv.Ten, content, MaBD, imageDataURL, DateTime.Now.ToString(),binhLuan.MaCmt, maSV);
             }
-            if (context.QuanLy.Find(maSV) != null)
+            catch (Exception e)
             {
-                string imageBase64Data;
-                string imageDataURL;
-                bl.MaQl = maSV;
-                bl.NgayDang = DateTime.Now;
-                context.BinhLuan.Add(bl);
-                
-
-                QuanLy sv = context.QuanLy.Find(maSV);
-
-                if (sv.HinhAnh == null) imageDataURL = "images/avt.png";
-                else
-                {
-                    imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
-                    imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                }
                 context.SaveChanges();
-                BinhLuan binhLuan = context.BinhLuan.Where(x => x.NgayDang == bl.NgayDang).FirstOrDefault();
-                await Clients.All.SendAsync("DisplayComment", maSV, sv.Ho + " " + sv.Ten, content, MaBD, imageDataURL, DateTime.Now.ToString(), binhLuan.MaCmt, maSV);
             }
+            Users nguoiDung = context.Users.Find(Int32.Parse(maSV));
+            string imageDataURL = "/images/avts/" + nguoiDung.HinhAnh;
+            await Clients.All.SendAsync("DisplayComment", nguoiDung.Ho
+                + " " + nguoiDung.Ten, content, MaBD, imageDataURL,
+                DateTime.Now.ToString("dd-MM-yyyy HH:mm"), bl.Id, maSV);
 
         }
         public async Task Vote(int MaBD, int MaCmt, string MaUser)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            Vote c = context.Vote.Find(MaCmt, MaUser);
-            if(c!= null)
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            Vote c = context.Vote.Find(MaCmt, int.Parse(MaUser));
+            BinhLuan bl = context.BinhLuan.Find(MaCmt);
+            if (c != null)
             {
                 context.Remove(c);
+                bl.Sllike -= 1;
+                context.BinhLuan.Update(bl);
                 context.SaveChanges();
             }
             else
             {
                 Vote v = new Vote();
-                v.MaUser = MaUser;
+                v.MaUser = int.Parse(MaUser);
                 v.TimeVote = DateTime.Now;
                 v.MaCmt = MaCmt;
+                bl.Sllike += 1;
+                context.BinhLuan.Update(bl);
                 context.Add(v);
                 context.SaveChanges();
             }
-            int sl = context.Vote.Where(x => x.MaCmt == MaCmt).Count();
-            await Clients.All.SendAsync("IncreateVote", MaBD, MaCmt, MaUser,sl);
+            await Clients.All.SendAsync("IncreateVote", MaBD, MaCmt, MaUser, bl.Sllike);
         }
     }
 }

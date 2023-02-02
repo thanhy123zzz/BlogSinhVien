@@ -1,21 +1,11 @@
-﻿using BlogSinhVien.Models.Entities;
+﻿using BlogSinhVien.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using System.Net;
-using BlogSinhVien.Models;
-using BlogSinhVien.Hubs;
 
 namespace BlogSinhVien
 {
@@ -29,7 +19,7 @@ namespace BlogSinhVien
 
         public IConfiguration Configuration { get; }
         public static string ContentRootPath { get; set; }
-      
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,7 +36,8 @@ namespace BlogSinhVien
                     {
                         options.LoginPath = "/login";
                         options.Cookie.Name = "my_app_auth_cookie";
-                        options.AccessDeniedPath = "/login";
+                        options.AccessDeniedPath = "/not-found";
+                        options.LogoutPath = "/Login/Logout";
                     });
         }
 

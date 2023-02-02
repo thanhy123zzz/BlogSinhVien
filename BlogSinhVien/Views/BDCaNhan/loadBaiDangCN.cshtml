@@ -1,0 +1,179 @@
+﻿@{
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	string dayToString(DateTime? a)
+	{
+		if (a == null)
+		{
+			return "";
+		}
+		return a.Value.ToString("dd-MM-yyyy HH:mm");
+	}
+}
+<div id="loadMore" class="loadMore">
+	@foreach (BaiDang bd in ViewBag.ListBaiDang)
+	{
+										<div class="central-meta item">
+										<div class="user-post">
+											<div class="friend-info">
+												<figure>
+													<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;"
+												src="~/images/avts/@bd.IduserNavigation.HinhAnh" alt="">
+												</figure>
+												<div class="friend-name">
+														<ins style="display:flex;justify-content:space-between;">
+														<a href="/profile/@bd.Iduser" title="">
+								@bd.IduserNavigation.Ho
+								@bd.IduserNavigation.Ten</a>
+							@if (bd.TrangThai == true)
+							{
+																<p style="color:lawngreen;margin-bottom: 0;">Đã đăng</p>
+							}
+							else
+							{
+																<p style="color:orangered;margin-bottom: 0;">Đang duyệt</p>
+							}
+													</ins>
+													<span style="display:flex;justify-content:space-between;">@dayToString(bd.NgayDang)
+														<a href="/BDCaNhan/deleteBD/@bd.Id" onclick="return confirm('Bạn có muốn xoá bài viết này?')" 
+													style="color:orangered;margin-bottom: 0;cursor:pointer;">
+															Huỷ <i class="ti-trash"></i>
+														</a>
+													</span>
+												</div>
+												<div class="post-meta"
+											style="display:flex; justify-content: space-around; flex-flow: wrap;">
+						@foreach (ChiTietBaiDang item in bd.ChiTietBaiDang)
+						{
+							@if (item.Type.EndsWith("/png") || item.Type.EndsWith("/jpeg") ||
+											item.Type.EndsWith("/jpg"))
+							{
+																	<img style="margin-bottom:10px;" width="32%"
+												src="~/BaiDang/@item.Path/@item.NameFile" alt="@item.NameFile">
+							}
+							@if (item.Type.Trim().EndsWith("/mp4"))
+							{
+																	<video style="margin-bottom:10px;" controls width="32%"
+												src="~/BaiDang/@item.Path/@item.NameFile"></video>
+							}
+							@if (item.Type.Trim().EndsWith(".document"))
+							{
+																	<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px; max-height:60px">
+																		<i class="fa fa-file-word-o">
+																		</i>
+									@item.NameFile.Trim()
+																	</a>
+							}
+							@if (item.Type.Trim().EndsWith("/pdf"))
+							{
+																	<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+																		<i class="fa fa-file-excel-o">
+																		</i>
+									@item.NameFile.Trim()
+																	</a>
+							}
+							@if (item.Type.Trim().EndsWith(".sheet"))
+							{
+																	<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+																		<i class="fa fa-file-pdf-o">
+																		</i>
+									@item.NameFile.Trim()
+																	</a>
+							}
+							@if (item.Type.Trim().EndsWith(".presentation"))
+							{
+																	<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+																		<i class="fa fa-file-powerpoint-o">
+																		</i>
+									@item.NameFile.Trim()
+																	</a>
+							}
+						}
+													<div class="we-video-info">
+														<ul>
+															<li>
+																<span class="comment" data-toggle="tooltip" title="Comments">
+																	<i class="fa fa-comments-o"></i>
+																	<ins id="sl_cmt_@bd.Id">@bd.BinhLuan.Count</ins>
+																</span>
+															</li>
+														</ul>
+													</div>
+													<div class="description">
+														<label>
+								@bd.Content
+														</label>
+													</div>
+												</div>
+											</div>
+											<div class="coment-area">
+												<ul class="we-comet" id="list_cmt_@bd.Id">
+						@foreach (BinhLuan bl in bd.BinhLuan.Take(5).OrderByDescending(x => x.Sllike))
+						{
+							Users user = context.Users.Find(bl.Iduser);
+															<li style="display: flex" class="cmt">
+																<div class="comet-avatar">
+																	<img width="40px"
+														style="max-height: 40px; max-width:40px;object-fit: cover;"
+														src="~/images/avts/@user.HinhAnh" alt="">
+																</div>
+																<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+																	<div class="coment-head">
+																		<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+												@user.Ten</a></h5>
+																		<span>@dayToString(bl.NgayDang)</span>
+																		<i class="fa fa-thumbs-up" style="cursor:pointer;"
+															onclick="vote(@bd.Id,@bl.Id,'@User.Identity.Name')"></i>
+																	</div>
+																	<p style="word-break: break-all;">@bl.Content</p>
+																</div>
+																<div
+													style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+																	<div class="vote-item">
+																		<i class="ti-angle-up"></i>
+																	</div>
+																	<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																		<h5 id="vote_@bl.Id" class="vote-h">@bl.Sllike</h5>
+																	</div>
+
+																	<div class="vote-item">
+																		<i class="ti-angle-down"></i>
+																	</div>
+																</div>
+															</li>
+						}
+													<li id="beforeBL_@bd.Id">
+														<a href="" onclick="load_More_Cmt(event,@bd.Id,true)" title=""
+													id="showmore_@bd.Id" class="showmore underline @bd.Id">more
+															comments</a>
+													</li>
+													<li class="post-comment">
+														<div class="comet-avatar">
+															<img width="40px"
+														style="max-height: 40px; max-width:40px;object-fit: cover;"
+														src="~/images/avts/@bd.IduserNavigation.HinhAnh" alt="">
+														</div>
+														<div class="post-comt-box">
+															<form enctype="multipart/form-data">
+																<textarea id="contentcomments_@bd.Id"
+															onkeydown="Comment(event,@bd.Id,'@User.Identity.Name')"
+															placeholder="Post your comment"></textarea>
+																<div class="add-smiles" style="cursor:pointer;">
+																	<i class="fa fa-paper-plane"></i>
+																</div>
+															</form>
+														</div>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+	}
+								</div>

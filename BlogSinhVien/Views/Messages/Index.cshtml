@@ -1,103 +1,185 @@
-﻿
-@{
-	string getImage(string MaSV)
-	{
-		BlogSinhVienContext context = new BlogSinhVienContext();
-		SinhVien sv = context.SinhVien.Find(MaSV);
-
-		if (sv.HinhAnh == null) return "images/avt.png";
-		string imageBase64Data = Convert.ToBase64String(sv.HinhAnh);
-		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-	string getName(string MaSV){
-		BlogSinhVienContext context = new BlogSinhVienContext();
-		SinhVien sv = context.SinhVien.Find(MaSV);
-		return sv.Ho +" "+ sv.Ten;
-	}
+﻿@{
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	List<Conversation> getListC
+	= context.Conversation
+	.Include(x => x.Iduser1Navigation)
+	.Include(x => x.Iduser2Navigation)
+	.Include(x => x.Message)
+	.Where(x => x.Iduser2 == nguoiDung.Id || x.Iduser1 == nguoiDung.Id)
+	.OrderByDescending(x => x.LastTime)
+	.ToList();
 }
-<div class="gap2 gray-bg">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="row" id="page-contents">
-							<div class="col-lg-1"></div>
-							<div class="col-lg-10">
-								<div class="central-meta">
-									<div class="messages">
-										<h5 class="f-title"><i class="ti-bell"></i>Chat<span class="more-options"><i class="fa fa-ellipsis-h"></i></span></h5>
-										<div class="message-box">
-											<ul class="peoples">
-										@foreach (Conversation a in ViewBag.Conversations)
+@model Conversation
+<div class="gap2 gray-bg" style="margin-top:50px">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="row" id="page-contents">
+					<div class="col-lg-1"></div>
+					<div class="col-lg-10">
+						<div class="central-meta">
+							<div class="messages">
+								<h5 class="f-title"><i class="ti-bell"></i>Chat
+									<span class="more-options">
+										<i class="fa fa-ellipsis-h">
+										</i>
+									</span>
+								</h5>
+
+								<div class="message-box">
+									<ul id="listConversation" class="peoples">
+										@foreach (Conversation a in getListC)
+										{
+											@if (a.TrangThai == false && a.IduserLast != nguoiDung.Id)
 											{
-												<li onclick="loadMesBox(@a.MaC)">
-												@if (a.MaSinhVien1 == User.FindFirst("MaSV").Value)
-												{
+												<li id="conversation_@a.Id" style="background-color: aliceblue;"
+											onclick="loadMesBox('@a.Id')">
+													@if (a.Iduser1 == nguoiDung.Id)
+													{
 														<figure>
-															<img width="45px" style="max-height: 45px; max-width:45px;" src="@getImage(a.MaSinhVien2)" alt="@a.MaSinhVien2">
+															<img width="45px"
+													style="max-height: 45px; max-width:45px;object-fit: cover;"
+													src="~/images/avts/@a.Iduser2Navigation.HinhAnh" alt="@a.Iduser2">
 														</figure>
 														<div class="people-name">
-															<span>@getName(a.MaSinhVien2)</span>
+															<div class="d-flex justify-content-between">
+																<span>@a.Iduser2Navigation.Ho @a.Iduser2Navigation.Ten</span>
+																<i id="iconC_@a.Id" class="ti-bell m-lg-auto"></i>
+															</div>
 														</div>
-													
-												}else{
-													<figure>
-																<img width="45px" style="max-height: 45px; max-width:45px;" src="@getImage(a.MaSinhVien1)" alt="@a.MaSinhVien1">
-													</figure>
-													<div class="people-name">
-														<span>@getName(a.MaSinhVien1)</span>
-													</div>
-												}
+													}
+													else
+													{
+														<figure>
+															<img width="45px"
+													style="max-height: 45px; max-width:45px;object-fit: cover;"
+													src="~/images/avts/@a.Iduser1Navigation.HinhAnh" alt="@a.Iduser1">
+														</figure>
+														<div class="people-name">
+															<div class="d-flex justify-content-between">
+																<span>@a.Iduser1Navigation.Ho @a.Iduser1Navigation.Ten</span>
+																<i id="iconC_@a.Id" class="ti-bell m-lg-auto"></i>
+															</div>
+														</div>
+													}
 												</li>
 											}
-											</ul>
-											<div id="chatBox" class="peoples-mesg-box" style="min-width:480px;">
+											else
+											{
+												<li id="conversation_@a.Id" onclick="loadMesBox('@a.Id')">
+													@if (a.Iduser1 == nguoiDung.Id)
+													{
+														<figure>
+															<img width="45px"
+													style="max-height: 45px; max-width:45px;object-fit: cover;"
+													src="~/images/avts/@a.Iduser2Navigation.HinhAnh" alt="@a.Iduser2">
+														</figure>
+														<div class="people-name">
+															<div class="d-flex justify-content-between">
+																<span>@a.Iduser2Navigation.Ho @a.Iduser2Navigation.Ten</span>
+															</div>
+														</div>
+													}
+													else
+													{
+														<figure>
+															<img width="45px"
+													style="max-height: 45px; max-width:45px;object-fit: cover;"
+													src="~/images/avts/@a.Iduser1Navigation.HinhAnh" alt="@a.Iduser1">
+														</figure>
+														<div class="people-name">
+															<div class="d-flex justify-content-between">
+																<span>@a.Iduser1Navigation.Ho @a.Iduser1Navigation.Ten</span>
+															</div>
+														</div>
+													}
+												</li>
+											}
+										}
+									</ul>
+									@if (Model == null)
+									{
+										<div id="chatBox" class="peoples-mesg-box" style="min-width:480px;">
+											<div class="container">
+												<label class="text-center w-100">Hãy chọn 1 cuộc hội thoại</label>
+											</div>
+										</div>
+									}
+									else
+									{
+										<div id="chatBox" class="peoples-mesg-box" style="min-width:480px;">
+											@if (Model.Iduser1 == nguoiDung.Id)
+											{
 												<div id="headerMessage" class="conversation-head">
-													<figure><img src="@getImage(ViewBag.MaSV)" alt=""></figure>
-													<span>@getName(ViewBag.MaSV)</span>
+													<figure><img src="~/images/avts/@Model.Iduser2Navigation.HinhAnh" alt=""
+													width="45px"
+													style="max-height: 45px; max-width:45px;object-fit: cover;">
+													</figure>
+													<span>@Model.Iduser2Navigation.Ho @Model.Iduser2Navigation.Ten</span>
 												</div>
-												<ul id="messagesList" class="chatting-area">
+											}
+											else
+											{
+												<div id="headerMessage" class="conversation-head">
+													<figure><img src="~/images/avts/@Model.Iduser1Navigation.HinhAnh" alt=""
+													width="45px"
+													style="max-height: 45px; max-width:45px;object-fit: cover;">
+													</figure>
+													<span>@Model.Iduser1Navigation.Ho @Model.Iduser1Navigation.Ten</span>
+												</div>
+											}
+											<ul id="messagesList" class="chatting-area" onscroll="loadMoreMessage()">
 
 												@foreach (Message m in ViewBag.messages)
+												{
+													@if (nguoiDung.Id == m.IduserSend)
 													{
-														@if (User.FindFirst("MaSV").Value == m.MaSinhVienSend)
-															{
-																<li class="me">
-																	<figure></figure>
-																	<p >@m.Content</p>
-																</li>
-															}
-														else
-															{
-																<li class="you">
-																	<figure><img src="@getImage(m.MaSinhVienSend)" alt=""></figure>
-																	<p>@m.Content</p>
-																</li>
-															}
+														<li class='me'>
+															<figure></figure>
+															<p style="max-width: 70%;overflow-wrap: break-word;">@m.Content</p>
+														</li>
 													}
+													else
+													{
+														<li class="you">
+															<figure><img src="~/images/avts/@m.IduserSendNavigation.HinhAnh" alt=""
+														width="35px"
+														style="max-height: 35px; max-width:35px;object-fit: cover;">
+															</figure>
+															<p style="max-width: 70%;overflow-wrap: break-word;">@m.Content</p>
+														</li>
+													}
+												}
 												<script>
 													var objDiv = document.getElementById("messagesList");
 													objDiv.scrollTop = objDiv.scrollHeight;
 												</script>
-												</ul>
-												<div class="message-text-container">
-													<form>
-														<textarea id="messageInput"></textarea>
-														<input id="MaC" value="@ViewBag.MaC" style="display:none;">
-														<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
-														<button id="sendButton" title="send"><i class="fa fa-paper-plane"></i></button>
-													</form>
-												</div>
+											</ul>
+											<div class="message-text-container">
+												<form>
+													<textarea onkeydown="sendMessageEnter(event)"
+													id="messageInput"></textarea>
+													<input id="MaC" value="@Model.Id" style="display:none;">
+													<input id="userInput" value="@nguoiDung.Id" style="display:none;">
+													<button onclick="sendMessage('@nguoiDung.Id')" type="button"
+													title="send"><i class="fa fa-paper-plane"></i></button>
+												</form>
 											</div>
 										</div>
-									</div>
-								</div>	
-							</div><!-- centerl meta -->
-							<div class="col-lg-1"></div>
-						</div>	
-					</div>
+									}
+								</div>
+							</div>
+						</div>
+					</div><!-- centerl meta -->
+					<div class="col-lg-1"></div>
 				</div>
 			</div>
-		</div>	
+		</div>
+	</div>
+</div>
+
+<audio src="~/Sound/samsung-whistle-soundalike-105086.mp3" id="soundMessage" style="display:none;"
+	type="audio/mpeg"></audio>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>

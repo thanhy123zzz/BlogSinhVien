@@ -1,119 +1,66 @@
 ﻿@{
-	BlogSinhVienContext context = new BlogSinhVienContext();
-	List<BinhLuan> binhLuans(int MaBD)
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	string dayToString(DateTime? a)
 	{
-		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
-	}
-	string getImage(byte[] image)
-	{
-		if (image == null) return "images/avt.png";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-	SinhVien getSinhVien(string maSV)
-	{
-
-		return context.SinhVien.Find(maSV);
-	}
-	QuanLy getQuanLy(string maQL)
-	{
-		return context.QuanLy.Find(maQL);
-	}
-	int GetSLVote(int MaCmt)
-	{
-		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
+		if (a == null)
+		{
+			return "";
+		}
+		return a.Value.ToString("dd-MM-yyyy HH:mm");
 	}
 }
-
-<ul class="we-comet" id="list_cmt_@ViewBag.MaBD">
-	@foreach (BinhLuan bl in binhLuans(@ViewBag.MaBD).Take((Int32)ViewBag.sl))
-	{
-		<li style="display: flex">
-			<div class="comet-avatar">
-				@if (bl.MaSinhVien != null)
-				{
-					<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
-				}
-				else
-				{
-					<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
-				}
-			</div>
-			<div class="we-comment"  style="max-width:83.4%; width:83.4%; ">
-				@if(ViewBag.Loai == true){
-						<div class="coment-head">
-						@if (bl.MaSinhVien != null)
-						{
-									<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
-						}
-						else
-						{
-									<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
-						}
-						<span>@bl.NgayDang</span>
-								<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@ViewBag.MaBD,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
-							</div>
-					}
-					else{
-						<div class="coment-head" style="display:inline-flex;justify-content:space-between">
-						<div class="coment-head">
-							@if (bl.MaSinhVien != null)
-							{
-								<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5> 
-							}
-							else
-							{
-								<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5> 
-							}
-							<span>@bl.NgayDang</span> 
-
-							<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@ViewBag.MaBD,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
-							</div>
-						<i style="cursor:pointer;" onclick="RemoveCmt(@bl.MaCmt)" class="ti-close"></i>
-					</div>
-					}
-				<p style="word-break: break-all;">@bl.Content</p>
-			</div>
-			<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
-								<div class="vote-item">
-									<i class="ti-angle-up"></i>
-								</div>
-								<div class="vote-item" style="margin-bottom:0;margin-left:2px">
-									<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
-							</div>
-
-						<i class="ti-angle-down"></i>
-					</div>
-		</li>
-	}
-		<li>
-<a href="" onclick="load_More_Cmt(event,@ViewBag.MaBD,'@ViewBag.Loai')" title="" id="showmore_@ViewBag.MaBD" class="showmore underline @ViewBag.MaBD">more comments</a>
-<input id="count_cmt_@ViewBag.MaBD" style="display:none;" value="@ViewBag.sl">
-
-</li>
-	@if (ViewBag.Loai == true)
-	{
-		<li class="post-comment">
-			<div class="comet-avatar">
-				@if (User.IsInRole("SV"))
-				{
-					<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-				}
-				else
-				{
-					<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-				}
-			</div>
-			<div class="post-comt-box">
-				<form enctype="multipart/form-data">
-					<textarea id="contentcomments_@ViewBag.MaBD" onkeydown="Comment(event,@ViewBag.MaBD)" placeholder="Post your comment"></textarea>
-					<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
-					<div class="add-smiles" style="cursor:pointer;">
-						<i class="fa fa-paper-plane"></i>
-					</div>
-				</form>	
-			</div>
-		</li>
+@foreach (BinhLuan bl in ViewBag.ListCmt)
+{
+	Users user = context.Users.Find(bl.Iduser);
+	<li style="display: flex" class="cmt" id="Cmt_@bl.Id">
+		<div class="comet-avatar">
+			<img width="40px" style="max-height: 40px; max-width:40px;object-fit: cover;" src="~/images/avts/@user.HinhAnh"
+			alt="">
+		</div>
+		@if (bl.Iduser != nguoiDung.Id)
+		{
+																					<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+																						<div class="coment-head">
+																							<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+							@user.Ten</a></h5>
+																							<span>@dayToString(bl.NgayDang)</span>
+																							<i class="fa fa-thumbs-up" style="cursor:pointer;"
+																			onclick="vote(@bl.IdbaiDang,@bl.Id,'@User.Identity.Name')"></i>
+																						</div>
+																						<p style="word-break: break-all;">@bl.Content</p>
+																					</div>
 		}
-</ul>
+		else
+		{
+																				<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+																								<div class="coment-head"
+																					style="display:inline-flex;justify-content:space-between">
+
+																									<div class="coment-head">
+																										<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+								@user.Ten</a></h5>
+																										<span>@dayToString(bl.NgayDang)</span>
+																										<i class="fa fa-thumbs-up" style="cursor:pointer;"
+																									onclick="vote(@bl.IdbaiDang,@bl.Id,'@User.Identity.Name')"></i>
+																											</div>
+																									<i style="cursor:pointer;" class="ti-close"
+																								onclick=" deleteCmt('@bl.Id')"></i>
+																								</div>
+																								<p style="word-break: break-all;">@bl.Content</p>
+																							</div>
+		}
+		<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+			<div class="vote-item">
+				<i class="ti-angle-up"></i>
+			</div>
+			<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+				<h5 id="vote_@bl.Id" class="vote-h">@bl.Sllike</h5>
+			</div>
+
+			<div class="vote-item">
+				<i class="ti-angle-down"></i>
+			</div>
+		</div>
+	</li>
+}

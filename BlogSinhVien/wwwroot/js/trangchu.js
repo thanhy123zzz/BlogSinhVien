@@ -133,9 +133,8 @@ function close_imageCommentpreview(maBD) {
 }
 
 
-function Comment(event, MaBD) {
+function Comment(event, MaBD, maSV) {
     if (event.keyCode == 13) {
-        var maSV = document.getElementById("userInput").value;
         var content = $("#contentcomments_" + MaBD).val();
         connection.invoke("CommentInsert", maSV, content, MaBD).catch(function (err) {
             return console.error(err.toString());
@@ -152,24 +151,31 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
-connection.on("DisplayComment", function (maSV, tenSV, content, MaBD, imageDataURL, date, MaCmt, MaUser) {
-    console.log(maSV + tenSV + content + MaBD + date + MaCmt + MaUser);
+connection.on("DisplayComment", function (tenSV, content, MaBD, imageDataURL, date, MaCmt, MaUser) {
     var parent = jQuery("#showmore_" + MaBD).parent("li");
     var count_cmt = parseInt(document.getElementById("sl_cmt_" + MaBD).textContent);
     document.getElementById("sl_cmt_" + MaBD).textContent = count_cmt + 1;
-    var comment_HTML = '<li style="display: flex"><div class="comet-avatar"><img style="width:50px; height:50px;" src="' + imageDataURL + '" alt=""></div><div class="we-comment" style="max-width:83.4%; width:83.4%;"><div class="coment-head"><h5><a href="/profile/' + maSV + '" title="' + tenSV + '">' + tenSV + '</a></h5><span>' + date + '</span><i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(' + MaBD +',' + MaCmt + ','+"'"+'' + MaUser + ''+"'"+')"></i></div><p>' + content + '</p></div><div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;"><div class="vote-item"><i class="ti-angle-up"></i></div><div class="vote-item" style="margin-bottom:0;margin-left:2px"><h5 id="vote_' + MaCmt + '" class="vote-h">0</h5></div><div class="vote-item"><i class="ti-angle-down"></i></div></div> </li>';
-    $(comment_HTML).insertBefore(parent);
+    var IdUser = $('#IdUser').val();
+    if (MaUser != IdUser) {
+        var comment_HTML = '<li style="display: flex" class="cmt" id="Cmt_' + MaCmt + '"><div class="comet-avatar"><img width="40px" style = "max-height: 40px; max-width:40px;object-fit: cover;" src="' + imageDataURL + '" alt=""></div><div class="we-comment" style="max-width:83.4%; width:83.4%;"><div class="coment-head"><h5><a href="/profile/' + MaUser + '" title="' + tenSV + '">' + tenSV + '</a></h5><span>' + date + '</span><i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(' + MaBD + ',' + MaCmt + ',' + "'" + '' + MaUser + '' + "'" + ')"></i></div><p>' + content + '</p></div><div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;"><div class="vote-item"><i class="ti-angle-up"></i></div><div class="vote-item" style="margin-bottom:0;margin-left:2px"><h5 id="vote_' + MaCmt + '" class="vote-h">0</h5></div><div class="vote-item"><i class="ti-angle-down"></i></div></div> </li>';
+        $(comment_HTML).insertBefore(parent);
+    } else {
+        var comment_HTML = '<li style="display: flex" class="cmt" id="Cmt_' + MaCmt + '"><div class="comet-avatar"><img width="40px" style = "max-height: 40px; max-width:40px;object-fit: cover;" src="' + imageDataURL + '" alt=""></div><div class="we-comment" style="max-width:83.4%; width:83.4%;"><div class="coment-head" style="display:inline-flex;justify-content:space-between"><div class="coment-head"><h5><a href="/profile/' + MaUser + '" title="' + tenSV + '">' + tenSV + '</a></h5><span>' + date + '</span><i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(' + MaBD + ',' + MaCmt + ',' + "'" + '' + MaUser + '' + "'" + ')"></i></div><i style="cursor:pointer;" class="ti-close" onclick=" deleteCmt('+MaCmt+')"></i></div><p>' + content + '</p></div><div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;"><div class="vote-item"><i class="ti-angle-up"></i></div><div class="vote-item" style="margin-bottom:0;margin-left:2px"><h5 id="vote_' + MaCmt + '" class="vote-h">0</h5></div><div class="vote-item"><i class="ti-angle-down"></i></div></div> </li>';
+        $(comment_HTML).insertBefore(parent);
+    }
+    
     $("#contentcomments_" + MaBD).val('');
 });
 
 function load_More_Cmt(event,MaBD,loai) {
-    var count_cmt = jQuery('#count_cmt_' + MaBD).val();
+    var count_cmt = $('#list_cmt_' + MaBD + ' li').length - 2;
     $.ajax({
         type: 'POST',
         url: '/load-more-cmt',
         data: "MaBD=" + MaBD + "&sl=" + count_cmt + "&loai=" + loai,
         success: function (result) {
-            $('#list_cmt_' + MaBD).replaceWith(result);
+            $('#list_cmt_' + MaBD + ' .cmt').remove();
+            $(result).insertBefore("#beforeBL_" + MaBD);
         },
         error: function (result) {
             alert('Lỗi!');
@@ -178,20 +184,34 @@ function load_More_Cmt(event,MaBD,loai) {
     event.preventDefault();
 }
 
-function load_More_BD() {
-    var sl_bd = $('#sl_bd').val();
-    console.log(sl_bd);
-    $.ajax({
-        type: 'POST',
-        url: '/load-more-bd',
-        data: "slbd=" + sl_bd,
-        success: function (result) {
-            $('#loadMore').replaceWith(result);
-        },
-        error: function (result) {
-            alert('Lỗi!');
-        }
-    })
+function load_More_BD(mm) {
+    if (mm=='') {
+        var sl_bd = $('#loadMore .central-meta').length;
+        $.ajax({
+            type: 'POST',
+            url: '/load-more-bd-cn',
+            data: "slbd=" + sl_bd,
+            success: function (result) {
+                $('#loadMore').replaceWith(result);
+            },
+            error: function (result) {
+                alert('Lỗi!');
+            }
+        });
+    } else {
+        var sl_bd = $('#loadMore .central-meta').length;
+        $.ajax({
+            type: 'POST',
+            url: '/load-more-bd',
+            data: "slbd=" + sl_bd,
+            success: function (result) {
+                $('#loadMore').replaceWith(result);
+            },
+            error: function (result) {
+                alert('Lỗi!');
+            }
+        });
+    }
 }
 
 function vote(MaBD, MaCmt, MaUser) {
@@ -212,7 +232,6 @@ $(document).ready(function () {
         "pageLength": 5,
         select: true,
         bInfo: false,
-        fixedHeader: true,
         language: {
             paginate: {
                 previous: "Trước",
@@ -223,3 +242,72 @@ $(document).ready(function () {
         },
     });
 });
+
+function BaoCao(MaBD,idUser) {
+    if (confirm("Bạn có muốn báo cáo bài viết này không?")) {
+        $.ajax({
+            type: 'POST',
+            url: '/bao-cao-bai-dang',
+            data: "idBD=" + MaBD + "&idUser="+idUser,
+            success: function (result) {
+                alert(result);
+            },
+            error: function (result) {
+                alert('Lỗi!');
+            }
+        });
+    }
+}
+
+function Ghim(IdBD, IdUser) {
+    if (confirm("Bạn có muốn ghim bài viết này không?")) {
+        $.ajax({
+            type: 'POST',
+            url: '/ghim-bai-dang',
+            data: "idBD=" + IdBD + "&idUser=" + IdUser,
+            success: function (result) {
+                alert(result);
+                $('#div_bd_' + IdBD).prependTo("#div_bd_ghim");
+                $('#div_bd_' + IdBD).css('border', '1px solid');
+                $('#ghim_' + IdBD).replaceWith('<span onclick="HuyGhim(' + IdBD + ',' + IdUser + ')" id="ghim_' + IdBD + '">Huỷ ghim</span>')
+            },
+            error: function (result) {
+                alert('Lỗi!');
+            }
+        });
+    }
+}
+
+function HuyGhim(IdBD, IdUser) {
+    if (confirm("Bạn có muốn huỷ ghim bài viết này không?")) {
+        var sl_bd = $('#loadMore .central-meta').length;
+        $.ajax({
+            type: 'POST',
+            url: '/huyghim-bai-dang',
+            data: "idBD=" + IdBD + "&idUser=" + IdUser + "&slbd=" + sl_bd,
+            success: function (result) {
+                alert(result.message);
+                $('#div_bd_' + IdBD).remove();
+                $('#loadMore').replaceWith(result.view);
+            },
+            error: function (result) {
+                alert('Lỗi!');
+            }
+        });
+    }
+}
+function deleteCmt(MaCmt) {
+    if (confirm("Bạn có muốn xoá bình luận này?")) {
+        $.ajax({
+            type: 'POST',
+            url: '/remove-cmt',
+            data: "id=" + MaCmt,
+            success: function (result) {
+                $("#Cmt_" + MaCmt).remove();
+            },
+            error: function (result) {
+                alert('Lỗi!');
+            }
+        });
+    }
+}

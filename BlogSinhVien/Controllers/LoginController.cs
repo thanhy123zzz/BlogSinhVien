@@ -1,22 +1,20 @@
-﻿using BlogSinhVien.Models.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using BlogSinhVien.Models.EntitiesNew;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Security.Claims;
-using BlogSinhVien.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using MailKit.Security;
-using MimeKit.Text;
-using MimeKit;
-using MailKit.Net.Smtp;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using MimeKit;
+using MimeKit.Text;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BlogSinhVien.Controllers
 {
@@ -33,8 +31,6 @@ namespace BlogSinhVien.Controllers
         [Route("/login")]
         public IActionResult Index(string returnUrl)
         {
-
-
             if (HttpContext.User.Identity.Name == null)
                 return View("login");
             else
@@ -51,15 +47,20 @@ namespace BlogSinhVien.Controllers
         [Route("/login")]
         public async Task<IActionResult> LoginUser(Accounts accounts, string returnUrl)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            Accounts a = context.Accounts.Find(accounts.TaiKhoan);
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            Accounts a = context.Accounts
+                .Include(x => x.IdvaiTroNavigation)
+                .FirstOrDefault(x => x.TaiKhoan == accounts.TaiKhoan);
             if (a == null)
             {
                 return Redirect("/login");
             }
-            if (a.MatKhau.Trim().Equals(accounts.MatKhau.Trim())&&a.TrangThai==true)
+            if (a.MatKhau.Equals(accounts.MatKhau) && a.TrangThai == true)
             {
                 await SignInUser(a);
+                a.LastLogin = DateTime.Now;
+                context.Accounts.Update(a);
+                context.SaveChanges();
                 if (string.IsNullOrWhiteSpace(returnUrl) || !returnUrl.StartsWith("/"))
                 {
                     returnUrl = "/";
@@ -75,42 +76,21 @@ namespace BlogSinhVien.Controllers
 
         private async Task SignInUser(Accounts accounts)
         {
-            if (accounts.MaRole.Trim() == "SV1")
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            Users user = context.Users.Where(x => x.Idtk == accounts.Id).FirstOrDefault();
+
+            var claims = new List<Claim>
             {
-                BlogSinhVienContext context = new BlogSinhVienContext();
-                SinhVien a = context.SinhVien.Where(x => x.TaiKhoan == accounts.TaiKhoan).FirstOrDefault();
-                var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, accounts.TaiKhoan),
-                new Claim(ClaimTypes.Role, accounts.MaRole.Substring(0,2)),
-                new Claim("MaSV",a.MaSv),
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, accounts.IdvaiTroNavigation.MaVaiTro),
             };
 
-                var claimsIdentity = new ClaimsIdentity(
-                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity));
-            }
-            else
-            {
-                BlogSinhVienContext context = new BlogSinhVienContext();
-                QuanLy a = context.QuanLy.Where(x => x.TaiKhoan == accounts.TaiKhoan).FirstOrDefault();
-                var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, accounts.TaiKhoan),
-                new Claim(ClaimTypes.Role, accounts.MaRole.Substring(0,2)),
-                new Claim("MaSV",a.MaQl),
-            };
-
-                var claimsIdentity = new ClaimsIdentity(
-                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity));
-            }
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
         }
         [HttpGet]
         public async Task<IActionResult> Logout()
@@ -120,10 +100,10 @@ namespace BlogSinhVien.Controllers
         }
 
         [HttpPost("send-mail")]
-        public bool SendGmail(String Email)
+        public bool SendGmail(string Email)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            var sv = context.SinhVien.Where(k => k.EmailEdu.Trim() == Email).ToList();
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            var sv = context.Users.Where(k => k.EmailEdu == Email).ToList();
             if (sv.Count() != 0)
             {
                 var email = new MimeMessage();
@@ -153,7 +133,7 @@ namespace BlogSinhVien.Controllers
         [HttpPost("confirm-code")]
         public bool ComfirmCode(int Code)
         {
-           if(Code == HttpContext.Session.GetInt32("code"))
+            if (Code == HttpContext.Session.GetInt32("code"))
             {
                 return true;
             }
@@ -163,13 +143,14 @@ namespace BlogSinhVien.Controllers
             }
         }
         [HttpPost("change-pass")]
-        public bool ChangePass(String Email, String Pass)
+        public bool ChangePass(string Email, string Pass)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            var sv = context.SinhVien.Where(k => k.EmailEdu.Trim() == Email);
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            var sv = context.Users.Where(k => k.EmailEdu == Email).FirstOrDefault();
             if (sv != null)
             {
-                context.Database.ExecuteSqlRaw("update Accounts set MatKhau ='" + Pass + "' where TaiKhoan = '"+ sv.First().TaiKhoan+ "'");
+
+                context.Database.ExecuteSqlRaw("update Accounts set MatKhau ='" + Pass + "' where TaiKhoan = '" + sv.Idtk + "'");
                 return true;
             }
             else return false;

@@ -1,178 +1,160 @@
-@model IEnumerable<BaiDang>
+@model IEnumerable<BlogSinhVien.Models.EntitiesNew.BaiDang>
 @{
-    ViewData["Title"] = "Search";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    BlogSinhVienContext context = new BlogSinhVienContext();
-    string getImage(byte[] image)
-    {
-        if (image == null) return "images/avt.png";
-        string imageBase64Data = Convert.ToBase64String(image);
-        string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-        return imageDataURL;
-    }
-    SinhVien getSinhVien(string maSV)
-    {
 
-        return context.SinhVien.Find(maSV);
-    }
-
-    QuanLy getQuanLy(string maQL)
-    {
-        return context.QuanLy.Find(maQL);
-    }
-    string getVideo(byte[] image)
+	
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	string dayToString(DateTime? a)
 	{
-		if (image == null) return "";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:video/mp4;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-    List<ChiTietBaiDang> chiTietBaiDangs(int MaBD){
-		return context.ChiTietBaiDang.Where(x => x.MaBaiDang == MaBD).ToList();
-	}
-
-	List<BinhLuan> binhLuans(int MaBD){
-		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
-	}
-
-	int GetSLVote(int MaCmt){
-		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
+		if (a == null)
+		{
+			return "";
+		}
+		return a.Value.ToString("dd-MM-yyyy HH:mm");
 	}
 }
 <section style="background-color: #f3f3f3;">
-    <style>
-        .link-muted {
-            color: #aaa;
-        }
+	<style>
+		.link-muted {
+			color: #aaa;
+		}
 
-        .link-muted:hover {
-            color: #1266f1;
-        }
+		.link-muted:hover {
+			color: #1266f1;
+		}
 
-        .d-flex.flex-start img {
-            height: 60px;
-            width: 60px;
-        }
-    </style>
-    <div class="gap2 gray-bg">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="row merged20" id="page-contents">
-							<div class="col-lg-2">
-							</div><!-- sidebar -->
-							<div class="col-lg-8">
-								<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
-									@* <div class="new-postbox" style="border-bottom: 2px solid #8be594;"> *@
-										<h3 class="ml-2">Sinh viên</h3>
-									@* </div> *@
-                                </div> 
-                                @*  *@
-                                <div class="card text-dark">
-                                    @foreach (var item in @ViewBag.listSV)
-                                    {
-                                            <div class="card-body p-4">
-                                             <div class="d-flex flex-start">
-                                            <img class="rounded-circle shadow-1-strong me-3 mr-4"
-                                src="@getImage(getSinhVien(@item.MaSv).HinhAnh)" alt="">
-                                            <div>
-                                                <h5 class="fw-bold mb-1"><a style="text-decoration: ;none;" href="/profile/@item.MaSv">@item.Ho @item.Ten</a></h5>
-                                                <div class="d-flex align-items-center mb-3">
-                                                    @if (@item.GioiTinh == true)
-                                                    {
-                                                        <p class="mb-0">Nam</p>
-                                                    }
-                                                    else
-                                                    {
-                                                        <p class="mb-0">Nữ</p>
-                                                    }
-                                                </div>
-                                                <p class="mb-0">
-                                                    @item.DiaChi
-                                                </p>
-                                                @if(@item.MaSv != User.FindFirst("MaSV").Value){
-                                                <span class="text-center"><a href="/chat/@item.MaSv"><i class="fa fa-comments" aria-hidden="true"></i> Trò chuyện ngay</a></span>
-                                                }
-                                            </div>
-                                            </div>
-                                            </div>
-                                        }
-                </div>
-                    <h1 class="text-center text-blogBTM p-4">@ViewBag.messSearch</h1>
-
-                                @*  *@
-                                </div> 
-                                </div> </div></div> </div> </div> </div> </div>
-    @*  *@
-    <div class="gap2 gray-bg">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="row merged20" id="page-contents">
-							<div class="col-lg-2">
-							</div><!-- sidebar -->
-							<div class="col-lg-8">
-								<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
-									@* <div class="new-postbox" style="background-color: #8be594;"> *@
-										<h3 class="ml-2">Bài viết</h3>
-									@* </div> *@
-									<div class="user-post" id="user-post-new" style="display:none;">
-										<div class="friend-info">
-											<div id="imagePreview" class="post-meta imagePreview" style="display:flex; justify-content: space-around; flex-flow: wrap;">
-											
-											
-											</div>
-											<div class="post-meta" style="display:flex;justify-content:center;">
-												<button onclick="close_imagepreview()" type="button" class="btn btn-danger">
-													<i class="fa fa-close"></i>
-												</button>
+		.d-flex.flex-start img {
+			height: 60px;
+			width: 60px;
+		}
+	</style>
+	<div class="gap2 gray-bg" style="margin-top:50px">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="row merged20" id="page-contents">
+						<div class="col-lg-2">
+						</div><!-- sidebar -->
+						<div class="col-lg-8">
+							<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
+								<h3 class="ml-2">Sinh viên</h3>
+							</div>
+							<div class="card text-dark">
+								@foreach (Users item in ViewBag.listSV)
+								{
+									<div class="card-body p-4">
+										<div class="d-flex flex-start">
+											<img class="rounded-circle shadow-1-strong me-3 mr-4"
+											src="/images/avts/@item.HinhAnh" alt="" style="object-fit:cover">
+											<div>
+												<h5 class="fw-bold mb-1"><a href="/profile/@item.Id">@item.Ho @item.Ten</a>
+												</h5>
+												<div class="d-flex align-items-center mb-3">
+													@if (@item.GioiTinh == true)
+													{
+														<p class="mb-0">Nam</p>
+													}
+													else
+													{
+														<p class="mb-0">Nữ</p>
+													}
+												</div>
+												<p class="mb-0">
+													@item.DiaChi
+												</p>
+												@if (@item.Id != nguoiDung.Id)
+												{
+													<span class="text-center"><a href="/chat/@item.Id"><i class="fa fa-comments"
+														aria-hidden="true"></i> Trò chuyện ngay</a></span>
+												}
 											</div>
 										</div>
 									</div>
-								</div><!-- add post new box -->
-								<div id="loadMore" class="loadMore">
-									<input style="display:none;" value="5" id="sl_bd">
-								@foreach(BaiDang bd in (IEnumerable<BaiDang>)TempData["listBaiDang"]){
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	@* *@
+	<div class="gap2 gray-bg">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="row merged20" id="page-contents">
+						<div class="col-lg-2">
+						</div><!-- sidebar -->
+						<div class="col-lg-8">
+							<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
+								@* <div class="new-postbox" style="background-color: #8be594;"> *@
+								<h3 class="ml-2">Bài viết</h3>
+								@* </div> *@
+								<div class="user-post" id="user-post-new" style="display:none;">
+									<div class="friend-info">
+										<div id="imagePreview" class="post-meta imagePreview"
+											style="display:flex; justify-content: space-around; flex-flow: wrap;">
+
+
+										</div>
+										<div class="post-meta" style="display:flex;justify-content:center;">
+											<button onclick="close_imagepreview()" type="button" class="btn btn-danger">
+												<i class="fa fa-close"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div><!-- add post new box -->
+							<div id="loadMore" class="loadMore">
+								<input style="display:none;" value="5" id="sl_bd">
+								@foreach (BaiDang bd in ViewBag.listBaiDang)
+								{
 									<div class="central-meta item">
-									<div class="user-post">
-										<div class="friend-info">
-											<figure>
-											
-												@if (bd.MaSinhVien != null)
-												{
-													<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
-												}
-												else
-												{
-													<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
-												}
-											</figure>
-											<div class="friend-name">
-														
-												@if (bd.MaSinhVien != null)
-												{
-													<ins><a href="/profile/@bd.MaSinhVien" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
-												}
-												else
-												{
-													<ins><a href="#" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
-												}
-												<span>@bd.NgayDang</span>
-											</div>
-											<div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
-												@foreach(ChiTietBaiDang item in chiTietBaiDangs(bd.MaBaiDang)){
-													@if (item.Type.Trim().EndsWith("/png") || item.Type.Trim().EndsWith("/jpeg") || item.Type.Trim().EndsWith("/jpg"))
+										<div class="user-post">
+											<div class="friend-info">
+												<figure>
+													<img width="60px"
+													style="max-height: 60px;max-width:60px;object-fit: cover;"
+													src="~/images/avts/@bd.IduserNavigation.HinhAnh" alt="">
+												</figure>
+												<div class="friend-name">
+													<ins class="d-flex justify-content-between" style="cursor:pointer;">
+														<a href="/profile/@bd.Iduser" title="">@bd.IduserNavigation.Ho
+															@bd.IduserNavigation.Ten</a>
+
+														<div class="dropdown">
+															<i class="ti-more dropbtn"></i>
+															<div class="dropdown-content">
+
+																<span onclick="BaoCao('@bd.Id','@nguoiDung.Id')">Báo
+																	cáo</span>
+															</div>
+														</div>
+													</ins>
+													<span>@dayToString(bd.NgayDang)</span>
+												</div>
+												<div class="post-meta"
+												style="display:flex; justify-content: space-around; flex-flow: wrap;">
+													@foreach (ChiTietBaiDang item in bd.ChiTietBaiDang)
+													{
+														@if (item.Type.EndsWith("/png") || item.Type.EndsWith("/jpeg") ||
+																item.Type.EndsWith("/jpg"))
 														{
-															<img style="margin-bottom:10px;" width="32%" src="@getImage(item.Files)" alt="@item.NameFile">
+															<img style="margin-bottom:10px;" width="32%"
+													src="~/BaiDang/@item.Path/@item.NameFile" alt="@item.NameFile">
 														}
-													@if (item.Type.Trim().EndsWith("/mp4"))
+														@if (item.Type.Trim().EndsWith("/mp4"))
 														{
-															<video style="margin-bottom:10px;" controls width="32%" src="@getVideo(item.Files)"></video>
+															<video style="margin-bottom:10px;" controls width="32%"
+													src="~/BaiDang/@item.Path/@item.NameFile"></video>
 														}
 														@if (item.Type.Trim().EndsWith(".document"))
 														{
-															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" 
-															style="white-space:normal;margin-bottom:10px; max-height:60px">
+															<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+													class="btn btn-light"
+													style="white-space:normal;margin-bottom:10px; max-height:60px">
 																<i class="fa fa-file-word-o">
 																</i>
 																@item.NameFile.Trim()
@@ -180,7 +162,9 @@
 														}
 														@if (item.Type.Trim().EndsWith("/pdf"))
 														{
-																<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+													class="btn btn-light"
+													style="white-space:normal;margin-bottom:10px;max-height:60px">
 																<i class="fa fa-file-excel-o">
 																</i>
 																@item.NameFile.Trim()
@@ -188,7 +172,9 @@
 														}
 														@if (item.Type.Trim().EndsWith(".sheet"))
 														{
-															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+													class="btn btn-light"
+													style="white-space:normal;margin-bottom:10px;max-height:60px">
 																<i class="fa fa-file-pdf-o">
 																</i>
 																@item.NameFile.Trim()
@@ -196,186 +182,188 @@
 														}
 														@if (item.Type.Trim().EndsWith(".presentation"))
 														{
-																		<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+													class="btn btn-light"
+													style="white-space:normal;margin-bottom:10px;max-height:60px">
 																<i class="fa fa-file-powerpoint-o">
 																</i>
 																@item.NameFile.Trim()
 															</a>
 														}
-												}
-												<div class="we-video-info">
-													<ul>
-														<li>
-															<span class="comment" data-toggle="tooltip" title="Comments">
-																<i class="fa fa-comments-o"></i>
-																	<ins id="sl_cmt_@bd.MaBaiDang">@binhLuans(bd.MaBaiDang).Count()</ins>
-															</span>
-														</li>
-													</ul>
-												</div>
-												<div class="description">
-													<p>
-														@bd.Content
-													</p>
+													}
+													<div class="we-video-info">
+														<ul>
+															<li>
+																<span class="comment" data-toggle="tooltip"
+																title="Comments">
+																	<i class="fa fa-comments-o"></i>
+																	<ins id="sl_cmt_@bd.Id">@bd.BinhLuan.Count</ins>
+																</span>
+															</li>
+														</ul>
+													</div>
+													<div class="description">
+														<label>
+															@bd.Content
+														</label>
+													</div>
 												</div>
 											</div>
-										</div>
-										<div class="coment-area">
-											<ul class="we-comet" id="list_cmt_@bd.MaBaiDang">
-												@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
-												{
-													<li style="display: flex">
-														<div class="comet-avatar">
-															@if (bl.MaSinhVien != null)
-															{
-																<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
-															}else{
-																<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
-															}
-														</div>
-														<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
-																<div class="coment-head">
-																@if (bl.MaSinhVien != null)
-																{
-																	<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
-																}
-																else
-																{
-																	<h5><a href="#" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
-																}
-																	<span>@bl.NgayDang</span>
-																		<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
-																</div>
-																<p style="word-break: break-all;">@bl.Content</p>
+											<div class="coment-area">
+												<ul class="we-comet" id="list_cmt_@bd.Id">
+													@foreach (BinhLuan bl in bd.BinhLuan.Take(5).OrderByDescending(x =>
+															x.Sllike))
+													{
+														Users user = context.Users.Find(bl.Iduser);
+														<li style="display: flex" class="cmt" id="Cmt_@bl.Id">
+															<div class="comet-avatar">
+																<img width="40px"
+															style="max-height: 40px; max-width:40px;object-fit: cover;"
+															src="~/images/avts/@user.HinhAnh" alt="">
 															</div>
-														<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
-															<div class="vote-item">
-																<i class="ti-angle-up"></i>
-															</div>
-															<div class="vote-item" style="margin-bottom:0;margin-left:2px">
-																<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
-															</div>
-																
-															<div class="vote-item">
-																<i class="ti-angle-down"></i>
-															</div>
-														</div>
-													</li>
-												}
-												<li>
-														<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang,true)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
-													<input id="count_cmt_@bd.MaBaiDang" style="display:none;" value="5">
-												</li>
-												<li class="post-comment">
-													<div class="comet-avatar">
-														@if (User.IsInRole("SV"))
-														{
-															<img width="50px" height="50px" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-														}
-														else
-														{
-															<img width="50px" height="50px" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-														}
+															@if (bl.Iduser!=nguoiDung.Id) {
+																	<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+																						<div class="coment-head">
+																							<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+																									@user.Ten</a></h5>
+																							<span>@dayToString(bl.NgayDang)</span>
+																							<i class="fa fa-thumbs-up" style="cursor:pointer;"
+																					onclick="vote(@bd.Id,@bl.Id,'@User.Identity.Name')"></i>
+																						</div>
+																						<p style="word-break: break-all;">@bl.Content</p>
+																					</div>
+																}else{
+																	<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+																					<div class="coment-head" style="display:inline-flex;justify-content:space-between">
 
-													</div>
-													<div class="post-comt-box">
-														<form enctype="multipart/form-data">
-																	<textarea id="contentcomments_@bd.MaBaiDang" onkeydown="Comment(event,@bd.MaBaiDang)" placeholder="Post your comment"></textarea>
-																<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
+																									<div class="coment-head">
+																										<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+																												@user.Ten</a></h5>
+																										<span>@dayToString(bl.NgayDang)</span>
+																										<i class="fa fa-thumbs-up" style="cursor:pointer;"
+																											onclick="vote(@bd.Id,@bl.Id,'@User.Identity.Name')"></i>
+																											</div>
+																									<i style="cursor:pointer;" class="ti-close" onclick=" deleteCmt('@bl.Id')"></i>
+																								</div>
+																								<p style="word-break: break-all;">@bl.Content</p>
+																							</div>
+																}
+															<div
+														style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+																<div class="vote-item">
+																	<i class="ti-angle-up"></i>
+																</div>
+																<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																	<h5 id="vote_@bl.Id" class="vote-h">@bl.Sllike</h5>
+																</div>
+
+																<div class="vote-item">
+																	<i class="ti-angle-down"></i>
+																</div>
+															</div>
+														</li>
+													}
+													<li id="beforeBL_@bd.Id">
+														<a href="" onclick="load_More_Cmt(event,@bd.Id,true)" title=""
+														id="showmore_@bd.Id" class="showmore underline @bd.Id">more
+															comments</a>
+													</li>
+													<li class="post-comment">
+														<div class="comet-avatar">
+															<img width="40px"
+															style="max-height: 40px; max-width:40px;object-fit: cover;"
+															src="~/images/avts/@nguoiDung.HinhAnh" alt="">
+														</div>
+														<div class="post-comt-box">
+															<form enctype="multipart/form-data">
+																<textarea id="contentcomments_@bd.Id"
+																onkeydown="Comment(event,@bd.Id,'@User.Identity.Name')"
+																placeholder="Post your comment"></textarea>
+																@*<input id="userInput"
+																	value="@User.FindFirst("MaSV").Value.Trim()"
+																	style="display:none;">*@
 																<div class="add-smiles" style="cursor:pointer;">
 																	<i class="fa fa-paper-plane"></i>
 																</div>
-														</form>	
-													</div>
-												</li>
-											</ul>
+															</form>
+														</div>
+													</li>
+												</ul>
+											</div>
 										</div>
 									</div>
-								</div>
 								}
-								</div>
-                                @if(@ViewBag.messSearch == "" || @ViewBag.messSearch == null){
-								<button onclick="load_More_BD()" class="btn-view btn-load-more"></button>
-                                }
-                                <h1 class="text-center text-blogBTM p-4">@ViewBag.messSearch</h1>
-							</div><!-- centerl meta -->
-							<div class="col-lg-2">
-							</div><!-- sidebar -->
-						</div>	
+							</div>
+						</div><!-- centerl meta -->
+						<div class="col-lg-2">
+						</div><!-- sidebar -->
 					</div>
 				</div>
 			</div>
-		</div>	
-    @*  *@
+		</div>
+	</div>
+	@* *@
 </section>
 <style>
-    p{
-        width: 100% !important;
-    }
-        .text-blogBTM{
-            color: #8be594 !important;
-        }
-        .link-muted {
-            color: #aaa;
-        }
+	p {
+		width: 100% !important;
+	}
 
-        .link-muted:hover {
-            color: #1266f1;
-        }
+	.text-blogBTM {
+		color: #8be594 !important;
+	}
 
-        .d-flex.flex-start img {
-            height: 60px;
-            width: 60px;
-        }
+	.link-muted {
+		color: #aaa;
+	}
 
-         .card-bodyy {
-            /*background: #ffff none repeat scroll 0 0;
-            border: 1px solid #ede9e9; */
-            border-radius: 3px;
-            display: inline-block;
-            width: 100%;
-        }
-        .card-bodyy h4{
-            border-bottom: 2px  solid #8be594;
-            font-size: xx-large;
-            font-weight: 600;
-        }
+	.link-muted:hover {
+		color: #1266f1;
+	}
 
-        .card-body {
-            margin-bottom: 1%;
-            background: #ffff none repeat scroll 0 0;
-            border: 1px solid #ede9e9;
-            border-radius: 3px;
-            display: inline-block;
-            width: 100%;
-        }
+	.d-flex.flex-start img {
+		height: 60px;
+		width: 60px;
+	}
 
-        .card-body:hover {
-            background-color: #8be594;
-        }
-        .card-body span > a:hover{
-            text-decoration: none;
-            color: red;
-        }
-        .card-body ins{
-            font-size: 11px;
-            margin-bottom: 5%;
-            padding-left: 1%;
-    position: absolute;
-    text-decoration: none;
-        }
-        /* .post-meta img{
-            height: 50% !important;
-            max-height: fit-content;
-            width: 50% !important;
-        }
-        .post-meta video{
-            height: auto;
-            width: 100%;
-        }  */
-        @* .post-comt-box img{
-            height: fit-content !important;
-            width: 50px !important;
-        } *@
-    </style>
+	.card-bodyy {
+		/*background: #ffff none repeat scroll 0 0;
+			border: 1px solid #ede9e9; */
+		border-radius: 3px;
+		display: inline-block;
+		width: 100%;
+	}
+
+	.card-bodyy h4 {
+		border-bottom: 2px solid #8be594;
+		font-size: xx-large;
+		font-weight: 600;
+	}
+
+	.card-body {
+		margin-bottom: 1%;
+		background: #ffff none repeat scroll 0 0;
+		border: 1px solid #ede9e9;
+		border-radius: 3px;
+		display: inline-block;
+		width: 100%;
+	}
+
+	.card-body:hover {
+		background-color: #8be594;
+	}
+
+	.card-body span>a:hover {
+		text-decoration: none;
+		color: red;
+	}
+
+	.card-body ins {
+		font-size: 11px;
+		margin-bottom: 5%;
+		padding-left: 1%;
+		position: absolute;
+		text-decoration: none;
+	}
+</style>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>

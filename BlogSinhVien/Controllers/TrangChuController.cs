@@ -1,122 +1,242 @@
-﻿using BlogSinhVien.Models.Entities;
+﻿using BlogSinhVien.Models.EntitiesNew;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using SqlParameter = Microsoft.Data.SqlClient.SqlParameter;
-using System.Xml.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System.Text;
-using SelectPdf;
-using static System.Net.WebRequestMethods;
-using System.Security.Policy;
-using System.Drawing.Printing;
-using BlogSinhVien.Models;
 
 namespace BlogSinhVien.Controllers
 {
-
-    [Authorize(Roles = "QL,SV")]
+    [Authorize]
     public class TrangChuController : Controller
     {
+        private readonly IWebHostEnvironment webHostEnvironment;
         private readonly ILogger<TrangChuController> _logger;
-
-        public TrangChuController(ILogger<TrangChuController> logger)
+        private ICompositeViewEngine _viewEngine;
+        public TrangChuController(ILogger<TrangChuController> logger, IWebHostEnvironment hostEnvironment, ICompositeViewEngine viewEngine)
         {
             _logger = logger;
+            webHostEnvironment = hostEnvironment;
+            _viewEngine = viewEngine;
         }
         [HttpGet]
         [Route("trang-chu")]
         [Route("")]
         public IActionResult Index()
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            List<BaiDang> listBD = context.BaiDang.Where(x=>x.TrangThai==true).OrderByDescending(x => x.NgayDang).Take(5).ToList();
-            ViewBag.Loai = true;
-            ViewBag.ListBD = listBD;
+            ViewData["Title"] = "Trang chủ";
             return View("TrangChu");
         }
-        
-        public IActionResult Create()
-        {
-            return View();
-        }
-
 
         [HttpPost("post-new")]
         public IActionResult post_new(IFormFile[] fileImage, IFormFile[] fileDocs, IFormFile[] fileVideo, string content)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
             BaiDang baiDang = new BaiDang();
-
-            baiDang.Content = content;
-            if(User.IsInRole("SV"))
-            baiDang.MaSinhVien = User.FindFirst("MaSV").Value;
-            else baiDang.MaQl = User.FindFirst("MaSV").Value;
-            baiDang.TrangThai = false;
-            baiDang.NgayDang = DateTime.Now;
-
-            context.BaiDang.Add(baiDang);
-            context.SaveChanges();
-
-            List<ChiTietBaiDang> chiTietBaiDangs = new List<ChiTietBaiDang>();
-            int maBD = context.BaiDang.OrderByDescending(x => x.MaBaiDang).FirstOrDefault().MaBaiDang;
-            insertFile(fileImage, maBD);
-            insertFile(fileVideo, maBD);
-            insertFile(fileDocs, maBD);
-            return RedirectToAction("Index");
-        }
-
-        private void insertFile(IFormFile[] files, int MaBD)
-        {
-            _logger.LogInformation(files.Count().ToString());
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            if (files.Count() == 0) return;
-            else
+            var tran = context.Database.BeginTransaction();
+            try
             {
-                foreach (var file in files)
+                baiDang.Content = content;
+                baiDang.TrangThai = false;
+                baiDang.NgayDang = DateTime.Now;
+                baiDang.Slreport = 0;
+                baiDang.Iduser = int.Parse(User.Identity.Name);
+                baiDang.Ghim = false;
+                context.BaiDang.Add(baiDang);
+                context.SaveChanges();
+                string path = DateTime.Now.ToString("yyyyMMdd");
+                string t = webHostEnvironment.WebRootPath + "\\BaiDang\\" + path;
+                if (!Directory.Exists(t))
                 {
-                    MemoryStream ms = new MemoryStream();
-                    file.CopyTo(ms);
-                    string sql = "insert into ChiTietBaiDang values({0},{1},{2},{3})";
-                    context.Database.ExecuteSqlRaw(sql, MaBD, ms.ToArray(), file.FileName, file.ContentType);
+                    Directory.CreateDirectory(t);
                 }
+                if (fileImage.Count() > 0)
+                {
+                    foreach (IFormFile file in fileImage)
+                    {
+                        ChiTietBaiDang ct = new ChiTietBaiDang();
+                        ct.NameFile = baiDang.Id + "_" + file.FileName;
+                        ct.Path = path;
+                        ct.Type = file.ContentType;
+                        ct.IdbaiDang = baiDang.Id;
+                        context.ChiTietBaiDang.Add(ct);
+                        context.SaveChanges();
+                        string pathFile = webHostEnvironment.WebRootPath + "\\BaiDang\\" + path + "\\" + ct.NameFile;
+                        var fileStream = new FileStream(pathFile, FileMode.Create);
+                        file.CopyTo(fileStream);
+                        fileStream.Close();
+                    }
+                }
+                if (fileDocs.Count() > 0)
+                {
+                    foreach (IFormFile file in fileDocs)
+                    {
+                        ChiTietBaiDang ct = new ChiTietBaiDang();
+                        ct.NameFile = baiDang.Id + "_" + file.FileName;
+                        ct.Path = path;
+                        ct.Type = file.ContentType;
+                        ct.IdbaiDang = baiDang.Id;
+                        context.ChiTietBaiDang.Add(ct);
+                        context.SaveChanges();
+                        string pathFile = webHostEnvironment.WebRootPath + "\\BaiDang\\" + path + "\\" + ct.NameFile;
+                        var fileStream = new FileStream(pathFile, FileMode.Create);
+                        file.CopyTo(fileStream);
+                        fileStream.Close();
+                    }
+                }
+                if (fileVideo.Count() > 0)
+                {
+                    foreach (IFormFile file in fileVideo)
+                    {
+                        ChiTietBaiDang ct = new ChiTietBaiDang();
+                        ct.NameFile = baiDang.Id + "_" + file.FileName;
+                        ct.Path = path;
+                        ct.Type = file.ContentType;
+                        ct.IdbaiDang = baiDang.Id;
+                        context.ChiTietBaiDang.Add(ct);
+                        context.SaveChanges();
+                        string pathFile = webHostEnvironment.WebRootPath + "\\BaiDang\\" + path + "\\" + ct.NameFile;
+                        var fileStream = new FileStream(pathFile, FileMode.Create);
+
+                        file.CopyTo(fileStream);
+                        fileStream.Close();
+                    }
+                }
+
+                tran.Commit();
             }
+            catch (Exception e)
+            {
+                tran.Rollback();
+                TempData["ThongBao"] = e.Message;
+                return RedirectToAction("Index");
+            }
+            TempData["ThongBao"] = "Đăng bài thành công, đang chờ duyệt!";
+            return RedirectToAction("Index");
         }
         [AllowAnonymous]
         [Route("/download")]
-        public IActionResult Download(int MaBD, string tenFile, string loaiFile)
+        public IActionResult Download(string path, string tenFile, string type)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            ChiTietBaiDang ct = context.ChiTietBaiDang.Where(x => x.MaBaiDang == MaBD && x.NameFile == tenFile && x.Type == loaiFile).FirstOrDefault();
-            return File(ct.Files,ct.Type.Trim(),ct.NameFile.Trim());
+            string pathFile = webHostEnvironment.WebRootPath + "\\BaiDang\\" + path + "\\" + tenFile;
+            return File(new FileStream(pathFile, FileMode.Open), type, tenFile);
         }
 
         [HttpPost("load-more-cmt")]
-        public IActionResult load_more_cmt(int MaBD, int sl,bool loai)
+        public IActionResult load_more_cmt(int MaBD, int sl)
         {
-            ViewBag.MaBD = MaBD;
-            ViewBag.sl = sl+5;
-            ViewBag.Loai = loai;
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            ViewBag.ListCmt = context.BinhLuan.Where(x => x.IdbaiDang == MaBD).OrderByDescending(x => x.Sllike).Take(sl + 5).ToList();
             return PartialView("_list_cmt");
         }
         [HttpPost("load-more-bd")]
         public IActionResult load_more_bd(int slbd)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            _logger.LogInformation(slbd.ToString());
-            List<BaiDang> listBD = context.BaiDang.Where(x => x.TrangThai == true).OrderByDescending(x => x.NgayDang).Take(slbd+5).ToList();
-            ViewBag.ListBD = listBD;
-            ViewBag.SLBD = slbd + 5;
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            ViewBag.ListBaiDang = context.BaiDang.Include(x => x.IduserNavigation)
+            .Include(x => x.ChiTietBaiDang)
+            .Include(x => x.BinhLuan)
+            .Where(x => x.TrangThai == true && x.Ghim == false)
+            .OrderByDescending(x => x.NgayDang)
+            .Take(slbd + 5)
+            .ToList();
             return PartialView("_baiDang");
+        }
+        [HttpPost("/bao-cao-bai-dang")]
+        public IActionResult baoCaoBaiDang(int idBD, int idUser)
+        {
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            ToCao c = context.ToCao.Where(x => x.Idbd == idBD && x.Iduser == idUser).FirstOrDefault();
+            BaiDang bd = context.BaiDang.Find(idBD);
+            if (c != null)
+            {
+                return Ok("Bạn đã báo cáo bài viết này");
+            }
+            else
+            {
+                ToCao v = new ToCao();
+                v.Iduser = idUser;
+                v.NgayToCao = DateTime.Now;
+                v.Idbd = idBD;
+                bd.Slreport += 1;
+                context.BaiDang.Update(bd);
+                context.Add(v);
+                context.SaveChanges();
+                return Ok("Báo cáo thành công");
+            }
+        }
+        [HttpPost("/ghim-bai-dang")]
+        public IActionResult Ghim(int idBD, int idUser)
+        {
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            BaiDang bd = context.BaiDang.Find(idBD);
+            bd.Ghim = true;
+            bd.IdUserGhim = idUser;
+            bd.NgayGhim = DateTime.Now;
+            context.BaiDang.Update(bd);
+            context.SaveChanges();
+            return Ok("Ghim thành công");
+        }
+        [HttpPost("/huyghim-bai-dang")]
+        public IActionResult HuyGhim(int idBD, int slbd)
+        {
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            BaiDang bd = context.BaiDang.Find(idBD);
+            bd.Ghim = false;
+            bd.IdUserGhim = null;
+            bd.NgayGhim = null;
+            context.BaiDang.Update(bd);
+            context.SaveChanges();
+            ViewBag.ListBaiDang = context.BaiDang.Include(x => x.IduserNavigation)
+            .Include(x => x.ChiTietBaiDang)
+            .Include(x => x.BinhLuan)
+            .Where(x => x.TrangThai == true && x.Ghim == false)
+            .OrderByDescending(x => x.NgayDang)
+            .Take(slbd)
+            .ToList();
+
+            PartialViewResult partialViewResult = PartialView("_baiDang");
+
+            string viewContent = ConvertViewToString(ControllerContext, partialViewResult, _viewEngine);
+
+            return Json(new
+            {
+                message = "Huỷ ghim thành công",
+                view = viewContent
+            }
+                );
+        }
+        [HttpPost("remove-cmt")]
+        public IActionResult RemoveCmt(int id)
+        {
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+
+            context.Database.ExecuteSqlRaw("delete Vote where MaCmt = " + id);
+
+            BinhLuan bl = context.BinhLuan.Find(id);
+            context.BinhLuan.Remove(bl);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        public string ConvertViewToString(ControllerContext controllerContext, PartialViewResult pvr, ICompositeViewEngine _viewEngine)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                ViewEngineResult vResult = _viewEngine.FindView(controllerContext, pvr.ViewName, false);
+                ViewContext viewContext = new ViewContext(controllerContext, vResult.View, pvr.ViewData, pvr.TempData, writer, new HtmlHelperOptions());
+
+                vResult.View.RenderAsync(viewContext);
+
+                return writer.GetStringBuilder().ToString();
+            }
         }
     }
     public static class SessionExtensions
@@ -133,4 +253,5 @@ namespace BlogSinhVien.Controllers
             return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
         }
     }
+
 }
