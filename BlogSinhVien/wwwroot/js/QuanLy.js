@@ -9,6 +9,7 @@
     }
     document.getElementById("contain_" + a).style.display = "block";
     document.getElementById(a).classList.add("activel");
+    
     $($.fn.dataTable.tables(true)).DataTable()
         .columns.adjust();
 }
@@ -38,7 +39,7 @@ function searchManagerEnter(event) {
             success: function (result) {
                 active("quanlybaiviet");
                 $(result).insertAfter("#contain_quanlybaiviet");
-                $("#contain_quanlybaiviet").addClass("d-none");
+                $("#contain_quanlybaiviet").css("display", "none");
             },
             error: function (result) {
                 alert('Lỗi!');
@@ -46,7 +47,7 @@ function searchManagerEnter(event) {
         })
     }
     if (key=="") {
-        $("#contain_quanlybaiviet").removeClass("d-none");
+        $("#contain_quanlybaiviet").css("display", "block");
         $('#searchContain').remove();
     }
 }
@@ -134,7 +135,7 @@ function load_More_BDM() {
 }
 
 function back() {
-    $("#contain_quanlybaiviet").removeClass("d-none");
+    $("#contain_quanlybaiviet").css("display", "block");
     $('#searchContain').remove();
 }
 

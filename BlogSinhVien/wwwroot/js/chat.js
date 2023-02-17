@@ -1,12 +1,12 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+/*var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 //Disable send button until connection is established
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = false;
 }).catch(function (err) {
     return console.error(err.toString());
-});
+});*/
 
 connection.on("ReceiveMessage", function (user, message, MaC, imageDataURL) {
     var user1 = $('#userInput').val();

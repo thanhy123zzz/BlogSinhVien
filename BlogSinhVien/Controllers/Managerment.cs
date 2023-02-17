@@ -120,6 +120,7 @@ namespace BlogSinhVien.Controllers
         [Route("add-sv")]
         public IActionResult AddSV()
         {
+            ViewData["Title"] = "Thêm sinh viên";
             return View("add_sv");
         }
         [HttpPost("add-sv")]
@@ -250,6 +251,52 @@ namespace BlogSinhVien.Controllers
             return File(new FileStream(pathFile, FileMode.Open),
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Mẫu.xlsx");
         }
+        [Route("update-sinh-vien/{Id:int}")]
+        public IActionResult View_SuaSinhVien(int Id)
+        {
+            ViewData["Title"] = "Chỉnh sửa sinh viên";
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            return View(context.Users.Find(Id));
+        }
+
+        [HttpPost("edit-sv")]
+        public IActionResult UpdateSV(Users sv, Accounts accounts)
+        {
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            var tran = context.Database.BeginTransaction();
+            try
+            {
+                Users us = context.Users.Find(sv.Id);
+                us.MaSv = sv.MaSv;
+                us.Ten = sv.Ten;
+                us.Ho = sv.Ho;
+                us.Cccd = sv.Cccd;
+                us.Phone = sv.Phone;
+                us.EmailEdu = sv.EmailEdu;
+                us.EmailPrivate = sv.EmailPrivate;
+                us.GioiTinh = sv.GioiTinh;
+                us.DiaChi = sv.DiaChi;
+                context.Users.Update(us);
+                context.SaveChanges();
+
+                Accounts ac = context.Accounts.Find(us.Idtk);
+                ac.TaiKhoan = accounts.TaiKhoan;
+                ac.MatKhau = accounts.MatKhau;
+
+                context.Accounts.Update(ac);
+                context.SaveChanges();
+
+                tran.Commit();
+                TempData["ThongBao"] = "Sửa thông tin sinh viên thành công!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                tran.Rollback();
+                TempData["ThongBao"] = "Thất bại";
+                return RedirectToAction("Index");
+            }
+        }
 
         [HttpPost("insert-list-sv")]
         public IActionResult insert_List_SV(IFormFile file)
@@ -259,7 +306,6 @@ namespace BlogSinhVien.Controllers
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage package = new ExcelPackage(stream))
             {
-                //get the first worksheet in the workbook
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                 int rowCount = worksheet.Dimension.End.Row;     //get row count
                 BlogSinhVienNewContext context = new BlogSinhVienNewContext();
@@ -280,7 +326,17 @@ namespace BlogSinhVien.Controllers
                             users.Cccd = worksheet.Cells[row, 5].Value?.ToString();
                             users.Phone = worksheet.Cells[row, 6].Value?.ToString();
                             users.EmailEdu = worksheet.Cells[row, 7].Value?.ToString();
-                            users.GioiTinh = (bool)worksheet.Cells[row, 8].Value;
+
+                            string gt = worksheet.Cells[row, 8].Value.ToString();
+                            if (gt == "1")
+                            {
+                                users.GioiTinh = true;
+                            }
+                            else
+                            {
+                                users.GioiTinh = false;
+                            }
+
                             users.DiaChi = worksheet.Cells[row, 9].Value?.ToString();
                             users.GhiChu = worksheet.Cells[row, 10].Value?.ToString();
                             users.HinhAnh = "avt.png";

@@ -160,7 +160,7 @@
 													@if (item.Type.EndsWith("/png") || item.Type.EndsWith("/jpeg") ||
 																	item.Type.EndsWith("/jpg"))
 													{
-																	<img style="margin-bottom:10px;" width="32%"
+																	<img id="image_BD_@item.Id" onclick="show_image('@item.Id')" style="margin-bottom:10px; object-fit:cover;cursor: pointer" width="32%"
 												src="~/BaiDang/@item.Path/@item.NameFile" alt="@item.NameFile">
 													}
 													@if (item.Type.Trim().EndsWith("/mp4"))

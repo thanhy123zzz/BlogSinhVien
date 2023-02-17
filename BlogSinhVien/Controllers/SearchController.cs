@@ -31,7 +31,7 @@ namespace BlogSinhVien.Controllers
             .Include(x => x.IduserNavigation)
             .Include(x => x.ChiTietBaiDang)
             .Include(x => x.BinhLuan)
-            .Where(x => (x.IduserNavigation.Ho + " " + x.IduserNavigation.Ten + " " + x.Content)
+            .Where(x => x.Content
             .ToLower().Contains(search))
             .OrderByDescending(x => x.NgayDang)
             .ToList();

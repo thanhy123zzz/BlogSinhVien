@@ -87,6 +87,7 @@ $("#fileDocs").on("change", function (event) {
             docs.disabled = true;
             docs.style.width = "32%";
             docs.style.whiteSpace = "normal";
+            docs.style.overflowWrap = "break-word";
 
             docs.textContent = file.name + " ";
             docs.appendChild(icon);

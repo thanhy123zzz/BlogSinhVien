@@ -22,7 +22,7 @@
 
 	<link rel="stylesheet" href="~/datepicker/bootstrap-datetimepicker.min.css">
 	<script src="~/js/jquery/jquery-3.6.1.min.js"></script>
-
+	<script src="~/js/signalr/dist/browser/signalr.js"></script>
 </head>
 
 <body>
@@ -138,6 +138,12 @@
 	<section>
 		@RenderBody()
 	</section>
+	<div id="imageModal" class="imageModal">
+	  <span class="closeImageModal">&times;</span>
+	  <img class="imageModal-content" id="imageHHModal">
+	  <div id="imageModelCaption"></div>
+	</div>
+	
 	<script src="~/datepicker/popper.min.js"></script>
 	<script src="~/datepicker/moment.min.js"></script>
 	<script src="~/datepicker/bootstrap-datetimepicker.min.js"></script>
@@ -147,11 +153,12 @@
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	
 	<script src="~/js/trangchu.js"></script>
+	<script src="~/js/chat.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 
 	<script type="text/javascript" charset="utf8"
 		src="~/js/jquery/datatables.min.js"></script>
-	@RenderSection("Scripts", required: false)
+	@RenderSection("Scripts", required: false) 
 
 	<script>
 		$('.toast').toast('show');
@@ -162,6 +169,25 @@
 			format: "DD-MM-yyyy",
 		});
 		});
+		// Get the modal
+		var modal = document.getElementById("imageModal");
+
+		// Get the image and insert it inside the modal - use its "alt" text as a caption
+		var modalImg = document.getElementById("imageHHModal");
+		var captionText = document.getElementById("imageModelCaption");
+		function show_image(Id){
+			var img = document.getElementById("image_BD_"+Id);
+			modal.style.display = "block";
+			  modalImg.src = img.src;
+			  captionText.innerHTML = img.alt;
+		}
+			// Get the <span> element that closes the modal
+			var span = document.getElementsByClassName("closeImageModal")[0];
+
+			// When the user clicks on <span> (x), close the modal
+			span.onclick = function() { 
+			  modal.style.display = "none";
+			}
 	</script>
 </body>
 

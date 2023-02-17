@@ -38,7 +38,7 @@
 						</div><!-- sidebar -->
 						<div class="col-lg-8">
 							<div class="central-meta item mb-0" style="border-bottom: 4px solid #8be594;">
-								<h3 class="ml-2">Sinh viên</h3>
+								<h3 class="ml-2">Người dùng</h3>
 							</div>
 							<div class="card text-dark">
 								@foreach (Users item in ViewBag.listSV)
@@ -142,7 +142,7 @@
 														@if (item.Type.EndsWith("/png") || item.Type.EndsWith("/jpeg") ||
 																item.Type.EndsWith("/jpg"))
 														{
-															<img style="margin-bottom:10px;" width="32%"
+														<img id="image_BD_@item.Id" onclick="show_image('@item.Id')" style="margin-bottom:10px; object-fit:cover;cursor: pointer" width="32%"
 													src="~/BaiDang/@item.Path/@item.NameFile" alt="@item.NameFile">
 														}
 														@if (item.Type.Trim().EndsWith("/mp4"))

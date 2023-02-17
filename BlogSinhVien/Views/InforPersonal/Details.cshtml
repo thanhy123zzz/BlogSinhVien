@@ -83,11 +83,11 @@
 											<div class="row">
 											<div class=" col-6 mb-5">
 												<label class="control-label">Họ</label><br>
-												<input class="input-group" value="@nguoiDung.Ho" type="text" name="Ho" readonly/>
+												<input class="input-group h" value="@nguoiDung.Ho" type="text" name="Ho" readonly/>
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label">Tên</label><br>
-												<input class="input-group" value="@nguoiDung.Ten" type="text" name="Ten" readonly/>
+												<input class="input-group h" value="@nguoiDung.Ten" type="text" name="Ten" readonly/>
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>
@@ -104,7 +104,7 @@
                                               </div>
                                               <div class=" col-6 mb-5">
 												<label class="control-label" for="Phone">Email trường</label><br>
-												<input class="input-group" name="EmailEdu" value="@nguoiDung.EmailEdu" type="text" readonly />
+												<input class="input-group h" name="EmailEdu" value="@nguoiDung.EmailEdu" type="text" readonly />
                                               </div>
 												<div class=" col-6 mb-5">
 													<label class="control-label" for="GioiTinh">Giới tính</label><br>
@@ -238,6 +238,7 @@
 		function reaonlyInput(){
 			
 			$('.input-group').attr('readonly', false);
+			$('.h').attr('readonly', true);
 			$('.custom-select').attr('disabled',false);
 
 			$('#btnChinhSua').replaceWith('<div class="col-4 d-flex justify-content-end" id="btnChinhSua"><button class="btn btn-secondary col-5" onclick="btnHuy()" type="button">Huỷ</button><button class="btn btn-success col-5" type="submit" style="margin-left:5px">Lưu</button></div>');
