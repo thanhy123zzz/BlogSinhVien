@@ -1,0 +1,82 @@
+﻿@{
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	DateTime FromDay = DateTime.ParseExact(ViewBag.fromDay, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+	DateTime ToDay = DateTime.ParseExact(ViewBag.toDay, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+
+	string SLBD = "";
+	string SLVote = "";
+	string SLCmt = "";
+
+	string getweek()
+	{
+		if ((ToDay - FromDay).TotalDays > 31)
+		{
+			string e = "";
+			int m = ((ToDay.Year - FromDay.Year) * 12) + ToDay.Month - FromDay.Month;
+
+			DateTime nextMonth = FromDay.AddMonths(1).AddDays(-FromDay.Day);
+
+			e += "'" + FromDay.ToString("dd-MM-yyyy") + "', ";
+			SLBD += context.BaiDang.FromSqlRaw("select*from BaiDang where CONVERT(date,NgayDang) >= '" + FromDay.ToString("yyyy-MM-dd") + "' and CONVERT(date,NgayDang) <= '"+nextMonth.ToString("yyyy-MM-dd")+"'").Count() + ", ";
+			SLCmt += context.BinhLuan.FromSqlRaw("select*from BinhLuan where CONVERT(date,NgayDang) >= '" + FromDay.ToString("yyyy-MM-dd") + "' and CONVERT(date,NgayDang) <= '" + nextMonth.ToString("yyyy-MM-dd") + "'").Count() + ", ";
+			SLVote += context.Vote.FromSqlRaw("select*from Vote where CONVERT(date,TimeVote) >= '" + FromDay.ToString("yyyy-MM-dd") + "' and CONVERT(date,TimeVote) <= '" + nextMonth.ToString("yyyy-MM-dd") + "'").Count() + ", ";
+
+			for (int i = 1; i <= m; i++)
+			{
+				string year = FromDay.AddMonths(i).Year.ToString();
+				string month = FromDay.AddMonths(i).Month.ToString();
+				e += "'" + FromDay.AddMonths(i).ToString("MM-yyyy") + "', ";
+				SLBD += context.BaiDang.FromSqlRaw("select*from BaiDang where Year(NgayDang) = '" + year + "' and month(NgayDang) = '" + month + "'").Count() + ", ";
+				SLCmt += context.BinhLuan.FromSqlRaw("select*from BinhLuan where Year(NgayDang) = '" + year + "' and month(NgayDang) = '" + month + "'").Count() + ", ";
+				SLVote += context.Vote.FromSqlRaw("select*from Vote where Year(TimeVote) = '" + year + "' and month(TimeVote) = '" + month + "'").Count() + ", ";
+			}
+			return e;
+		}
+		else
+		{
+			string e = "";
+			int d = (int)Math.Round((ToDay - FromDay).TotalDays, 0);
+			for (int i = d; i >= 0; i--)
+			{
+				e += "'" + ToDay.AddDays(-i).ToString("dd-MM-yyyy") + "'" + ", ";
+				SLBD += context.BaiDang.FromSqlRaw("select*from BaiDang where CONVERT(date,NgayDang) = '" + ToDay.AddDays(-i).ToString("yyyy-MM-dd") + "'").Count() + ", ";
+				SLCmt += context.BinhLuan.FromSqlRaw("select*from BinhLuan where CONVERT(date,NgayDang) = '" + ToDay.AddDays(-i).ToString("yyyy-MM-dd") + "'").Count() + ", ";
+				SLVote += context.Vote.FromSqlRaw("select*from Vote where CONVERT(date,TimeVote) = '" + ToDay.AddDays(-i).ToString("yyyy-MM-dd") + "'").Count() + ", ";
+			}
+			return e;
+		}
+	}
+}
+<div class="user-post" id="chartTK">
+											<canvas id="myChart"></canvas>
+											<script src="~/js/chart.js"></script>
+											<script>
+											var ctx = document.getElementById('myChart').getContext('2d');
+												  var myChart = new Chart(ctx, {
+													  type: 'bar',
+													  data: {
+														labels: [@Html.Raw(getweek())],
+														datasets: [{ 
+															data: [@Html.Raw(SLBD)],
+															label: "Lượt đăng",
+															borderColor: "rgb(62,149,205)",
+															backgroundColor: "rgb(62,149,205,0.1)",
+															borderWidth:2
+														  }, { 
+															data: [@Html.Raw(SLCmt)],
+															label: "Bình luận",
+															borderColor: "rgb(60,186,159)",
+															backgroundColor: "rgb(60,186,159,0.1)",
+															borderWidth:2
+														  }, { 
+															data: [@Html.Raw(SLVote)],
+															label: "Vote",
+															borderColor: "rgb(255,165,0)",
+															backgroundColor:"rgb(255,165,0,0.1)",
+															borderWidth:2
+														  }
+														]
+													  },
+													});
+											</script>
+										</div>

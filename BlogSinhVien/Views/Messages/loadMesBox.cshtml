@@ -1,0 +1,51 @@
+﻿@{
+	int maC = ViewBag.MaC;
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	Conversation c = context.Conversation
+	.Include(x=>x.Iduser2Navigation)
+	.Include(x => x.Iduser1Navigation)
+	.Where(x=>x.Id == maC).FirstOrDefault();
+
+}
+<div id="chatBox" class="peoples-mesg-box" style="min-width:480px;">
+@if (c.Iduser1 == nguoiDung.Id)
+{
+	<div id="headerMessage" class="conversation-head">
+			<figure><img src="~/images/avts/@c.Iduser2Navigation.HinhAnh" alt="" width="45px" style="max-height: 45px; max-width:45px;object-fit: cover;"></figure>
+		<span>@c.Iduser2Navigation.Ho @c.Iduser2Navigation.Ten</span>
+	</div>
+}else{
+	<div id="headerMessage" class="conversation-head">
+			<figure><img src="~/images/avts/@c.Iduser1Navigation.HinhAnh" alt="" width="45px" style="max-height: 45px; max-width:45px;object-fit: cover;"></figure>
+		<span>@c.Iduser1Navigation.Ho @c.Iduser1Navigation.Ten</span>
+	</div>
+}
+<ul id="messagesList" class="chatting-area" onscroll="loadMoreMessage()">
+
+	@foreach (Message m in ViewBag.messages)
+	{
+		@if (nguoiDung.Id == m.IduserSend)
+		{
+			<li class='me'><figure></figure><p style="max-width: 70%;overflow-wrap: break-word;">@m.Content</p></li>
+		}
+		else
+		{
+			<li class="you"><figure><img src="~/images/avts/@m.IduserSendNavigation.HinhAnh" alt=""
+			width="35px" style="max-height: 35px; max-width:35px;object-fit: cover;"></figure><p style="max-width: 70%;overflow-wrap: break-word;">@m.Content</p></li>
+		}
+	}
+	<script>
+		var objDiv = document.getElementById("messagesList");
+		objDiv.scrollTop = objDiv.scrollHeight;
+	</script>
+</ul>
+<div class="message-text-container">
+	<form>
+		<textarea onkeydown="sendMessageEnter(event)" id="messageInput"></textarea>
+		<input id="MaC" value="@c.Id" style="display:none;">
+		<input id="userInput" value="@nguoiDung.Id" style="display:none;">
+		<button onclick="sendMessage('@nguoiDung.Id')" type="button" title="send"><i class="fa fa-paper-plane"></i></button>
+	</form>
+</div>
+</div>

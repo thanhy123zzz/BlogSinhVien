@@ -1,33 +1,9 @@
 ﻿@{
-	if(ViewBag.SinhVien != null){
-		ViewData["Title"] = ViewBag.SinhVien.Ho +" "+ ViewBag.SinhVien.Ten;
-	}else{
-		ViewData["Title"] = ViewBag.QuanLy.Ho +" "+ ViewBag.QuanLy.Ten;
-	}
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	ViewData["Title"] = "Cá nhân";
 	Layout = "~/Views/Shared/_Layout.cshtml";
-	BlogSinhVienContext context = new BlogSinhVienContext();
-	string getImage(byte[] image)
-	{
-		if (image == null) return "images/avt.png";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-	SinhVien getSinhVien(string maSV){
-
-		return context.SinhVien.Find(maSV);
-	}
-
-	QuanLy getQuanLy(string maQL)
-	{
-		return context.QuanLy.Find(maQL);
-	}
-	String anhQL(){
-		return getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh);
-	}
-	String getanhSV(){
-		return getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh);
-	}
+	
 }
 
 <div class="container"> 
@@ -45,13 +21,7 @@
 		<div class="feature-photo">
 			<figure><img src="images/resources/timeline-1.jpg" alt=""></figure>
 			<div id="formAvt" style="display:none" class="add-btn">
-				@if (User.IsInRole("SV")){
-					<a href="#" onclick="CancelAvt(event,'@getanhSV()')">Huỷ</a>
-				}
-
-				else{	
-					<a href="#" onclick="CancelAvt(event,'@anhQL()')">Huỷ</a>
-				}
+					<a href="#" onclick="CancelAvt(event,'@nguoiDung.HinhAnh')">Huỷ</a>
 				<a href="#" onclick="uploadFiles(event)" title="" data-ripple="">Đồng ý</a>
 			</div>
 			<div class="container-fluid">
@@ -59,14 +29,7 @@
 					<div class="col-lg-2 col-sm-3">
 						<div class="user-avatar">
 							<figure style="max-height: 154px;">
-								@if (User.IsInRole("SV"))
-									{
-										<img style="max-height: 154px;" id="image-avt" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-									}
-									else
-									{
-										<img style="max-height: 154px;" id="image-avt" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-									}
+										<img style="max-height: 154px;object-fit:cover;" id="image-avt" src="~/images/avts/@nguoiDung.HinhAnh" alt="">
 								<form class="edit-phto">
 									<i class="fa fa-camera-retro"></i>
 									<label class="fileContainer">
@@ -83,7 +46,7 @@
 		</div>
 	</section>
 	<section>
-		<div class="gap gray-bg">
+		<div class="gap gray-bg" >
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-lg-12">
@@ -91,22 +54,18 @@
 							<div class="col-lg-4">
 								<aside class="sidebar static">
 									<div class="widget stick-widget">
-										<h4 class="widget-title">Chỉnh sửa</h4>
+										<h4 class="widget-title">Thao tác</h4>
 										<ul class="naves">
-											<li class="mb-5">
-                                                <i class="ti-info-alt"></i>
-                                                <a href="/change-information" title="">Thay đổi thông tin</a>
-                                            </li>
                                             <li class="mb-5">
                                                 <i class="ti-lock"></i>
-												<a href="/change-password" title="">Đổi mật khẩu</a>
+												<a style="cursor:pointer" onclick="showDiv1()" title="">Đổi mật khẩu</a>
                                             </li>
 										</ul>
 									</div><!-- settings widget -->										
 								</aside>
 							</div><!-- sidebar -->
 							<div class="col-lg-8">
-								<div class="central-meta">
+								<div class="central-meta" id="di1">
 									<div class="editing-info">
 										<style>
 											.editing-info label{
@@ -119,105 +78,107 @@
 												
 											}
 										</style>
-										<h5 class="f-title"><i class="ti-info-alt"></i> Thông tin cá nhân</h5>
-										@if(ViewBag.SinhVien != null){
-											<form method="post">
+										<h5 class="f-title" style="margin-bottom:0"><i class="ti-info-alt"></i> Thông tin cá nhân</h5>
+											<form method="post" action="/change-information">
 											<div class="row">
-											<div class=" col-12 mb-5">
-												<label class="control-label">Họ và tên</label><br>
-												<input class="input-group" value="@ViewBag.SinhVien.Ho @ViewBag.SinhVien.Ten" type="text" id="Ho" readonly/>
+											<div class=" col-6 mb-5">
+												<label class="control-label">Họ</label><br>
+												<input class="input-group h" value="@nguoiDung.Ho" type="text" name="Ho" readonly/>
+											</div>
+											<div class=" col-6 mb-5">
+												<label class="control-label">Tên</label><br>
+												<input class="input-group h" value="@nguoiDung.Ten" type="text" name="Ten" readonly/>
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>
 
-												<input class="input-group" value="@ViewBag.SinhVien.EmailPrivate" type="text" readonly />
+												<input class="input-group" name="EmailPrivate" value="@nguoiDung.EmailPrivate" type="text" readonly />
 											</div>
 											<div class=" col-6 mb-5">
 												<label class="control-label" for="Phone">Số điện thoại</label><br>
-												<input class="input-group" value="@ViewBag.SinhVien.Phone" type="text" readonly />
+												<input class="input-group" name="Phone" value="@nguoiDung.Phone" type="text" readonly />
 											</div>
                                             <div class=" col-6 mb-5">
 												<label class="control-label" for="Cccd">Căn cước công dân(CCCD/CMND)</label><br>
-												<input class="input-group" value="@ViewBag.SinhVien.Cccd" type="text" readonly />
+												<input class="input-group" name="Cccd" value="@nguoiDung.Cccd" type="text" readonly />
                                               </div>
                                               <div class=" col-6 mb-5">
 												<label class="control-label" for="Phone">Email trường</label><br>
-												<input class="input-group" value="@ViewBag.SinhVien.EmailEdu" type="text" readonly />
+												<input class="input-group h" name="EmailEdu" value="@nguoiDung.EmailEdu" type="text" readonly />
                                               </div>
-											  @if(@ViewBag.SinhVien.GioiTinh == true){
 												<div class=" col-6 mb-5">
 													<label class="control-label" for="GioiTinh">Giới tính</label><br>
-													<input class="input-group" value="Nam" type="text" readonly />
+													<select class="custom-select" name="GioiTinh" type="text" asp-for="@nguoiDung.GioiTinh" disabled>
+														<option value="True">Nam</option>
+														<option value="False">Nữ</option>
+													</select>
 												</div>
-											  }else{
-												<div class=" col-6 mb-5">
-													<label class="control-label" for="GioiTinh">Giới tính</label><br>
-													<input class="input-group" value="Nữ" type="text" readonly />
-												</div>
-											  }
 											  
 											<div class="col-12 mb-5">
 											  <label class="control-label" for="DiaChi">Địa chỉ</label><br>
-												<input class="input-group" value="@ViewBag.SinhVien.DiaChi" type="text" readonly />
+												<input class="input-group" name="DiaChi" value="@nguoiDung.DiaChi" type="text" readonly />
 											</div>
+											<div class="col-12 d-flex justify-content-end">
+												<div class="col-3 btn btn-success" id="btnChinhSua" onclick="reaonlyInput()" style="background-color:#8be594;border-color:#8be594;border-radius:0;color: white;">Chỉnh sửa</div>
+												
 											</div>
-											<!--<div class="submit-btns">
-
-												<button type="button" class="mtr-btn"><span>Hủy</span></button>
-													<button type="button" class="mtr-btn"><span>Cập nhật</span></button>
-											</div> -->
+										</div>
 										</form>
-
-										}else if(ViewBag.QuanLy != null){
-											<form method="post">
-											<div class="row">
-											<div class=" col-12 mb-5">
-												<label class="control-label">Họ và tên</label><br>
-												<input class="input-group" value="@ViewBag.QuanLy.Ho @ViewBag.QuanLy.Ten" type="text" id="Ho" readonly/>
-											</div>
-											<div class=" col-6 mb-5">
-												<label class="control-label" for="EmailPrivate"><a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b0e262a22270b">Email cá nhân</a></label><br>
-
-												<input class="input-group" value="@ViewBag.QuanLy.EmailPrivate" type="text" readonly />
-											</div>
-											<div class=" col-6 mb-5">
-												<label class="control-label" for="Phone">Số điện thoại</label><br>
-												<input class="input-group" value="@ViewBag.QuanLy.Phone" type="text" readonly />
-											</div>
-                                            <div class=" col-6 mb-5">
-												<label class="control-label" for="Cccd">Căn cước công dân(CCCD/CMND)</label><br>
-												<input class="input-group" value="@ViewBag.QuanLy.Cccd" type="text" readonly />
-                                              </div>
-                                              <div class=" col-6 mb-5">
-												<label class="control-label" for="Phone">Email trường</label><br>
-												<input class="input-group" value="@ViewBag.QuanLy.EmailEdu" type="text" readonly />
-                                              </div>
-											  @if(@ViewBag.QuanLy.GioiTinh == true){
-												<div class=" col-6 mb-5">
-													<label class="control-label" for="GioiTinh">Giới tính</label><br>
-													<input class="input-group" value="Nam" type="text" readonly />
-												</div>
-											  }else{
-												<div class=" col-6 mb-5">
-													<label class="control-label" for="GioiTinh">Giới tính</label><br>
-													<input class="input-group" value="Nữ" type="text" readonly />
-												</div>
-											  }
-											  
-											<div class="col-12 mb-5">
-											  <label class="control-label" for="DiaChi">Địa chỉ</label><br>
-												<input class="input-group" value="@ViewBag.QuanLy.DiaChi" type="text" readonly />
-											</div>
-											</div>
-											<!--<div class="submit-btns">
-
-												<button type="button" class="mtr-btn"><span>Hủy</span></button>
-													<button type="button" class="mtr-btn"><span>Cập nhật</span></button>
-											</div> -->
-										</form>
-										}
 										</div>
 								</div>	
+								<div class="central-meta d-none" id="di2">
+									<div class="editing-info">
+										<h5 class="f-title" style="margin-bottom:0"><i class="ti-lock"></i>Đổi mật khẩu</h5>
+										<script>
+											$(document).ready(function () {
+													$("#savesubmit").prop('disabled', true);
+											});
+
+											function checkPass() {
+												var confirm = $("#confirmpass").val();
+												var newpass = $("#newpass").val();
+												if (confirm !== newpass) {
+													$("#savesubmit").prop('disabled', true);
+													$("#confirmpass").css('border-bottom','2px solid red');
+													$("#newpass").css('border-bottom','2px solid Lime');
+												} else {
+													$("#savesubmit").prop('disabled', false);
+													$("#confirmpass").css('border-bottom','none');
+													$("#newpass").css('border-bottom','none');
+												}
+											}
+										</script>
+										<form method="post" action="/confirm-change-password" style="margin-top:0">
+											<div id="changepass">
+												<label style="color: red;" id="messPass">@TempData["messPass"]</label>
+												<div class="form-group mb-5">
+													<input type="password" id="oldpass" name="oldpass"
+														required="required" />
+													<label class="control-label" for="input">Mật khẩu cũ</label><i
+														class="mtrl-select"></i>
+												</div>
+												<div class="form-group mb-5">
+													<input onkeyup="checkPass()" type="password" id="newpass" name="newpass"
+														required="required" />
+													<label class="control-label" for="input">Mật khẩu mới</label><i
+														class="mtrl-select"></i>
+												</div>
+												<div class="form-group mb-5">
+													<input onkeyup="checkPass()" type="password" id="confirmpass"
+														name="confirmpass" required="required" />
+													<label  class="control-label" for="input">Xác nhận mật khẩu</label><i
+														class="mtrl-select"></i>
+												</div>
+												<div class="col-12 d-flex justify-content-end">
+												<div class="col-4 d-flex justify-content-end">
+													<button class="btn btn-secondary col-5" type="button" onclick="showDiv2()">Trở về</button>
+													<button id="savesubmit" type="submit" class="btn btn-success col-5" style="margin-left:5px">Lưu</button>
+												</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
 							</div>
 						</div>	
 					</div>
@@ -230,7 +191,7 @@
 		function CancelAvt(event,src){
 			event.preventDefault();
 			document.getElementById("formAvt").style.display = "none";
-			document.getElementById("image-avt").src = src;
+			document.getElementById("image-avt").src = "/images/avts/"+src;
 		}
 		function readURL(input) {
 			if (input.files && input.files[0]) {
@@ -274,4 +235,26 @@
 				}
 			  );
 			}
+		function reaonlyInput(){
+			
+			$('.input-group').attr('readonly', false);
+			$('.h').attr('readonly', true);
+			$('.custom-select').attr('disabled',false);
+
+			$('#btnChinhSua').replaceWith('<div class="col-4 d-flex justify-content-end" id="btnChinhSua"><button class="btn btn-secondary col-5" onclick="btnHuy()" type="button">Huỷ</button><button class="btn btn-success col-5" type="submit" style="margin-left:5px">Lưu</button></div>');
+		}
+
+		function btnHuy(){
+			$('.input-group').attr('readonly', true);
+			$('.custom-select').attr('disabled',true);
+			$('#btnChinhSua').replaceWith('<div class="col-3 btn btn-success" id="btnChinhSua" onclick="reaonlyInput()" style="background-color:#8be594;border-color:#8be594;border-radius:0;color: white;">Chỉnh sửa</div>');
+		}
+		function showDiv1(){
+			$('#di1').addClass("d-none");
+			$('#di2').removeClass("d-none");
+		}
+		function showDiv2(){
+			$('#di2').addClass("d-none");
+			$('#di1').removeClass("d-none");
+		}
 	</script>

@@ -1,42 +1,84 @@
-﻿using BlogSinhVien.Models.Entities;
+﻿using BlogSinhVien.Models.EntitiesNew;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using System.Linq;
 
 namespace BlogSinhVien.Controllers
 {
-    [Authorize(Roles = "QL,SV")]
+    [Authorize]
     [Route("BDCaNhan")]
     public class BDCaNhan : Controller
-	{
+    {
+        private readonly IWebHostEnvironment webHostEnvironment;
+
+        public BDCaNhan(IWebHostEnvironment hostEnvironment)
+        {
+            webHostEnvironment = hostEnvironment;
+        }
+
         public IActionResult Index()
-		{
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            ViewBag.ListMyPost = context.BaiDang.Where(x => x.MaSinhVien == User.FindFirst("MaSV").Value || x.MaQl == User.FindFirst("MaSV").Value);
-			return View();
-		}
+        {
+            ViewData["Title"] = "Quản lý bài viết cá nhân";
+            return View();
+        }
         [Route("deleteBD/{MaBD:int}")]
         public IActionResult delete(int MaBD)
         {
-            BlogSinhVienContext context = new BlogSinhVienContext();
-            context.Database.ExecuteSqlRaw("delete ChiTietBaiDang where MaBaiDang = "+MaBD);
-
-            BaiDang bd = context.BaiDang.Find(MaBD);
-
-            List<BinhLuan> bls = context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
-
-            foreach(BinhLuan bl in bls)
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            var tran = context.Database.BeginTransaction();
+            try
             {
-                context.Database.ExecuteSqlRaw("delete Vote where MaCmt = " + bl.MaCmt);
+                var bd = context.BaiDang
+                    .Include(x => x.BinhLuan)
+                    .Include(x => x.ChiTietBaiDang)
+                    .Where(x => x.Id == MaBD).FirstOrDefault();
+                if (bd.BinhLuan != null)
+                {
+                    foreach (BinhLuan bl in bd.BinhLuan)
+                    {
+                        context.BinhLuan.Remove(bl);
+                    }
+                }
+                if (bd.ChiTietBaiDang != null)
+                {
+                    foreach (ChiTietBaiDang ct in bd.ChiTietBaiDang)
+                    {
+                        string path = Path.Combine(webHostEnvironment.WebRootPath, "BaiDang", ct.Path, ct.NameFile);
+                        System.IO.File.Delete(path);
+                        context.ChiTietBaiDang.Remove(ct);
+                    }
+                }
+                context.BaiDang.Remove(bd);
+                context.SaveChanges();
+                tran.Commit();
             }
-
-            context.BinhLuan.RemoveRange(context.BinhLuan.Where(x => x.MaBaiDang == MaBD));
-            context.SaveChanges();
-            context.BaiDang.Remove(bd);
-            context.SaveChanges();
+            catch (Exception e)
+            {
+                tran.Rollback();
+                TempData["ThongBao"] = "Xoá thất bại!";
+            }
+            TempData["ThongBao"] = "Xoá thành công!";
             return RedirectToAction("Index");
         }
-	}
+
+        [HttpPost("/load-more-bd-cn")]
+        public IActionResult load_more_bd(int slbd)
+        {
+            BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+            Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+            ViewBag.ListBaiDang = context.BaiDang.Include(x => x.IduserNavigation)
+            .Include(x => x.ChiTietBaiDang)
+            .Include(x => x.BinhLuan)
+            .Include(x => x.IduserNavigation)
+            .Where(x => x.Iduser == nguoiDung.Id)
+            .OrderByDescending(x => x.NgayDang)
+            .Take(slbd + 5)
+            .ToList();
+            return PartialView("loadBaiDangCN");
+        }
+    }
 }

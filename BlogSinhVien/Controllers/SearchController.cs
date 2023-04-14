@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using BlogSinhVien.Models.Entities;
+using BlogSinhVien.Models.EntitiesNew;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace BlogSinhVien.Controllers
 {
-    // [Route("[search]")]
+    [Authorize]
     public class SearchController : Controller
     {
         // private readonly ILogger<SearchController> _logger;
@@ -26,61 +21,36 @@ namespace BlogSinhVien.Controllers
         [Route("/searchAll")]
         public IActionResult SearchAll(IFormCollection form)
         {
-            String search = form["search"];
+            string search = form["search"];
+            ViewData["Title"] = "Tìm kiếm: '" + search + "'";
             ViewBag.PartialView = "SearchAll";
             ViewBag.search = search;
-            var _context = new BlogSinhVienContext();
-            
-            var list  = _context.BaiDang.FromSqlRaw($"(select MaBaiDang,bd.MaSinhVien,bd.MaQL,bd.NgayDang,TrangThai, CAST(bd.Content AS NVARCHAR(MAX)) as 'content' from BaiDang bd join SinhVien sv on sv.MaSV = bd.MaSinhVien Where CONCAT_WS(' ',Content,sv.Ho,sv.Ten)  like N'%"+search+"%')"
-              +"union"
-              +"(select MaBaiDang,bd.MaSinhVien,bd.MaQL,bd.NgayDang,TrangThai,CAST(bd.Content AS NVARCHAR(MAX)) from BaiDang bd join QuanLy ql on ql.MaQL = bd.MaQL Where CONCAT_WS(' ',Content,ql.Ho,ql.Ten)  like N'%"+search+"%');").ToList();
-            var list2 = _context.SinhVien.ToList();
-            var list3 = _context.QuanLy.ToList();
-            var listnewsv = new List<SinhVien>(); 
-            foreach(BaiDang x in list){
-                foreach(SinhVien sv in list2){
-                    if(x.MaSinhVien == sv.MaSv){
-                        if(listnewsv.Contains(sv) == true){
-                            
-                        }else{
-                        listnewsv.Add(sv);
-                        Console.WriteLine(listnewsv.Count);
-                        }
-                    }
-                }
+            var _context = new BlogSinhVienNewContext();
+
+            var list = _context.BaiDang
+            .Include(x => x.IduserNavigation)
+            .Include(x => x.ChiTietBaiDang)
+            .Include(x => x.BinhLuan)
+            .Where(x => x.Content
+            .ToLower().Contains(search))
+            .OrderByDescending(x => x.NgayDang)
+            .ToList();
+            ViewBag.listBaiDang = list;
+            ViewBag.listSV = _context.Users.Where(x => (x.Ho + " " + x.Ten).ToLower().Contains(search)).ToList(); ;
+            if (list.Count() == 0)
+            {
+                ViewBag.messSearch = $"Không tìm thấy kết quả phù hợp!";
             }
-                TempData["listBaiDang"] = list;
-                // TempData["listSV"] = list2;
-                ViewBag.listQL = list3;
-                ViewBag.listSV = listnewsv;
-                if(list.Count() == 0){
-                    ViewBag.messSearch = $"Không tìm thấy kết quả phù hợp!";
-                }
             return View();
         }
         // {MaCmt:int}
         [HttpGet]
-        [Route("/chat/{maSV}")]
-        public IActionResult Chat(string maSV)
+        [Route("/chat/{Id:int}")]
+        public IActionResult Chat(int Id)
         {
-            Console.WriteLine(maSV);
-            string masv1 = User.FindFirst("MaSV").Value;
-            var _context = new BlogSinhVienContext();
-            var list = _context.Conversation.FromSqlRaw($"SELECT *  FROM [BlogSinhVien].[dbo].[Conversation] Where MaSinhVien1 = '"+masv1+"' and MaSinhVien2 = '"+maSV+"';").ToList();        
-            var list2 = _context.Conversation.FromSqlRaw($"SELECT *  FROM [BlogSinhVien].[dbo].[Conversation] Where MaSinhVien1 = '"+maSV+"' and MaSinhVien2 = '"+masv1+"';").ToList();        
-            Console.WriteLine(list.Count);
-            var conversation = new Conversation();
-            conversation.MaSinhVien1 = masv1;
-            conversation.MaSinhVien2 = maSV;
-            if(list.Count <= 0 && list2.Count <= 0){
-                _context.Conversation.Add(conversation);
-                // _context.Conversation.FromSqlRaw($"Insert into [BlogSinhVien].[dbo].[Conversation](MaSinhVien1,MaSinhVien2) values('"+masv1+"','"+maSV+"');");
-                _context.SaveChanges();
-                return RedirectToAction("Index","Messages");
-            }else{
-                return RedirectToAction("Index","Messages");
-                
-            }
+            var context = new BlogSinhVienNewContext();
+            TempData["IdUser"] = Id;
+            return RedirectToAction("Index", "Messages");
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -90,12 +60,17 @@ namespace BlogSinhVien.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "QL,SV")]
-        [Route("/profile/{maSV}")]
-        public IActionResult Profile(string maSV){
-            var _context = new BlogSinhVienContext();
-            var stu = _context.SinhVien.FirstOrDefault(x => x.MaSv == maSV);
-            var list =  _context.BaiDang.Where(x => x.MaSinhVien == maSV).ToList();
+        [Route("/profile/{Id:int}")]
+        public IActionResult Profile(int Id)
+        {
+            var _context = new BlogSinhVienNewContext();
+            var stu = _context.Users.Find(Id);
+            var list = _context.BaiDang.Include(x => x.IduserNavigation)
+                            .Include(x => x.ChiTietBaiDang)
+                            .Include(x => x.BinhLuan)
+                            .Where(x => x.TrangThai == true && x.Iduser == Id)
+                            .OrderByDescending(x => x.NgayDang)
+                            .ToList();
             ViewBag.ListPost = list;
             return View(stu);
         }

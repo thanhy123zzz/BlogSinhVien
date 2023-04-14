@@ -1,44 +1,23 @@
 ﻿@{
-	BlogSinhVienContext context = new BlogSinhVienContext();
-	string getImage(byte[] image)
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	List<BaiDang> getListBD = context.BaiDang.Include(x => x.IduserNavigation)
+		.Include(x => x.ChiTietBaiDang)
+		.Include(x => x.BinhLuan)
+		.Where(x => x.Iduser == nguoiDung.Id)
+		.OrderByDescending(x => x.NgayDang)
+		.Take(5)
+		.ToList();
+	string dayToString(DateTime? a)
 	{
-		if (image == null) return "images/avt.png";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-	SinhVien getSinhVien(string maSV)
-	{
-		return context.SinhVien.Find(maSV);
-	}
-	List<ChiTietBaiDang> chiTietBaiDangs(int MaBD)
-	{
-		return context.ChiTietBaiDang.Where(x => x.MaBaiDang == MaBD).ToList();
-	}
-
-	string getVideo(byte[] image)
-	{
-		if (image == null) return "";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:video/mp4;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-
-	List<BinhLuan> binhLuans(int MaBD)
-	{
-		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
-	}
-
-	QuanLy getQuanLy(string maQL)
-	{
-		return context.QuanLy.Find(maQL);
-	}
-	int GetSLVote(int MaCmt)
-	{
-		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
+		if (a == null)
+		{
+			return "";
+		}
+		return a.Value.ToString("dd-MM-yyyy HH:mm");
 	}
 }
-<div class="gap2 gray-bg">
+<div class="gap2 gray-bg" style="margin-top:50px">
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-lg-12">
@@ -47,181 +26,190 @@
 							</div><!-- sidebar -->
 							<div class="col-lg-8">
 								<div id="loadMore" class="loadMore">
-							@foreach (BaiDang bd in ViewBag.ListMyPost)
+									@foreach (BaiDang bd in getListBD)
 							{
-										<div class="central-meta item">
-										<div class="user-post">
-											<div class="friend-info">
-												<figure>
-												@if (bd.MaSinhVien != null)
-												{
-													<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
-												}
-												else
-												{
-													<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
-												}
-												</figure>
-												<div class="friend-name">
-													<ins style="display:flex;justify-content:space-between;">
-														@if (bd.MaSinhVien != null){
-														<a href="/profile" title="@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a>
-														}
-														else{
-														<a href="/profile" title="@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a>
-														}
-														@if(bd.TrangThai==true){
-																	<p style="color:lawngreen;margin-bottom: 0;">Đã đăng</p>
-														}
-														else{
-															<p style="color:orangered;margin-bottom: 0;">Đang duyệt</p>
-														}
-													</ins>
-													<span style="display:flex;justify-content:space-between;">
-														@bd.NgayDang
-															<a href="/BDCaNhan/deleteBD/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn xoá bài viết này?')" style="color:orangered;margin-bottom: 0;cursor:pointer;">
-																Huỷ <i class="ti-trash"></i>
-															</a>
-													</span>
-												</div>
-												<div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
-												@foreach (ChiTietBaiDang item in chiTietBaiDangs(bd.MaBaiDang))
-												{
-													@if (item.Type.Trim().EndsWith("/png") || item.Type.Trim().EndsWith("/jpeg") || item.Type.Trim().EndsWith("/jpg"))
+									<div class="central-meta item">
+									<div class="user-post">
+										<div class="friend-info">
+											<figure>
+												<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;"
+												src="~/images/avts/@bd.IduserNavigation.HinhAnh" alt="">
+											</figure>
+											<div class="friend-name">
+												<ins style="display:flex;justify-content:space-between;">
+													<a href="/profile/@bd.Iduser" title="">
+														@bd.IduserNavigation.Ho
+														@bd.IduserNavigation.Ten</a>
+													@if (bd.TrangThai == true)
 													{
-																		<img style="margin-bottom:10px;" width="32%" src="@getImage(item.Files)" alt="@item.NameFile">
+														<p style="color:lawngreen;margin-bottom: 0;">Đã đăng</p>
+													}
+													else
+													{
+														<p style="color:orangered;margin-bottom: 0;">Đang duyệt</p>
+													}
+												</ins>
+												<span style="display:flex;justify-content:space-between;">@dayToString(bd.NgayDang)
+													<a href="/BDCaNhan/deleteBD/@bd.Id" onclick="return confirm('Bạn có muốn xoá bài viết này?')" 
+													style="color:orangered;margin-bottom: 0;cursor:pointer;">
+														Huỷ <i class="ti-trash"></i>
+													</a>
+												</span>
+											</div>
+											<div class="post-meta"
+											style="display:flex; justify-content: space-around; flex-flow: wrap;">
+												@foreach (ChiTietBaiDang item in bd.ChiTietBaiDang)
+												{
+													@if (item.Type.EndsWith("/png") || item.Type.EndsWith("/jpeg") ||
+															item.Type.EndsWith("/jpg"))
+													{
+														<img id="image_BD_@item.Id" onclick="show_image('@item.Id')" style="margin-bottom:10px; object-fit:cover;cursor: pointer" width="32%"
+												src="~/BaiDang/@item.Path/@item.NameFile" alt="@item.NameFile">
 													}
 													@if (item.Type.Trim().EndsWith("/mp4"))
 													{
-																		<video style="margin-bottom:10px;" controls width="32%" src="@getVideo(item.Files)"></video>
+														<video style="margin-bottom:10px;" controls width="32%"
+												src="~/BaiDang/@item.Path/@item.NameFile"></video>
 													}
 													@if (item.Type.Trim().EndsWith(".document"))
 													{
-																		<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" 
-															style="white-space:normal;margin-bottom:10px; max-height:60px">
-																			<i class="fa fa-file-word-o">
-																			</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px; max-height:60px">
+															<i class="fa fa-file-word-o">
+															</i>
 															@item.NameFile.Trim()
-																		</a>
+														</a>
 													}
 													@if (item.Type.Trim().EndsWith("/pdf"))
 													{
-																											<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
-																			<i class="fa fa-file-excel-o">
-																			</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<i class="fa fa-file-excel-o">
+															</i>
 															@item.NameFile.Trim()
-																		</a>
+														</a>
 													}
 													@if (item.Type.Trim().EndsWith(".sheet"))
 													{
-																											<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
-																			<i class="fa fa-file-pdf-o">
-																			</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<i class="fa fa-file-pdf-o">
+															</i>
 															@item.NameFile.Trim()
-																		</a>
+														</a>
 													}
 													@if (item.Type.Trim().EndsWith(".presentation"))
 													{
-																					<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
-																			<i class="fa fa-file-powerpoint-o">
-																			</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<i class="fa fa-file-powerpoint-o">
+															</i>
 															@item.NameFile.Trim()
-																		</a>
+														</a>
 													}
 												}
-													<div class="we-video-info">
-														<ul>
-															<li>
-																<span class="comment" data-toggle="tooltip" title="Comments">
-																	<i class="fa fa-comments-o"></i>
-																		<ins id="sl_cmt_@bd.MaBaiDang">@binhLuans(bd.MaBaiDang).Count()</ins>
-																</span>
-															</li>
-														</ul>
-													</div>
-													<div class="description">
-														<p>
+												<div class="we-video-info">
+													<ul>
+														<li>
+															<span class="comment" data-toggle="tooltip" title="Comments">
+																<i class="fa fa-comments-o"></i>
+																<ins id="sl_cmt_@bd.Id">@bd.BinhLuan.Count</ins>
+															</span>
+														</li>
+													</ul>
+												</div>
+												<div class="description">
+													<label>
 														@bd.Content
-														</p>
-													</div>
+													</label>
 												</div>
 											</div>
-												<div class="coment-area">
-												<ul class="we-comet" id="list_cmt_@bd.MaBaiDang">
-												@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
+										</div>
+										<div class="coment-area">
+											<ul class="we-comet" id="list_cmt_@bd.Id">
+												@foreach (BinhLuan bl in bd.BinhLuan.Take(5).OrderByDescending(x=>x.Sllike))
 												{
-															<li style="display: flex">
-																<div class="comet-avatar">
-															@if (bl.MaSinhVien != null)
-															{
-																			<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
-															}
-															else
-															{
-																			<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
-															}
-																</div>
-																<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
-																		<div class="coment-head">
-																@if (bl.MaSinhVien != null)
-																{
-																				<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5>
-																}
-																else
-																{
-																				<h5><a href="#" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5>
-																}
-																			<span>@bl.NgayDang</span>
-																				<i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
-																		</div>
-																		<p style="word-break: break-all;">@bl.Content</p>
-																	</div>
-																<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
-																	<div class="vote-item">
-																		<i class="ti-angle-up"></i>
-																	</div>
-																	<div class="vote-item" style="margin-bottom:0;margin-left:2px">
-																		<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
-																	</div>
-
-																	<div class="vote-item">
-																		<i class="ti-angle-down"></i>
-																	</div>
-																</div>
-															</li>
-												}
-													<li>
-															<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang,true)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
-														<input id="count_cmt_@bd.MaBaiDang" style="display:none;" value="5">
-													</li>
-													<li class="post-comment">
+													Users user = context.Users.Find(bl.Iduser);
+													<li style="display: flex" class="cmt">
 														<div class="comet-avatar">
-														@if (User.IsInRole("SV"))
-														{
-																	<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getSinhVien(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-														}
-														else
-														{
-																	<img width="50px" style="max-height: 50px; max-width:50px;" src="@getImage(getQuanLy(User.FindFirst("MaSV").Value.Trim()).HinhAnh)" alt="">
-														}
-
+															<img width="40px"
+														style="max-height: 40px; max-width:40px;object-fit: cover;"
+														src="~/images/avts/@user.HinhAnh" alt="">
 														</div>
-														<div class="post-comt-box">
-															<form enctype="multipart/form-data">
-																		<textarea id="contentcomments_@bd.MaBaiDang" onkeydown="Comment(event,@bd.MaBaiDang)" placeholder="Post your comment"></textarea>
-																	<input id="userInput" value="@User.FindFirst("MaSV").Value.Trim()" style="display:none;">
-																	<div class="add-smiles" style="cursor:pointer;">
-																		<i class="fa fa-paper-plane"></i>
-																	</div>
-															</form>	
+														<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+															<div class="coment-head">
+																<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+																		@user.Ten</a></h5>
+																<span>@dayToString(bl.NgayDang)</span>
+																<i class="fa fa-thumbs-up" style="cursor:pointer;"
+															onclick="vote(@bd.Id,@bl.Id,'@User.Identity.Name')"></i>
+															</div>
+															<p style="word-break: break-all;">@bl.Content</p>
+														</div>
+														<div
+													style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+															<div class="vote-item">
+																<i class="ti-angle-up"></i>
+															</div>
+															<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																<h5 id="vote_@bl.Id" class="vote-h">@bl.Sllike</h5>
+															</div>
+
+															<div class="vote-item">
+																<i class="ti-angle-down"></i>
+															</div>
 														</div>
 													</li>
-												</ul>
-											</div>
+												}
+												<li id="beforeBL_@bd.Id">
+													<a href="" onclick="load_More_Cmt(event,@bd.Id,true)" title=""
+													id="showmore_@bd.Id" class="showmore underline @bd.Id">more
+														comments</a>
+												</li>
+												<li class="post-comment">
+													<div class="comet-avatar">
+														<img width="40px"
+														style="max-height: 40px; max-width:40px;object-fit: cover;"
+														src="~/images/avts/@nguoiDung.HinhAnh" alt="">
+													</div>
+													<div class="post-comt-box">
+														<form enctype="multipart/form-data">
+															<textarea id="contentcomments_@bd.Id"
+															onkeydown="Comment(event,@bd.Id,'@User.Identity.Name')"
+															placeholder="Post your comment"></textarea>
+															@*<input id="userInput"
+																value="@User.FindFirst("MaSV").Value.Trim()"
+																style="display:none;">*@
+															<div class="add-smiles" style="cursor:pointer;">
+																<i class="fa fa-paper-plane"></i>
+															</div>
+														</form>
+													</div>
+												</li>
+											</ul>
 										</div>
 									</div>
+								</div>
 							}
 								</div>
+								@if (getListBD.Count > 0)
+								{
+									<button onclick="load_More_BD('')" class="btn-view btn-load-more"></button>
+								}else{
+								<div class="central-meta item">
+									<div class="row">
+										<h5 class="m-auto">Không có bài viết nào</h5>
+
+									</div>
+									<div class="row mt-1">
+										<button class="btn btn-link m-auto" onclick="window.history.go(-1);">Quay lại</button>
+									</div>
+								</div>
+								}
 							</div><!-- centerl meta -->
 							<div class="col-lg-2">
 							</div><!-- sidebar -->

@@ -1,400 +1,409 @@
 ﻿@{
-	BlogSinhVienContext context = new BlogSinhVienContext();
-	string getImage(byte[] image)
+	BlogSinhVienNewContext context = new BlogSinhVienNewContext();
+	Users nguoiDung = context.Users.Find(Int32.Parse(User.Identity.Name));
+	List<BaiDang> getListBD()
 	{
-		if (image == null) return "/images/avt.png";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-		return imageDataURL;
-	}
-	SinhVien getSinhVien(string maSV){
-
-		return context.SinhVien.Find(maSV);
-	}
-	List<ChiTietBaiDang> chiTietBaiDangs(int MaBD){
-		return context.ChiTietBaiDang.Where(x => x.MaBaiDang == MaBD).ToList();
+		return context.BaiDang.Include(x => x.IduserNavigation)
+		.Include(x => x.ChiTietBaiDang)
+		.Include(x => x.BinhLuan)
+		.Include(x=>x.ToCao)
+		.OrderByDescending(x => x.NgayDang)
+		.Take(5)
+		.ToList();
 	}
 
-	string getVideo(byte[] image)
+	List<Users> getListUserSV()
 	{
-		if (image == null) return "";
-		string imageBase64Data = Convert.ToBase64String(image);
-		string imageDataURL = string.Format("data:video/mp4;base64,{0}", imageBase64Data);
-		return imageDataURL;
+		return context.Users
+		.Include(x => x.IdtkNavigation)
+		.Include(x => x.IdtkNavigation.IdvaiTroNavigation)
+		.Where(x => x.IdtkNavigation.IdvaiTroNavigation.MaVaiTro == "VaiTro02").ToList();
 	}
 
-	List<BinhLuan> binhLuans(int MaBD){
-		return context.BinhLuan.Where(x => x.MaBaiDang == MaBD).ToList();
-	}
 
-	QuanLy getQuanLy(string maQL)
+
+	DateTime FromDay = DateTime.Now.AddDays(-6);
+	DateTime ToDay = DateTime.Now;
+	string SLBD = "";
+	string SLVote = "";
+	string SLCmt = "";
+	string getweek()
 	{
-		return context.QuanLy.Find(maQL);
+			string e = "";
+			int d = (int)Math.Round((ToDay - FromDay).TotalDays, 0);
+			for (int i = d; i >= 0; i--)
+			{
+				e += "'" + ToDay.AddDays(-i).ToString("dd-MM-yyyy") + "'" + ", ";
+				SLBD += context.BaiDang.FromSqlRaw("select*from BaiDang where CONVERT(date,NgayDang) = '" + ToDay.AddDays(-i).ToString("yyyy-MM-dd") + "'").Count() + ", ";
+				SLCmt += context.BinhLuan.FromSqlRaw("select*from BinhLuan where CONVERT(date,NgayDang) = '" + ToDay.AddDays(-i).ToString("yyyy-MM-dd") + "'").Count() + ", ";
+				SLVote += context.Vote.FromSqlRaw("select*from Vote where CONVERT(date,TimeVote) = '" + ToDay.AddDays(-i).ToString("yyyy-MM-dd") + "'").Count() + ", ";
+			}
+			return e;
 	}
-	int GetSLVote(int MaCmt)
+
+	string dayToString(DateTime? a)
 	{
-		return context.Vote.Where(x => x.MaCmt == MaCmt).Count();
-	}
-	List<SinhVien> getListSinhVien(){
-		return context.SinhVien.ToList();
-	}
-
-	Accounts getAccount(string taikhoan){
-		return context.Accounts.Find(taikhoan);
-	}
-
-	string getweek(){
-		string e = "";
-		DateTime date = DateTime.Now;
-
-		for(int i = 6; i>=0;i--){
-			e += "'" + date.AddDays(-i).ToString("MM/dd/yyyy") + "'"+", ";
-		}
-		return e;
-	}
-
-	string getDataBD(){
-		string e = "";
-		for (int i = 6; i >= 0; i--)
+		if (a == null)
 		{
-			e+=context.BaiDang.Where(x => x.NgayDang.Day == (DateTime.Now.Day - i)).Count().ToString() + ", ";
+			return "";
 		}
-		return e;
-	}
-	string getDataCmt()
-	{
-		string e = "";
-		for (int i = 6; i >= 0; i--)
-		{
-			e += context.BinhLuan.Where(x => x.NgayDang.Day == (DateTime.Now.Day - i)).Count().ToString() + ", ";
-		}
-		return e;
-	}
-	string getDataVote()
-	{
-		string e = "";
-		for (int i = 6; i >= 0; i--)
-		{
-			e += context.Vote.Where(x => x.TimeVote.Value.Day == (DateTime.Now.Day - i)).Count().ToString() + ", ";
-		}
-		return e;
+		return a.Value.ToString("dd-MM-yyyy HH:mm");
 	}
 }
 
-@if (TempData["ThongBao"]!=null)
-{
-	<script type="text/javascript" charset="utf-8">
-		window.onload = function () {
-			alert("@Html.Raw(@TempData["ThongBao"])");
-		};
-	</script>
-}
-<div class="gap2 gray-bg">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="row merged20" id="page-contents">
-							<div class="col-lg-2">
-							
-							</div><!-- sidebar -->
-							<div class="col-lg-8">
-								<div class="topbar stick top-menu-manager">
-									<div class="top-area" style="width:auto;">
-											<ul class="setting-area">
-												<li class="menu-manager activel" title="Bài viết" style="cursor:pointer;margin-right:0;" id="quanlybaiviet" onclick="active('quanlybaiviet')">Quản lý bài viết</li>
-												<li class="menu-manager" title="Quản lý sinh viên" style="cursor:pointer;margin-right:0;" id="quanlysv" onclick="active('quanlysv')">Quản lý sinh viên</li>
-												<li class="menu-manager" title="Thống kê" style="cursor:pointer;margin-right:0;" id="thongke" onclick="active('thongke')">Thống kê hoạt động</li>
-											</ul>
-									</div>
-									<div class="top-search" style="margin: auto 1%;">
-										<div class="search-menu-manager">
-											<input id="search_manager" onkeydown="searchManagerEnter(event)" type="text" placeholder="Tìm kiếm">
-											<button style="border:none" onclick="searchManager()" data-ripple><i class="ti-search"></i></button>
-										</div>
-									</div>
+<div class="gap2 gray-bg" style="margin-top:50px">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="row merged20" id="page-contents">
+					<div class="col-lg-2">
+
+					</div><!-- sidebar -->
+					<div class="col-lg-8">
+						<div class="topbar stick top-menu-manager" style="position: unset;">
+							<div class="top-area" style="width:auto;">
+								<ul class="setting-area">
+									<li class="menu-manager activel" title="Bài viết"
+										style="cursor:pointer;margin-right:0;" id="quanlybaiviet"
+										onclick="active('quanlybaiviet')">Quản lý bài viết</li>
+									<li class="menu-manager" title="Quản lý sinh viên"
+										style="cursor:pointer;margin-right:0;" id="quanlysv"
+										onclick="active('quanlysv')">Quản lý sinh viên</li>
+									<li class="menu-manager" title="Thống kê" style="cursor:pointer;margin-right:0;"
+										id="thongke" onclick="active('thongke')">Thống kê hoạt động</li>
+								</ul>
+							</div>
+							<div class="top-search" style="margin: auto 1%;">
+								<div class="search-menu-manager">
+									<input id="search_manager" onkeydown="searchManagerEnter(event)" type="text"
+										placeholder="Tìm kiếm">
+									<button style="border:none" onclick="searchManager()" data-ripple><i
+											class="ti-search"></i></button>
 								</div>
-								<div id="contain_quanlybaiviet" class="contain">
-							@foreach (BaiDang bd in ViewBag.ListBD)
+							</div>
+						</div>
+						<div id="contain_quanlybaiviet" class="contain">
+							@foreach (BaiDang bd in getListBD())
 							{
-											<div class="central-meta item">
-											<div class="user-post">
-												<div class="friend-info">
-													<figure>
-														@if (bd.MaSinhVien != null)
-														{
-															<img style="width:70px; height:70px" src="@getImage(getSinhVien(bd.MaSinhVien).HinhAnh)" alt="">
-														}
-														else
-														{
-															<img style="width:70px; height:70px" src="@getImage(getQuanLy(bd.MaQl).HinhAnh)" alt="">
-														}
-													</figure>
-													<div class="friend-name">
-														<ins style="display:flex;justify-content:space-between;">
-													@if (bd.MaSinhVien != null)
+								<div class="central-meta item">
+									<div class="user-post">
+										<div class="friend-info">
+											<figure>
+												<img width="60px" style="max-height: 60px;max-width:60px;object-fit: cover;"
+												src="~/images/avts/@bd.IduserNavigation.HinhAnh" alt="">
+											</figure>
+											<div class="friend-name">
+												<ins style="display:flex;justify-content:space-between;">
+													<a href="/profile/@bd.Iduser" title="">
+														@bd.IduserNavigation.Ho
+														@bd.IduserNavigation.Ten</a>
+													@if (bd.TrangThai == true)
 													{
-														<ins style="text-decoration: none;"><a href="time-line.html" title="">@getSinhVien(bd.MaSinhVien).Ho @getSinhVien(bd.MaSinhVien).Ten</a></ins>
+														<div class="mb-0 d-flex">
+														<p class="mb-0" style="color:lawngreen;">Đã duyệt </p>
+														<p class="mb-0 ml-1" style="color:red;">(@bd.ToCao.Count)</p>
+														</div>
 													}
 													else
 													{
-														<ins style="text-decoration: none;"><a href="time-line.html" title="">@getQuanLy(bd.MaQl).Ho @getQuanLy(bd.MaQl).Ten</a></ins>
+														<div class="mb-0 d-flex">
+														<p class="mb-0" style="color:orangered;">Chờ duyệt</p>
+														<p class="mb-0 ml-1" style="color:red;">(@bd.ToCao.Count)</p>
+														</div>
 													}
-													@if (bd.TrangThai == false)
-													{
-														<p style="margin-bottom: 0;color:orangered;">Chờ duyệt</p>
-													}else{
-														<p style="margin-bottom: 0;color:lawngreen;">Đã duyệt</p>
-													}
-													</ins>
-													<span style="display:flex;justify-content:space-between;">
-														@bd.NgayDang
-														<div>
+												</ins>
+												<span class="d-flex justify-content-between">@dayToString(bd.NgayDang)
+													<div>
 														@if (bd.TrangThai == false)
 														{
-														<a href="/managerment/duyet/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn duyệt bài viết này?')" style="color:lawngreen;margin-bottom: 0;cursor:pointer;">
-															Duyệt <i class="ti-check"></i>
-																	</a>
-														}|
-															<a href="/managerment/xoa/@bd.MaBaiDang" onclick="return confirm('Bạn có muốn xoá bài viết này?')" style="color:orangered;margin-bottom: 0;cursor:pointer;">
-																	Huỷ <i class="ti-trash"></i>
+															<a href="/managerment/duyet/@bd.Id"
+														onclick="return confirm('Bạn có muốn duyệt bài viết này?')"
+														style="color:lawngreen;margin-bottom: 0;cursor:pointer;">
+																Duyệt <i class="ti-check"></i>
 															</a>
-														</div>	
-														</span>
+														}
+														|
+														<a href="/managerment/xoa/@bd.Id"
+														onclick="return confirm('Bạn có muốn xoá bài viết này?')"
+														style="color:orangered;margin-bottom: 0;cursor:pointer;">
+															Xoá <i class="ti-trash"></i>
+														</a>
 													</div>
-													<div class="post-meta" style="display:flex; justify-content: space-around; flex-flow: wrap;">
-												@foreach (ChiTietBaiDang item in chiTietBaiDangs(bd.MaBaiDang))
+												</span>
+											</div>
+											<div class="post-meta"
+											style="display:flex; justify-content: space-around; flex-flow: wrap;">
+												@foreach (ChiTietBaiDang item in bd.ChiTietBaiDang)
 												{
-													@if (item.Type.Trim().EndsWith("/png") || item.Type.Trim().EndsWith("/jpeg") || item.Type.Trim().EndsWith("/jpg"))
+													@if (item.Type.EndsWith("/png") || item.Type.EndsWith("/jpeg") ||
+															item.Type.EndsWith("/jpg"))
 													{
-																					<img style="margin-bottom:10px;" width="32%" src="@getImage(item.Files)" alt="@item.NameFile">
+														<img id="image_BD_@item.Id" onclick="show_image('@item.Id')" style="margin-bottom:10px; object-fit:cover;cursor: pointer" width="32%"
+												src="~/BaiDang/@item.Path/@item.NameFile" alt="@item.NameFile">
 													}
 													@if (item.Type.Trim().EndsWith("/mp4"))
 													{
-																					<video style="margin-bottom:10px;" controls width="32%" src="@getVideo(item.Files)"></video>
+														<video style="margin-bottom:10px;" controls width="32%"
+												src="~/BaiDang/@item.Path/@item.NameFile"></video>
 													}
 													@if (item.Type.Trim().EndsWith(".document"))
 													{
-																					<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" 
-															style="white-space:normal;margin-bottom:10px; max-height:60px">
-																						<i class="fa fa-file-word-o">
-																						</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px; max-height:60px">
+															<i class="fa fa-file-word-o">
+															</i>
 															@item.NameFile.Trim()
-																					</a>
+														</a>
 													}
 													@if (item.Type.Trim().EndsWith("/pdf"))
 													{
-																														<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
-																						<i class="fa fa-file-excel-o">
-																						</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<i class="fa fa-file-excel-o">
+															</i>
 															@item.NameFile.Trim()
-																					</a>
+														</a>
 													}
 													@if (item.Type.Trim().EndsWith(".sheet"))
 													{
-																														<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
-																						<i class="fa fa-file-pdf-o">
-																						</i>
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
+															<i class="fa fa-file-pdf-o">
+															</i>
 															@item.NameFile.Trim()
-																					</a>
+														</a>
 													}
 													@if (item.Type.Trim().EndsWith(".presentation"))
 													{
-															<a href="/download?MaBD=@bd.MaBaiDang&tenFile=@item.NameFile.Trim()&loaiFile=@item.Type.Trim()" class="btn btn-light" style="white-space:normal;margin-bottom:10px;max-height:60px">
+														<a href="/download?path=@item.Path&tenFile=@item.NameFile&type=@item.Type"
+												class="btn btn-light"
+												style="white-space:normal;margin-bottom:10px;max-height:60px">
 															<i class="fa fa-file-powerpoint-o">
 															</i>
 															@item.NameFile.Trim()
-															</a>
+														</a>
 													}
 												}
-														<div class="we-video-info">
-															<ul>
-																<li>
-																	<span class="comment" data-toggle="tooltip" title="Comments">
-																		<i class="fa fa-comments-o"></i>
-																			<ins>@binhLuans(bd.MaBaiDang).Count()</ins>
-																	</span>
-																</li>
-															</ul>
-														</div>
-														<div class="description">
-															<p>
-														@bd.Content
-															</p>
-														</div>
-													</div>
+												<div class="we-video-info">
+													<ul>
+														<li>
+															<span class="comment" data-toggle="tooltip" title="Comments">
+																<i class="fa fa-comments-o"></i>
+																<ins id="sl_cmt_@bd.Id">@bd.BinhLuan.Count</ins>
+															</span>
+														</li>
+													</ul>
 												</div>
-													<div class="coment-area">
-												<ul class="we-comet" id="list_cmt_@bd.MaBaiDang">
-												@foreach (BinhLuan bl in binhLuans(bd.MaBaiDang).Take(5))
+												<div class="description">
+													<label>
+														@bd.Content
+													</label>
+												</div>
+											</div>
+										</div>
+										<div class="coment-area">
+											<ul class="we-comet" id="list_cmt_@bd.Id">
+												@foreach (BinhLuan bl in bd.BinhLuan.Take(5).OrderByDescending(x =>
+														x.Sllike))
 												{
-															<li style="display: flex">
-																<div class="comet-avatar">
-															@if (bl.MaSinhVien != null)
-															{
-																			<img style="width:50px; height:50px" src="@getImage(getSinhVien(bl.MaSinhVien).HinhAnh)" alt="">
-															}
-															else
-															{
-																			<img style="width:50px; height:50px" src="@getImage(getQuanLy(bl.MaQl).HinhAnh)" alt="">
-															}
-																</div>
-																<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
-															<div class="coment-head" style="display:inline-flex;justify-content:space-between">
-															<div class="coment-head">
-																@if (bl.MaSinhVien != null)
-																{
-																	<h5><a href="/profile/@bl.MaSinhVien" title="">@getSinhVien(bl.MaSinhVien).Ho @getSinhVien(bl.MaSinhVien).Ten</a></h5> 
+													Users user = context.Users.Find(bl.Iduser);
+													<li style="display: flex" class="cmt" id="Cmt_@bl.Id">
+														<div class="comet-avatar">
+															<img width="40px"
+														style="max-height: 40px; max-width:40px;object-fit: cover;"
+														src="~/images/avts/@user.HinhAnh" alt="">
+														</div>
+														<div class="we-comment" style="max-width:83.4%; width:83.4%; ">
+															<div class="coment-head"
+														style="display:inline-flex;justify-content:space-between">
 
-																}
-																else
-																{
-																	<h5><a href="/profile/@bl.MaQl" title="">@getQuanLy(bl.MaQl).Ho @getQuanLy(bl.MaQl).Ten</a></h5> 
-
-																}
-																
-																	<span>@bl.NgayDang</span> 
-
-																	 <i class="fa fa-thumbs-up" style="cursor:pointer;" onclick="vote(@bd.MaBaiDang,@bl.MaCmt,'@User.FindFirst("MaSV").Value.Trim()')"></i>
-																</div>
-																		<a href="/managerment/remove-cmt/@bl.MaCmt" onclick="return confirm('Bạn có muốn xoá bình luận này?')">
-																<i style="cursor:pointer;" class="ti-close"></i>
-																		</a>
+																<div class="coment-head">
+																	<h5><a href="/profile/@bl.Iduser" title="">@user.Ho
+																			@user.Ten</a></h5>
+																	<span>@dayToString(bl.NgayDang)</span>
+																	<i class="fa fa-thumbs-up" style="cursor:pointer;"
+																		onclick="vote(@bd.Id,@bl.Id,'@User.Identity.Name')"></i>
+																		</div>
+																<i style="cursor:pointer;" class="ti-close"
+																	onclick=" deleteCmt('@bl.Id')"></i>
 															</div>
-																		<p style="word-break: break-all;">@bl.Content</p>
-																	</div>
-																<div style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
-																	<div class="vote-item">
-																		<i class="ti-angle-up"></i>
-																	</div>
-																	<div class="vote-item" style="margin-bottom:0;margin-left:2px">
-																		<h5 id="vote_@bl.MaCmt" class="vote-h">@GetSLVote(bl.MaCmt)</h5>
-																	</div>
+															<p style="word-break: break-all;">@bl.Content</p>
+														</div>
+														<div
+													style="max-width:6%; width:6%;display:inline-grid;justify-content:center;margin:auto;">
+															<div class="vote-item">
+																<i class="ti-angle-up"></i>
+															</div>
+															<div class="vote-item" style="margin-bottom:0;margin-left:2px">
+																<h5 id="vote_@bl.Id" class="vote-h">@bl.Sllike</h5>
+															</div>
 
-																	<div class="vote-item">
-																		<i class="ti-angle-down"></i>
-																	</div>
-																</div>
-															</li>
-												}
-													<li>
-														<a href="" onclick="load_More_Cmt(event,@bd.MaBaiDang,false)" title="" id="showmore_@bd.MaBaiDang" class="showmore underline @bd.MaBaiDang">more comments</a>
-														<input id="count_cmt_@bd.MaBaiDang" style="display:none;" value="5">
+															<div class="vote-item">
+																<i class="ti-angle-down"></i>
+															</div>
+														</div>
 													</li>
-												</ul>
-											</div>
-											</div>
+												}
+												<li id="beforeBL_@bd.Id">
+													<a href="" onclick="load_More_Cmt(event,@bd.Id,true)" title=""
+													id="showmore_@bd.Id" class="showmore underline @bd.Id">more
+														comments</a>
+												</li>
+
+											</ul>
 										</div>
-							}
+									</div>
 								</div>
-								<div id="contain_quanlysv" class="contain" style="display:none;">
-									<div class="central-meta item">
-										<div class="user-post">
-											<h5 style="border-bottom:solid 1px">Thêm với file excel</h5>
-											<form action="managerment/insert-info-sv" method="post" enctype="multipart/form-data" class="input-group mb-3" style="width:40%;">
-											  <div class="custom-file">
-												 <label class="custom-file-label" for="inputGroupFile01">Excel file</label>
-												<input type="file" name="excelFile" accept=".xlsx,.xls" class="custom-file-input" id="inputGroupFile01">
-											  </div>
-											  <div class="input-group-append" style="margin-left:5%;">
-												<button class="btn btn-info" style="background-color:#8be594;border-color:#8be594;border-radius:0;" type="submit">
-													<i class="fa fa-file-excel-o"></i> Xác nhận</button>
-											  </div>
-											</form>
+							}
+						<button onclick="load_More_BDM()" class="btn-view btn-load-more"></button>
+						</div>
+						<div id="contain_quanlysv" class="contain" style="display:none;">
+							<div class="central-meta item">
+								<div class="user-post">
+									<h5 style="border-bottom:solid 1px">Thêm với file excel</h5>
+									<form action="/managerment/insert-list-sv" method="post"
+										enctype="multipart/form-data" class="input-group mb-3" style="width:40%;">
+										<div class="custom-file">
+											<label class="custom-file-label" for="inputGroupFile01">Excel file</label>
+											<input type="file" name="file" accept=".xlsx,.xls"
+												class="custom-file-input" id="inputGroupFile01">
 										</div>
-										<div class="user-post" style="margin-bottom:1rem;">
-											<h5 style="border-bottom:solid 1px">Thêm thủ công</h5>
-											<a href="/managerment/add-sv" class="btn btn-info" style="background-color:#8be594;border-color:#8be594;border-radius:0;">
-												Thêm sinh viên	
-											</a>
+										<div class="input-group-append" style="margin-left:5%;">
+											<a class="btn btn-info"
+												style="background-color:#8be594;border-color:#8be594;border-radius:0;"
+												href="/managerment/tai-mau-excel">
+												<i class="fa fa-download" aria-hidden="true" title="Tải mẫu"></i></a>
 										</div>
-										<div class="user-post">
-											<table id="table-sv">
-												<thead>
-												<tr>
-													<th>MSSV</th>
-													<th>Họ tên</th>
-													<th>Email trường</th>
-													<th>Tài khoản</th>
-													<th>Mật khẩu</th>
-													<th>Trạng thái</th>
-													<th>Thao tác</th>
-												</tr>
-											</thead>
-											<tbody>
-												@foreach(SinhVien sv in getListSinhVien()){
+										<div class="input-group-append" style="margin-left:5%;">
+											<button class="btn btn-info"
+												style="background-color:#8be594;border-color:#8be594;border-radius:0;"
+												type="submit">
+												<i class="fa fa-file-excel-o"></i> Xác nhận</button>
+										</div>
+									</form>
+								</div>
+								<div class="user-post" style="margin-bottom:1rem;">
+									<h5 style="border-bottom:solid 1px">Thêm thủ công</h5>
+									<a href="/managerment/add-sv" class="btn btn-info"
+										style="background-color:#8be594;border-color:#8be594;border-radius:0;position:absolute;z-index:1">
+										Thêm sinh viên
+									</a>
+								</div>
+								<div class="user-post table-responsive" style="white-space:nowrap">
+									<table class="table table-hover" id="table-sv" width="100%">
+										<thead style="background-color:lightgray">
+											<tr>
+												<th>MSSV</th>
+												<th>Họ tên</th>
+												<th>Email trường</th>
+												<th>Tài khoản</th>
+												<th>Mật khẩu</th>
+												<th>Ghi chú</th>
+												<th>Thao tác</th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach (Users sv in getListUserSV())
+											{
 												<tr>
 													<td>@sv.MaSv</td>
 													<td>@sv.Ho @sv.Ten</td>
 													<td>@sv.EmailEdu</td>
-													<td>@sv.TaiKhoan</td>
-													<td>@getAccount(sv.TaiKhoan).MatKhau</td>
+													<td>@sv.IdtkNavigation.TaiKhoan</td>
+													<td>@sv.IdtkNavigation.MatKhau</td>
+													<td>@sv.GhiChu</td>
 													<td>
-														@getAccount(sv.TaiKhoan).TrangThai
+														<a href="/managerment/update-sinh-vien/@sv.Id" class="btn btn-primary">Chỉnh sửa</a>
+															@if (@sv.IdtkNavigation.TrangThai == true)
+															{
+																<button id="trangThai_@sv.IdtkNavigation.Id" onclick="doiTrangThai('@sv.IdtkNavigation.Id')" class="btn btn-danger">Khoá</button>
+															}
+															else
+															{
+																<button id="trangThai_@sv.IdtkNavigation.Id" onclick="doiTrangThai('@sv.IdtkNavigation.Id')" class="btn btn-success">Khôi phục</button>
+															}
 													</td>
-													@if(@getAccount(sv.TaiKhoan).TrangThai==true){
-														<td><a href="/managerment/trangthai-sv/@sv.TaiKhoan" onclick="return confirm('Bạn có muốn khoá sinh viên này?')" class="btn btn-danger">Khoá</a></td>
-													}
-													else{
-														<td><a href="/managerment/trangthai-sv/@sv.TaiKhoan" onclick="return confirm('Bạn có muốn khôi phục sinh viên này?')" class="btn btn-success">Khôi phục</a></td>
-													}
 												</tr>
-												}
-											</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-
-								<div id="contain_thongke" class="contain" style="display:none;">
-									<div class="central-meta item">
-										<div class="user-post">
-												<button class="btn btn-info" style="background-color:#8be594;border-color:#8be594;border-radius:0;" type="submit">
-													<i class="fa fa-file-excel-o"></i> Xuất báo cáo</button>
-										</div>
-										<div class="user-post">
-											<canvas id="myChart"></canvas>
-										</div>
-									</div>
+											}
+										</tbody>
+									</table>
 								</div>
 							</div>
-							<div class="col-lg-2">
+						</div>
 
-							</div><!-- sidebar -->
+						<div id="contain_thongke" class="contain" style="display:none;">
+							<div class="central-meta item">
+								<form action="/managerment/xuat-bao-cao" method="post" class="row justify-content-between">
+									<div class="col-lg-2 col-sm-2">
+										<input type="text" class="form-date form-control" name="fromDay"
+											value="@DateTime.Now.AddDays(-6).ToString("dd-MM-yyyy")" id="fromDay" />
+									</div>
+									<div class="col-lg-2 col-sm-2">
+										<input type="text" class="form-date form-control" name="toDay"
+											value="@DateTime.Now.ToString("dd-MM-yyyy")" id="toDay" />
+									</div>
+									<div class="col-lg-1 col-sm-1">
+										<div class="btn btn-secondary" type="button" id="searchChart" onclick="searchChart()"
+											style="border-radius:0">
+											<i class="ti-search"></i>
+										</div>
+									</div>
+									<div class="col-lg-5 col-sm-5">
+									</div>
+									<div class="col-lg-2 col-sm-2">
+										<button class="btn"
+											style="background-color:#8be594;border-color:#8be594;border-radius:0;color: white;"
+											type="submit">
+											Xuất báo cáo</button>
+									</div>
+								</form>
+								<div class="user-post" id="chartTK">
+									<canvas id="myChart"></canvas>
+									<script src="~/js/chart.js"></script>
+									<script>
+										var ctx = document.getElementById('myChart').getContext('2d');
+										var myChart = new Chart(ctx, {
+											type: 'bar',
+											data: {
+												labels: [@Html.Raw(getweek())],
+												datasets: [{
+													data: [@Html.Raw(SLBD)],
+													label: "Lượt đăng",
+													borderColor: "rgb(62,149,205)",
+													backgroundColor: "rgb(62,149,205,0.1)",
+													borderWidth: 2
+												}, {
+													data: [@Html.Raw(SLCmt)],
+													label: "Bình luận",
+													borderColor: "rgb(60,186,159)",
+													backgroundColor: "rgb(60,186,159,0.1)",
+													borderWidth: 2
+												}, {
+													data: [@Html.Raw(SLVote)],
+													label: "Vote",
+													borderColor: "rgb(255,165,0)",
+													backgroundColor: "rgb(255,165,0,0.1)",
+													borderWidth: 2
+												}
+												]
+											},
+										});
+									</script>
+								</div>
+							</div>
 						</div>
 					</div>
+					<div class="col-lg-2">
+
+					</div><!-- sidebar -->
 				</div>
 			</div>
+		</div>
+	</div>
 </div>
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/QuanLy.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-var ctx = document.getElementById('myChart').getContext('2d');
-	  var myChart = new Chart(ctx, {
-		  type: 'bar',
-		  data: {
-			labels: [@Html.Raw(getweek())],
-			datasets: [{ 
-				data: [@Html.Raw(getDataBD())],
-				label: "Lượt đăng",
-				borderColor: "rgb(62,149,205)",
-				backgroundColor: "rgb(62,149,205,0.1)",
-				borderWidth:2
-			  }, { 
-				data: [@Html.Raw(getDataCmt())],
-				label: "Bình luận",
-				borderColor: "rgb(60,186,159)",
-				backgroundColor: "rgb(60,186,159,0.1)",
-				borderWidth:2
-			  }, { 
-				data: [@Html.Raw(getDataVote())],
-				label: "Vote",
-				borderColor: "rgb(255,165,0)",
-				backgroundColor:"rgb(255,165,0,0.1)",
-				borderWidth:2
-			  }
-			]
-		  },
-		});
-</script>
